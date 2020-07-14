@@ -1,0 +1,47 @@
+{
+    "name": "lexedo/games",
+    "description": "Lexedo games",
+    "version": "1.0.0",
+    "keywords": ["lexedo", "games"],
+    "type": "application",
+    "authors": [
+        {
+            "name": "a.sedov",
+            "email": "altkkb.vds@mail.ru"
+        }
+    ],
+    "require":{
+        "lx/core":"dev-master",
+        "lx/auth":"dev-master",
+        "lx/model":"dev-master",
+        "lx/process":"dev-master",
+        "lx/socket":"dev-master",
+        "lx/tools":"dev-master"
+    },
+    "repositories":[
+        {
+            "type":"git",
+            "url":"https://github.com/epicoon/lx-core"
+        },
+        {
+            "type":"git",
+            "url":"https://github.com/epicoon/lx-auth"
+        },
+        {
+            "type":"git",
+            "url":"https://github.com/epicoon/lx-model"
+        },
+        {
+            "type":"git",
+            "url":"https://github.com/epicoon/lx-process"
+        },
+        {
+            "type":"git",
+            "url":"https://github.com/epicoon/lx-socket"
+        },
+        {
+            "type":"git",
+            "url":"https://github.com/epicoon/lx-tools"
+        }
+    ]
+}

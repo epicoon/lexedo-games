@@ -1,0 +1,39 @@
+name: lexedo/games
+
+autoload:
+  psr-4:
+    lexedo\games\:
+      - 'src'
+      - 'plugin'
+    lexedo\games\monopoly\: 'plugin/monopoly/src'
+    lexedo\games\chess: 'plugin/chesslike/src'
+
+
+service:
+  routes:
+    /: {plugin: main}
+    cofb: {plugin: cofb}
+    tetris: {plugin: tetris}
+    sapper: {plugin: sapper}
+    monopoly: {plugin: monopoly}
+    chess: {plugin: chesslike}
+
+  plugins: plugin
+  models: model
+
+  processes:
+    games_server:
+      class: lexedo\games\GamesServer
+      config:
+        single: true
+        delay: 80
+        host: lxloc
+        port: 8003
+        checkOrigin: false
+        allowedOrigins:
+          - lxloc
+        components:
+          logger:
+            class: lx\ApplicationLogger
+            ignoredCategories:
+              - lifecycle

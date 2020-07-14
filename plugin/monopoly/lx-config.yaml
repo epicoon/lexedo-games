@@ -1,0 +1,9 @@
+class: lexedo\games\monopoly\Plugin
+
+rootSnippet: snippets/_root.php
+
+jsMain: frontend/_main.js
+jsBootstrap: frontend/_bootstrap.js
+
+respondents:
+  Respondent: backend\Respondent
