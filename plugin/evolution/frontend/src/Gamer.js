@@ -2,7 +2,7 @@
 
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
-class Gamer #lx:namespace lexedo.games.Evolution extends lx.BindableModel {
+class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	#lx:schema
 		isPassed: {default: false},
 		isActive: {default: false},
@@ -75,6 +75,10 @@ class Gamer #lx:namespace lexedo.games.Evolution extends lx.BindableModel {
 		return selected.at(0);
 	}
 
+	getCreatures() {
+		return this._creatures;
+	}
+
 	getCreatureById(id) {
 		var selected = this._creatures.select(item=>item.id==id);
 		if (selected.isEmpty) return null;
@@ -93,8 +97,8 @@ class Gamer #lx:namespace lexedo.games.Evolution extends lx.BindableModel {
 		);
 	}
 
-	setCreaturesHungry(bool) {
-		this._creatures.each(c=>c.setHungry(bool));
+	setCreaturesFeedMode(bool) {
+		this._creatures.each(c=>c.setFeedMode(bool));
 	}
 
 
@@ -147,15 +151,18 @@ function __bindButtons(self) {
 	});
 	self.bind(plugin->>growPassBut);
 
-	plugin->>feedPassBut.setField('isActive', function(val) {
+	plugin->>feedEndTurnBut.click(function() {
+		self.getEnvironment().triggerChannelEvent('gamer-end-turn', {
+			gamer: self.getId()
+		});		
+	});
+	plugin->>feedEndTurnBut.setField('isActive', function(val) {
 		this.disabled(!val);
 	});
-	self.bind(plugin->>feedPassBut);
+	self.bind(plugin->>feedEndTurnBut);
 
 	plugin->>foodBut.click(function(e) {
-
 		self._game.mode.switchMode(#evConst.MOUSE_MODE_FEED, e);
-
 	});
 	plugin->>foodBut.setField('canGetFood', function(val) {
 		this.disabled(!val);

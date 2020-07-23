@@ -49,6 +49,14 @@ class Gamer
     }
 
     /**
+     * @return Game
+     */
+    public function getGame()
+    {
+        return $this->game;
+    }
+
+    /**
      * @param bool $value
      */
     public function setPassed($value)
@@ -111,6 +119,64 @@ class Gamer
     public function getCreaturesCount()
     {
         return count($this->creatures);
+    }
+
+    /**
+     * @return Creature[]
+     */
+    public function getCreatures()
+    {
+        return $this->creatures;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasActivities()
+    {
+        if ($this->game->isPhaseGrow()) {
+            return false;
+        }
+
+        foreach ($this->creatures as $creature) {
+            if ($creature->hasActivities()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasPotentialActivities()
+    {
+        if ($this->game->isPhaseGrow()) {
+            return false;
+        }
+
+        foreach ($this->creatures as $creature) {
+            if ($creature->hasPotentialActivities()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function canEat()
+    {
+        foreach ($this->creatures as $creature) {
+            if ($creature->canEat()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

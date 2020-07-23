@@ -56,13 +56,6 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             'creatureId' => $creature->getId(),
         ]);
 
-        if ($gamer->getHandCartsCount() == 0) {
-            $gamer->setPassed(true);
-            $event->addSubEvent('gamer-pass', [
-                'gamer' => $gamer->getId(),
-            ]);
-        }
-
         $this->onGrowPhaseAction($event, $gamer);
     }
 
@@ -119,20 +112,69 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             return;
         }
 
+        if (!$creature->canAttachProperty($data['property'])) {
+            $event->replaceEvent('error', [
+                'message' => 'Creature can not attach this property',
+            ]);
+            return;
+        }
+
         $gamer->dropCart($cart);
         $property = $creature->addProperty($data['property']);
         $event->addData([
             'propertyId' => $property->getId(),
         ]);
 
-        if ($gamer->getHandCartsCount() == 0) {
-            $gamer->setPassed(true);
-            $event->addSubEvent('gamer-pass', [
-                'gamer' => $gamer->getId(),
-            ]);
+        $this->onGrowPhaseAction($event, $gamer);
+    }
+
+    /**
+     * @param ChannelEvent $event
+     */
+    public function onFeedCreature($event)
+    {
+        $gamer = $this->checkGamerInPhase(Game::PHASE_FEED, $event);
+        if (!$gamer) {
+            return;
         }
 
-        $this->onGrowPhaseAction($event, $gamer);
+        if (!$this->game->getFoodCount()) {
+            $event->replaceEvent('error', [
+                'message' => 'There is no food',
+            ]);
+            return;
+        }
+
+        $data = $event->getData();
+        $creature = $gamer->getCreatureById($data['creature']);
+        if (!$creature) {
+            $event->replaceEvent('error', [
+                'message' => 'Creature not found',
+            ]);
+            return;
+        }
+
+        if (!$creature->canEat()) {
+            $event->replaceEvent('error', [
+                'message' => 'Creature is not hungry',
+            ]);
+            return;
+        }
+
+        $feedReport = $this->game->feedCreature($creature);
+        if (!$feedReport) {
+            $event->replaceEvent('error', [
+                'message' => 'Problem while creature feed',
+            ]);
+            return;
+        }
+
+        $event->addData([
+            'currentFood' => $this->game->getFoodCount(),
+            'feedReport' => $feedReport,
+        ]);
+
+        $this->onFeedPhaseAction($event, $gamer);
     }
 
     /**
@@ -147,6 +189,23 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
 
         $gamer->setPassed(true);
         $this->onGrowPhaseAction($event, $gamer);
+    }
+
+    /**
+     * @param ChannelEvent $event
+     */
+    public function onGamerEndTurn($event)
+    {
+        $gamer = $this->checkGamerInPhase(Game::PHASE_FEED, $event);
+        if (!$gamer) {
+            return;
+        }
+
+        $this->game->nextActiveGamer();
+        $event->addSubEvent('change-active-gamer', [
+            'old' => $gamer->getId(),
+            'new' => $this->game->getActiveGamer()->getId(),
+        ]);
     }
 
 
@@ -197,6 +256,14 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
     private function onGrowPhaseAction($event, $gamer)
     {
         $event->setAsync(false);
+
+        if ($gamer->getHandCartsCount() == 0) {
+            $gamer->setPassed(true);
+            $event->addSubEvent('gamer-pass', [
+                'gamer' => $gamer->getId(),
+            ]);
+        }
+
         if ($this->game->checkGrowPhaseFinished()) {
             $this->game->prepareFeedPhase();
             $event->addSubEvent('start-feed-phase', [
@@ -211,5 +278,45 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
                 'new' => $this->game->getActiveGamer()->getId(),
             ]);
         }
+    }
+
+    /**
+     * @param ChannelEvent $event
+     * @param Gamer $gamer
+     */
+    private function onFeedPhaseAction($event, $gamer)
+    {
+        $event->setAsync(false);
+
+        if (!$this->game->gamerAllowedToEat($gamer) && !$gamer->hasPotentialActivities()) {
+            $gamer->setPassed(true);
+            $event->addSubEvent('gamer-pass', [
+                'gamer' => $gamer->getId(),
+            ]);
+        }
+
+        if ($this->game->checkFeedPhaseFinished()) {
+
+            $event->dump('NEED THE NEXT TURN');
+
+            //TODO
+
+//            $this->game->prepareFeedPhase();
+//            $event->addSubEvent('start-feed-phase', [
+//                'activePhase' => $this->game->getActivePhase(),
+//                'turnSequence' => $this->game->getTurnSequence(),
+//                'foodCount' => $this->game->getFoodCount(),
+//            ]);
+        } else {
+            if (!$gamer->hasActivities()) {
+                $this->game->nextActiveGamer();
+            }
+            
+            $event->addSubEvent('change-active-gamer', [
+                'old' => $gamer->getId(),
+                'new' => $this->game->getActiveGamer()->getId(),
+            ]);
+        }
+        
     }
 }

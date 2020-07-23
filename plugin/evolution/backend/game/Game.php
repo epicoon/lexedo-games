@@ -13,6 +13,10 @@ class Game
     const PHASE_GROW = 'grow';
     const PHASE_FEED = 'feed';
 
+    const FOOD_TYPE_RED = 'red_food';
+    const FOOD_TYPE_BLUE = 'blue_food';
+    const FOOD_TYPE_FAT = 'fat_food';
+
     /** @var EvolutionChannel */
     private $channel;
 
@@ -132,6 +136,22 @@ class Game
     }
 
     /**
+     * @return bool
+     */
+    public function isPhaseGrow()
+    {
+        return $this->activePhase == self::PHASE_GROW;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPhaseFeed()
+    {
+        return $this->activePhase == self::PHASE_FEED;
+    }
+
+    /**
      * @return Gamer
      */
     public function getActiveGamer()
@@ -165,7 +185,6 @@ class Game
         while ($this->getActiveGamer()->isPassed()) {
             $this->incActiveGamerIndex();
             if ($this->activeGamerIndex == $current) {
-                //TODO признак ошибочного вызова метода
                 break;
             }
         }
@@ -186,6 +205,33 @@ class Game
     }
 
     /**
+     * @return bool
+     */
+    public function checkFeedPhaseFinished()
+    {
+        foreach ($this->gamers as $gamer) {
+            if ($this->gamerAllowedToEat($gamer) || $gamer->hasPotentialActivities()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param Gamer $gamer
+     * @return bool
+     */
+    public function gamerAllowedToEat($gamer)
+    {
+        if ($this->getFoodCount() == 0) {
+            return false;
+        }
+
+        return $gamer->canEat();
+    }
+
+    /**
      * @throws \Exception
      */
     public function prepareFeedPhase()
@@ -194,6 +240,7 @@ class Game
         foreach ($this->gamers as $gamer) {
             $gamer->setPassed(false);
         }
+        $this->activeGamerIndex = 0;
         $this->activePhase = self::PHASE_FEED;
     }
 
@@ -203,6 +250,30 @@ class Game
     public function getFoodCount()
     {
         return $this->foodCount;
+    }
+
+    /**
+     * @return void
+     */
+    public function wasteFood()
+    {
+        $this->foodCount--;
+    }
+
+    /**
+     * @param Creature $creature
+     * @return array|null
+     */
+    public function feedCreature($creature)
+    {
+        if ($this->getFoodCount() == 0) {
+            return [];
+        }
+
+        $feedReport = $creature->eat(self::FOOD_TYPE_RED);
+
+
+        return $feedReport;
     }
 
 

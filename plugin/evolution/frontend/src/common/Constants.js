@@ -24,6 +24,10 @@ class Constants #lx:namespace lexedo.games.Evolution {
 		PHASE_GROW = \lexedo\games\evolution\backend\game\Game::PHASE_GROW,
 		PHASE_FEED = \lexedo\games\evolution\backend\game\Game::PHASE_FEED,
 
+		FOOD_TYPE_RED = \lexedo\games\evolution\backend\game\Game::FOOD_TYPE_RED,
+		FOOD_TYPE_BLUE = \lexedo\games\evolution\backend\game\Game::FOOD_TYPE_BLUE,
+		FOOD_TYPE_FAT = \lexedo\games\evolution\backend\game\Game::FOOD_TYPE_FAT,
+
 		MOUSE_MODE_NONE = 0,
 		MOUSE_MODE_MOVE_CREATURE = 1,
 		MOUSE_MODE_MOVE_PROPERTY = 2,

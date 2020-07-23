@@ -98,7 +98,7 @@ gameInfoBox.begin();
 		var foodInfoBox = phaseFeedMenu.add(lx.Box, {geom:[0, 0, 100, '40px'], key:'foodInfoBox', text:'Пища: 0'});
 		foodInfoBox.align(lx.CENTER, lx.MIDDLE);
 		phaseFeedMenu.add(lx.Box, {geom:true, key:'foodBut', style:{cursor:'pointer'}});
-		phaseFeedMenu.add(lx.Button, {geom:[0, '50px', 100, '40px'], key:'feedPassBut', text:'Завершить'});
+		phaseFeedMenu.add(lx.Button, {geom:[0, '50px', 100, '40px'], key:'feedEndTurnBut', text:'Передать ход'});
 	phaseInfo.end();
 gameInfoBox.end();
 

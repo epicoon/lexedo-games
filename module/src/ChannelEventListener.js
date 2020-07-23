@@ -1,4 +1,4 @@
-class ChannelEventListener #lx:namespace lexedo.games extends lx.socket.EventListener {
+class ChannelEventListener extends lx.socket.EventListener #lx:namespace lexedo.games {
 	constructor(env) {
 		super();
 		this._environment = env;

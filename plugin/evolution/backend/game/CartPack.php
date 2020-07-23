@@ -25,14 +25,14 @@ class CartPack
         $this->carts = [];
         for ($i=0; $i<4; $i++) {
             $this->carts[] = new Cart(PropertyBank::BIG, PropertyBank::FAT);
-            $this->carts[] = new Cart(PropertyBank::HIDE, PropertyBank::FAT);
+//            $this->carts[] = new Cart(PropertyBank::HIDE, PropertyBank::FAT);
             $this->carts[] = new Cart(PropertyBank::BIG, PropertyBank::CARNIVAL);
             $this->carts[] = new Cart(PropertyBank::HIBERNATE, PropertyBank::CARNIVAL);
 //            $this->carts[] = new Cart(PropertyBank::TRAMP, PropertyBank::FAT);
 //            $this->carts[] = new Cart(PropertyBank::VENOM, PropertyBank::CARNIVAL);
 //            $this->carts[] = new Cart(PropertyBank::INTERACT, PropertyBank::CARNIVAL);
 //            $this->carts[] = new Cart(PropertyBank::PARASITE, PropertyBank::FAT);
-//            $this->carts[] = new Cart(PropertyBank::PARASITE, PropertyBank::CARNIVAL);
+            $this->carts[] = new Cart(PropertyBank::PARASITE, PropertyBank::CARNIVAL);
 //            $this->carts[] = new Cart(PropertyBank::ACUTE, PropertyBank::FAT);
 //            $this->carts[] = new Cart(PropertyBank::HOLE, PropertyBank::FAT);
 //            $this->carts[] = new Cart(PropertyBank::COOP, PropertyBank::CARNIVAL);

@@ -2,7 +2,7 @@
 
 #lx:require src/;
 
-class Game #lx:namespace lexedo.games.Chess extends lexedo.games.Game {
+class Game extends lexedo.games.Game #lx:namespace lexedo.games.Chess {
 	constructor(plugin, env) {
 		super(plugin, env);
 		#lx:require -F src/tool/__classInit;
@@ -69,7 +69,7 @@ class Game #lx:namespace lexedo.games.Chess extends lexedo.games.Game {
 
 
 
-class EventListener #lx:namespace lexedo.games.Chess extends lexedo.games.ChannelEventListener {
+class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexedo.games.Chess {
 	onMovePiece(event) {
 		var data = event.getData();
 		var game = this._environment.game;

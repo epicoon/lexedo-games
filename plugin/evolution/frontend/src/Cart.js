@@ -2,7 +2,7 @@
 
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
-class Cart #lx:namespace lexedo.games.Evolution  {
+class Cart #lx:namespace lexedo.games.Evolution {
 	constructor(env, id, prop1, prop2) {
 		this._environment = env;
 		this.id = id;
@@ -30,6 +30,10 @@ class Cart #lx:namespace lexedo.games.Evolution  {
 		this.gamer = gamer;
 	}
 
+	getGamer() {
+		return this.gamer;
+	}
+
 	switchProperties() {
 		if (this.prop2 === null) return;
 
@@ -42,6 +46,14 @@ class Cart #lx:namespace lexedo.games.Evolution  {
 
 	getTitleProperty() {
 		return this.prop1;
+	}
+
+	isPropertyFiendly() {
+		return this.getEnvironment().dataCatalog.isPropertyFiendly(this.getTitleProperty());
+	}
+
+	isPropertySingle() {
+		return this.getEnvironment().dataCatalog.isPropertySingle(this.getTitleProperty());
 	}
 
 	useAsCreature() {

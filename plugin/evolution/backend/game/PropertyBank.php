@@ -52,96 +52,118 @@ class PropertyBank
             'name' => 'большой',
             'imgBase' => '000big',
             'friendly' => true,
+            'single' => true,
+            'needFood' => 1,
         ],
         self::FAST => [
             'name' => 'быстрый',
             'imgBase' => '001fast',
             'friendly' => true,
+            'single' => true,
         ],
         self::INTERACT => [
             'name' => 'взаимодействие',
             'imgBase' => '002interact',
             'friendly' => true,
+            'single' => false,
         ],
         self::SWIM => [
             'name' => 'плавание',
             'imgBase' => '003swim',
             'friendly' => true,
+            'single' => true,
         ],
         self::HIDE => [
             'name' => 'камуфляж',
             'imgBase' => '004hide',
             'friendly' => true,
+            'single' => true,
         ],
         self::MIMICRY => [
             'name' => 'мимикрия',
             'imgBase' => '005mimicry',
             'friendly' => true,
+            'single' => true,
         ],
         self::HOLE => [
             'name' => 'норное',
             'imgBase' => '006hole',
             'friendly' => true,
+            'single' => true,
         ],
         self::ACUTE => [
             'name' => 'острое зрение',
             'imgBase' => '007acute',
             'friendly' => true,
+            'single' => true,
         ],
         self::DROP_TAIL => [
             'name' => 'отбрасывание хвоста',
             'imgBase' => '008drop',
             'friendly' => true,
+            'single' => true,
         ],
         self::SCAVENGER => [
             'name' => 'падальщик',
             'imgBase' => '009scavenger',
             'friendly' => true,
+            'single' => true,
         ],
         self::PARASITE => [
             'name' => 'паразит',
             'imgBase' => '010parasite',
             'friendly' => false,
+            'single' => true,
+            'needFood' => 2,
         ],
         self::PIRACY => [
             'name' => 'пиратство',
             'imgBase' => '011piracy',
             'friendly' => true,
+            'single' => true,
         ],
         self::SYMBIOSIS => [
             'name' => 'симбиоз',
             'imgBase' => '012simbios',
             'friendly' => true,
+            'single' => false,
         ],
         self::COOP => [
             'name' => 'сотрудничество',
             'imgBase' => '013coop',
             'friendly' => true,
+            'single' => false,
         ],
         self::HIBERNATE => [
             'name' => 'спячка',
             'imgBase' => '014hibern',
             'friendly' => true,
+            'single' => true,
         ],
         self::TRAMP => [
             'name' => 'топотун',
             'imgBase' => '015tramp',
             'friendly' => true,
+            'single' => true,
         ],
         self::VENOM => [
             'name' => 'ядовитое',
             'imgBase' => '016venom',
             'friendly' => true,
+            'single' => true,
         ],
         self::CARNIVAL => [
             'name' => 'хищник',
             'imgBase' => '017carniv',
             'friendly' => true,
+            'single' => true,
+            'needFood' => 1,
         ],
         self::FAT => [
             'name' => 'жировой запас',
             'imgBase' => '018fat',
             'friendly' => true,
+            'single' => false,
         ],
     ];
 
@@ -179,5 +201,23 @@ class PropertyBank
     public static function isFriendly($type)
     {
         return self::$data[$type]['friendly'] ?? false;
+    }
+
+    /**
+     * @param integer $type
+     * @return bool
+     */
+    public static function isSingle($type)
+    {
+        return self::$data[$type]['single'] ?? false;
+    }
+
+    /**
+     * @param integer $type
+     * @return integer
+     */
+    public static function getNeedFood($type)
+    {
+        return self::$data[$type]['needFood'] ?? 0;
     }
 }

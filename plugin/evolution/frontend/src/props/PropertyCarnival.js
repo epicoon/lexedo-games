@@ -1,11 +1,11 @@
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
-class PropertyCarnival #lx:namespace lexedo.games.Evolution extends lexedo.games.Evolution.Property {
+class PropertyCarnival extends lexedo.games.Evolution.Property #lx:namespace lexedo.games.Evolution {
 	constructor(creature, id) {
 		super(creature, #evConst.PROPERTY_CARNIVAL, id);
 	}
 
-	needFood() {
+	getNeedFood() {
 		return 1;
 	}
 

@@ -11,6 +11,12 @@ class DataCatalog #lx:namespace lexedo.games.Evolution {
 		return prop.friendly;
 	}
 
+	isPropertySingle(code) {
+		var prop = this.properties[code];
+		if (!prop) return false;
+		return prop.single;
+	}
+
 	getPropertyPictureMax(code) {
 		return this.properties[code].imgBase + '.jpg';
 	}

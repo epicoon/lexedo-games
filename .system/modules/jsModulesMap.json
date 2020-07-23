@@ -10,5 +10,5 @@
     "lexedo.games.ChessOnline": {
         "name": "lexedo.games.ChessOnline",
         "path": "vendor\/lexedo\/games\/plugin\/chesslike\/frontend\/modules\/ChessOnline.js"
-    },
+    }
 }

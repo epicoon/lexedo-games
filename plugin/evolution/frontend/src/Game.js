@@ -2,7 +2,7 @@
 
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
-class Game #lx:namespace lexedo.games.Evolution extends lexedo.games.Game {
+class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 	init() {
 		this.gamers = {};
 		this.turnSequence = [];
@@ -57,11 +57,11 @@ class Game #lx:namespace lexedo.games.Evolution extends lexedo.games.Game {
 		this.gamersBySequence.at(0).setActive(true);
 	}
 
-	setPhase(data) {
+	setFeedPhase(data) {
 		this.eachGamer(g=>{
 			g.setActive(false);
 			g.isPassed = false;
-			g.setCreaturesHungry(true);
+			g.setCreaturesFeedMode(true);
 		});
 		this.resetTurnSequence(data.activePhase, data.turnSequence);
 		this.phase.setData(data);
