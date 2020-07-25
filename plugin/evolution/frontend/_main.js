@@ -31,5 +31,9 @@ Plugin.environment = new lexedo.games.Environment(Plugin, {
 	}
 });
 
+
 //TODO
 window.ev = Plugin.environment;
+window.ev.dump = function(str) {
+	Plugin.environment.getSocket().dump(str);
+};

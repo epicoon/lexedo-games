@@ -76,4 +76,19 @@ class EvolutionChannel extends GameChannel
 
         $this->sendEvent($event);
     }
+
+    /**
+     * For development only!
+     *
+     * @param string $key
+     * @return mixed|null
+     */
+    public function forDump($key)
+    {
+        switch ($key) {
+            case 'game': return $this->game;
+
+            default: return null;
+        }
+    }
 }
