@@ -208,6 +208,23 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         ]);
     }
 
+    /**
+     * @param ChannelEvent $event
+     */
+    public function onApproveRevenge($event)
+    {
+        $data = $event->getData();
+        $result = $this->game->approveRevenge($data['gamer']);
+        if (!$result) {
+            $event->replaceEvent('error', [
+                'message' => 'Problem while approving revenge',
+            ]);
+            return;
+        }
+
+        $event->addData(['report' => $result]);
+    }
+
 
     /*******************************************************************************************************************
      * PRIVATE
@@ -296,17 +313,29 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         }
 
         if ($this->game->checkFeedPhaseFinished()) {
+            $report = $this->game->onFeedPhaseFinished();
 
-            $event->dump('NEED THE NEXT TURN');
+            $newCarts = $report['carts'] ?? null;
+            if ($newCarts) {
+                unset($report['carts']);
+            }
 
-            //TODO
+            $subEvent = $event->addSubEvent('finish-feed-phase', $report);
 
-//            $this->game->prepareFeedPhase();
-//            $event->addSubEvent('start-feed-phase', [
-//                'activePhase' => $this->game->getActivePhase(),
-//                'turnSequence' => $this->game->getTurnSequence(),
-//                'foodCount' => $this->game->getFoodCount(),
-//            ]);
+            if ($newCarts) {
+                $connections = $this->game->getChannel()->getConnections();
+                foreach ($connections as $id => $connection) {
+                    $cartsData = [];
+                    /** @var Cart $cart */
+                    foreach ($newCarts[$id] as $cart) {
+                        $cartsData[] = $cart->toArray();
+                    }
+
+                    $subEvent->setDataForConnection($id, [
+                        'carts' => $cartsData,
+                    ]);
+                }
+            }
         } else {
             if (!$gamer->hasActivities()) {
                 $this->game->nextActiveGamer();
@@ -317,6 +346,8 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
                 'new' => $this->game->getActiveGamer()->getId(),
             ]);
         }
-        
     }
+
+
+
 }

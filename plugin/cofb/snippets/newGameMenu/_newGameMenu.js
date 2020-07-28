@@ -7,7 +7,7 @@
 #lx:use lx.Button;
 #lx:use lx.Checkbox;
 
-Snippet.onload(()=>{#lx:require _newGameMenuClient;});
+Snippet.onLoad(()=>{#lx:require _newGameMenuClient;});
 var snippetBox = Snippet.widget;
 
 snippetBox.fill('black');

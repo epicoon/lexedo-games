@@ -25,6 +25,9 @@ class Gamer
     /** @var Creature[] */
     private $creatures;
 
+    /** @var integer */
+    private $droppingCounter;
+
     /**
      * Gamer constructor.
      * @param Game $game
@@ -38,6 +41,7 @@ class Gamer
 
         $this->hand = [];
         $this->creatures = [];
+        $this->droppingCounter = 0;
     }
 
     /**
@@ -111,6 +115,22 @@ class Gamer
     public function getHandCartsCount()
     {
         return count($this->hand);
+    }
+
+    /**
+     * @param integer $count
+     */
+    public function incDroppingCounter($count)
+    {
+        $this->droppingCounter += $count;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDropping()
+    {
+        return $this->droppingCounter;
     }
 
     /**
@@ -214,5 +234,45 @@ class Gamer
     public function getCreatureById($id)
     {
         return $this->creatures[$id] ?? null;
+    }
+
+    /**
+     * @return array
+     */
+    public function onFeedPhaseFinished()
+    {
+        $report = [
+            'dieOut' => [],
+            'dropping' => 0,
+        ];
+
+        foreach ($this->creatures as $creature) {
+            $creature->trySurvive();
+
+            if ($creature->mustDieOut()) {
+                $report['dieOut'][] = $creature->getId();
+                $report['dropping']+= $creature->getCartCount();
+                
+                $this->incDroppingCounter($creature->getCartCount());
+                unset($this->creatures[$creature->getId()]);
+                continue;
+            }
+            
+            $creature->reset();
+        }
+
+        return $report;
+    }
+
+    /**
+     * @return integer
+     */
+    public function calcScore()
+    {
+        $result = 0;
+        foreach ($this->creatures as $creature) {
+            $result += $creature->calcScore();
+        }
+        return $result;
     }
 }

@@ -143,6 +143,10 @@ class Property #lx:namespace lexedo.games.Evolution {
 		this.currentFood++;
 	}
 
+	reset() {
+		//TODO
+	}
+
 
 
 

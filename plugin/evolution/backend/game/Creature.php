@@ -24,6 +24,9 @@ class Creature
     /** @var integer */
     private $currentFood;
 
+    /** @var bool */
+    private $isDead;
+
     /**
      * Creature constructor.
      * @param Gamer $gamer
@@ -35,6 +38,9 @@ class Creature
         $this->properties = [];
 
         $this->currentFood = 0;
+
+        //TODO - убрать такую механику. Существа, погибающие в течение фазы питания должны сбрасываться сразу же.
+        $this->isDead = false;
     }
 
     /**
@@ -51,6 +57,34 @@ class Creature
     public function getGame()
     {
         return $this->gamer->getGame();
+    }
+
+    /**
+     * @return int
+     */
+    public function getCartCount()
+    {
+        return count($this->properties) + 1;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDead()
+    {
+        return $this->isDead;
+    }
+
+    /**
+     * @return bool
+     */
+    public function mustDieOut()
+    {
+        if ($this->isDead()) {
+            return true;
+        }
+
+        return $this->isHungry();
     }
 
     /**
@@ -239,5 +273,42 @@ class Creature
         // TODO
 
         return false;
+    }
+
+    /**
+     * @return void
+     */
+    public function trySurvive()
+    {
+        //TODO
+        /*
+            - если существо сытое, ничего делать не надо
+            - если голодное
+                - если есть жир, и его достаточно, чтобы прокормиться, применяется жир. Выход
+                - если есть спячка, активируется. Выход
+        */
+    }
+
+    /**
+     * @return void
+     */
+    public function reset()
+    {
+        $this->currentFood = 0;
+        foreach ($this->properties as $property) {
+            $property->reset();
+        }
+    }
+
+    /**
+     * @return integer
+     */
+    public function calcScore()
+    {
+        $result = 2;
+        foreach ($this->properties as $property) {
+            $result += ($property->getNeedFood() + 1);
+        }
+        return $result;
     }
 }

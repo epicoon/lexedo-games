@@ -6,7 +6,7 @@
 
 #lx:use lx.Form;
 
-Snippet.onload(()=>{#lx:require onclient;});
+Snippet.onLoad(()=>{#lx:require onclient;});
 
 let leaders = new lx.Box({geom:true});
 leaders.fill('white');

@@ -1,8 +1,6 @@
 class DataCatalog #lx:namespace lexedo.games.Evolution {
 	constructor(data) {
 		this.properties = data.properties;
-
-		console.log(this);
 	}
 
 	isPropertyFiendly(code) {

@@ -7,6 +7,7 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		this.gamers = {};
 		this.turnSequence = [];
 		this.gamersBySequence = new lx.Collection();
+		this.isLastTurn = false;
 
 		this.phase = new GamePhase(this);
 		this.chat = new GameChat(this);
@@ -57,14 +58,15 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		this.gamersBySequence.at(0).setActive(true);
 	}
 
-	setFeedPhase(data) {
+	resetPhase(data) {
+		this.resetTurnSequence(data.activePhase, data.turnSequence);
+		this.phase.setData(data);
+
 		this.eachGamer(g=>{
 			g.setActive(false);
 			g.isPassed = false;
-			g.setCreaturesFeedMode(true);
+			g.setCreaturesFeedMode(this.phase.isFeed());
 		});
-		this.resetTurnSequence(data.activePhase, data.turnSequence);
-		this.phase.setData(data);
 		this.gamersBySequence.at(0).setActive(true);
 	}
 
@@ -94,6 +96,24 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		newGamer.setActive(true);
 		this.phase.gamer = newGamer;
 	}
+
+	runExtinction(data) {
+		// data[gamerId] = {dieOut:[creatureId], dropping:int}
+		for (let gamerId in data) {
+			let gamer = this.getGamerById(gamerId);
+			gamer.runExtinction(data[gamerId]);
+		}
+	}
+
+	prepareToGrow() {
+		this.eachGamer(gamer=>gamer.prepareToGrow());
+	}
+
+	showResult(result) {
+		let plugin = this.getPlugin();
+		let resultMatrix = plugin->>resultMatrix;
+		resultMatrix.showResult(result);
+	}
 }
 
 
@@ -103,6 +123,8 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 
 function __setGui(self) {
 	let plugin = self.getPlugin();
+
+	plugin->>resultMatrix.env = self.getEnvironment();
 
 	// Список игроков
 	plugin->>gamersBox.matrix({
@@ -180,7 +202,7 @@ function __setGui(self) {
 	self.phase.bind(plugin->>phaseInfoBox);
 
 	// Управление картами
-	let cartMenu = Plugin->>cartMenu;
+	let cartMenu = plugin->>cartMenu;
 	cartMenu.close = function() {
 		this.__cart.box.style('zIndex', null);
 		this.__cart = null;
@@ -196,7 +218,7 @@ function __setGui(self) {
 		cartMenu.close();
 		cart.useAsProperty(e);
 	});
-	Snippet.widget.on('mousemove', function(e) {
+	plugin.root.on('mousemove', function(e) {
 		if (cartMenu.visibility()) {
 			if (e.target && e.target.__lx && (
 				e.target.__lx == cartMenu

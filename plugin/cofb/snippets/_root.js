@@ -106,7 +106,7 @@ Snippet.addSnippet({
 
 //======================================================================================================================
 
-Snippet.onload(()=>{#lx:require _rootClient;});
+Snippet.onLoad(()=>{#lx:require _rootClient;});
 
 function decorateBox(box) {
 	box.align(lx.CENTER, lx.MIDDLE);

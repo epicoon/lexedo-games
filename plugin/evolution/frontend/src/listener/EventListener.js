@@ -48,6 +48,30 @@ class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexe
 	}
 
 	onStartFeedPhase(event) {
-		this.getEnvironment().game.setFeedPhase(event.getData());
+		this.getEnvironment().game.resetPhase(event.getData());
+	}
+
+	onFinishFeedPhase(event) {
+		var data = event.getData();
+		var game = this.getEnvironment().game;
+
+		game.runExtinction(data.extinction);
+
+		if (data.gameOver) {
+			game.showResult(data.result);
+		} else {
+			game.isLastTurn = data.isLastTurn;
+
+			game.prepareToGrow();
+			game.getLocalGamer().receiveCarts(data.carts);
+			game.resetPhase(data);
+		}
+	}
+
+	onApproveRevenge(event) {
+		let report = event.getData().report;
+
+		//TODO
+		// this.getEnvironment().triggerEvent('revengeApproved', report);
 	}
 }

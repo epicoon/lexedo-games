@@ -6,7 +6,7 @@
 
 #lx:use lx.Image;
 
-Snippet.onload(()=>{#lx:require _scoreTableClient;});
+Snippet.onLoad(()=>{#lx:require _scoreTableClient;});
 Snippet.widget.hide();
 
 new lx.Rect({geom:true, style: {fill: 'black', opacity: 0.5}});

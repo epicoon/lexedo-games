@@ -9,6 +9,9 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		this.id = id;
 		this.gamer = gamer;
 
+		//TODO - убрать такую механику. Существа, погибающие в течение фазы питания должны сбрасываться сразу же.
+		this._isDead = false;
+
 		this.properties = new lx.Collection();
 		this.properties.add(
 			lexedo.games.Evolution.Property.create(this, #evConst.PROPERTY_EXIST)
@@ -17,6 +20,10 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 
 	getEnvironment() {
 		return this.gamer.getEnvironment();
+	}
+
+	isDead() {
+		return this._isDead;
 	}
 
 	canAttachCart(cart) {
@@ -61,36 +68,43 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	}
 
 	isHungry() {
+		if (this.isDead()) return false;
 		return (this.getNeedFood() > 0);
 	}
 
 	canEat() {
+		if (this.isDead()) return false;
 		if (this.isHungry()) return true;
 		return (this.getCurrentFat() < this.getTotalFat());
 	}
 
 	getNeedFood() {
+		if (this.isDead()) return 0;
 		return this.getTotalNeedFood() - this.getEatenFood();
 	}
 
 	getTotalNeedFood() {
+		if (this.isDead()) return 0;
 		var result = 0;
 		this.properties.each(property=>result+=property.getNeedFood());
 		return result;
 	}
 
 	getEatenFood() {
+		if (this.isDead()) return 0;
 		var result = 0;
 		this.properties.each(property=>result+=property.getEatenFood());
 		return result;
 	}
 
 	getTotalFat() {
+		if (this.isDead()) return 0;
 		var selected = this.properties.select(prop=>prop.type==#evConst.PROPERTY_FAT);
 		return selected.len;
 	}
 
 	getCurrentFat() {
+		if (this.isDead()) return 0;
 		var selected = this.properties.select(prop=>prop.type==#evConst.PROPERTY_FAT);
 		var totalFat = 0;
 		selected.each(fat=>totalFat+=fat.hasFat());
@@ -98,9 +112,17 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	}
 
 	feed(propertyId, foodType) {
+		if (this.isDead()) return;
 		var property = (propertyId == 0)
 			? this.getExistProperty()
 			: this.getPropertyById(propertyId);
 		property.feed(foodType);
+	}
+
+	prepareToGrow() {
+		this.properties.each(property=>{
+			property.setFeedMode(false);
+			property.reset();
+		});
 	}
 }

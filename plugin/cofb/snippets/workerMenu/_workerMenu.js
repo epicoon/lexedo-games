@@ -4,7 +4,7 @@
  * @const {lx.Snippet} Snippet
  */
 
-Snippet.onload(()=>{#lx:require _workerMenuClient;});
+Snippet.onLoad(()=>{#lx:require _workerMenuClient;});
 
 new lx.Box({geom:[40, 35, 20, 30], style:{fill:'white'}});
 new lx.Box({key:'back', geom:true, style:{fill:'black',opacity:0.5}});

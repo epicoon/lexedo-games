@@ -88,4 +88,15 @@ class Property
     {
         $this->currentFood++;
     }
+
+    /**
+     * @return void
+     */
+    public function reset()
+    {
+        $this->currentFood = 0;
+
+
+        //TODO паузы стопы
+    }
 }

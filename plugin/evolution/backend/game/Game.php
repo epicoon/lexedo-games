@@ -4,6 +4,7 @@ namespace lexedo\games\evolution\backend\game;
 
 use lexedo\games\evolution\backend\EvolutionChannel;
 use lx\Math;
+use Exception;
 
 /**
  * Class Game
@@ -38,6 +39,15 @@ class Game
     /** @var integer */
     private $foodCount;
 
+    /** @var bool */
+    private $isLastTurn;
+
+    /** @var bool */
+    private $isWaitingForRevenge;
+
+    /** @var array */
+    private $revengeApprovements;
+
     /**
      * Game constructor.
      * @param EvolutionChannel $channel
@@ -46,6 +56,11 @@ class Game
     {
         $this->channel = $channel;
         $this->gamers = [];
+
+        $this->foodCount = 0;
+        $this->isLastTurn = false;
+        $this->isWaitingForRevenge = false;
+        $this->revengeApprovements = [];
     }
 
     /**
@@ -219,6 +234,35 @@ class Game
     }
 
     /**
+     * @return array
+     */
+    public function onFeedPhaseFinished()
+    {
+        $extinctionReport = $this->runExtinction();
+
+        if ($this->isLastTurn) {
+            $report = [
+                'gameOver' => true,
+                'extinction' => $extinctionReport,
+                'result' => $this->calcScore(),
+            ];
+            $this->isWaitingForRevenge = true;
+            $this->revengeApprovements = [];
+        } else {
+            $newTurnReport = $this->prepareGrowPhase();
+            $report = array_merge(
+                [
+                    'gameOver' => false,
+                    'extinction' => $extinctionReport,
+                ],
+                $newTurnReport
+            );
+        }
+
+        return $report;
+    }
+
+    /**
      * @param Gamer $gamer
      * @return bool
      */
@@ -232,7 +276,7 @@ class Game
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function prepareFeedPhase()
     {
@@ -276,6 +320,16 @@ class Game
         return $feedReport;
     }
 
+    /**
+     * @param string $gamerId
+     */
+    public function approveRevenge($gamerId)
+    {
+
+        //TODO
+        return false;
+    }
+
 
     /*******************************************************************************************************************
      * PRIVATE
@@ -287,5 +341,83 @@ class Game
         if ($this->activeGamerIndex == count($this->gamers)) {
             $this->activeGamerIndex = 0;
         }
+    }
+
+    /**
+     * @return array
+     */
+    private function runExtinction()
+    {
+        $report = [];
+        foreach ($this->gamers as $gamer) {
+            $report[$gamer->getId()] = $gamer->onFeedPhaseFinished();
+        }
+
+        return $report;
+    }
+
+    /**
+     * @return array
+     */
+    private function prepareGrowPhase()
+    {
+        $report = [
+            'carts' => $this->distributeCarts(),
+        ];
+
+        if ($this->cartPack->isEmpty()) {
+            $this->isLastTurn = true;
+            $report['isLastTurn'] = $this->isLastTurn;
+        }
+
+        $this->foodCount = 0;
+        foreach ($this->gamers as $gamer) {
+            $gamer->setPassed(false);
+        }
+        $this->activeGamerIndex = 0;
+        $this->activePhase = self::PHASE_GROW;
+
+        $gamerId = array_shift($this->turnSequence);
+        $this->turnSequence[] = $gamerId;
+
+        $report['activePhase'] = $this->activePhase;
+        $report['turnSequence'] = $this->turnSequence;
+
+        return $report;
+    }
+
+    /**
+     * @return array
+     */
+    private function calcScore()
+    {
+        $list = [];
+        foreach ($this->gamers as $gamer) {
+            $score = $gamer->calcScore();
+            if (!array_key_exists($score, $list)) {
+                $list[$score] = [];
+            }
+            $list[$score][$gamer->getDropping()] = $gamer->getId();
+        }
+
+        ksort($list);
+        $list = array_reverse($list, true);
+        foreach ($list as &$item) {
+            ksort($item);
+            $item = array_reverse($item, true);
+        }
+        unset($item);
+
+        $result = [];
+        foreach ($list as $score => $droppings) {
+            foreach ($droppings as $dropping => $gamerId) {
+                $result[] = [
+                    'gamer' => $gamerId,
+                    'score' => $score,
+                    'dropping' => $dropping,
+                ];
+            }
+        }
+        return $result;
     }
 }

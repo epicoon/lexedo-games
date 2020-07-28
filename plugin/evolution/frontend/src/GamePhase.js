@@ -26,13 +26,17 @@ class GamePhase extends lx.BindableModel {
 	}
 
 	setData(data) {
-
-		console.log( 'setData' );
-		console.log(data);
-
 		if (this.type == #evConst.PHASE_FEED) {
 			this.food = data.foodCount;
 		}
+	}
+
+	isGrow() {
+		return this.type == #evConst.PHASE_GROW;
+	}
+
+	isFeed() {
+		return this.type == #evConst.PHASE_FEED;
 	}
 
 

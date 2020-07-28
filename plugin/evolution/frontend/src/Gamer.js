@@ -4,6 +4,7 @@
 
 class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	#lx:schema
+		dropping: {default: 0},
 		isPassed: {default: false},
 		isActive: {default: false},
 		canGetFood: {default: false};
@@ -101,8 +102,15 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		this._creatures.each(c=>c.setFeedMode(bool));
 	}
 
+	runExtinction(data) {
+		// data - {dieOut:[creatureId], dropping:int}
+		this.dropping += data.dropping;
+		data.dieOut.each(creatureId=>this._creatures.remove(this.getCreatureById(creatureId)));
+	}
 
-
+	prepareToGrow() {
+		this._creatures.each(creature=>creature.prepareToGrow());
+	}
 }
 
 

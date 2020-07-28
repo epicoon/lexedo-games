@@ -7,6 +7,7 @@
 #lx:use lx.Button;
 #lx:use lx.Input;
 #lx:use lx.MultiBox;
+#lx:use lx.ActiveBox;
 
 //======================================================================================================================
 // Поле для отображения существ
@@ -123,3 +124,12 @@ cartMenu.add(lx.Button, {
 cartMenu.hide();
 
 
+//======================================================================================================================
+// Итог игры
+var resultBox = new lx.ActiveBox({	
+	key: 'resultBox',
+	geom: [20, 25, 60, 30],
+	header: 'Результаты'
+});
+resultBox.setSnippet('resultBox');
+resultBox.hide();
