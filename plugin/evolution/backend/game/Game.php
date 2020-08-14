@@ -5,6 +5,7 @@ namespace lexedo\games\evolution\backend\game;
 use lexedo\games\evolution\backend\EvolutionChannel;
 use lx\Math;
 use Exception;
+use lx\socket\Channel\ChannelEvent;
 
 /**
  * Class Game
@@ -20,6 +21,9 @@ class Game
 
     /** @var EvolutionChannel */
     private $channel;
+
+    /** @var bool */
+    private $isActive;
 
     /** @var CartPack */
     private $cartPack;
@@ -55,7 +59,9 @@ class Game
     public function __construct($channel)
     {
         $this->channel = $channel;
+        $this->isActive = false;
         $this->gamers = [];
+        $this->turnSequence = [];
 
         $this->foodCount = 0;
         $this->isLastTurn = false;
@@ -71,59 +77,81 @@ class Game
         return $this->channel;
     }
 
-    public function prepare()
+    /**
+     * @return bool
+     */
+    public function isActive()
     {
-        $this->cartPack = new CartPack();
-        $this->cartPack->shuffle();
-
-        $sequence = [];
-
-        $connections = $this->getChannel()->getConnections();
-        foreach ($connections as $connection) {
-            $gamer = new Gamer($this, $connection);
-            $this->gamers[$gamer->getId()] = $gamer;
-            $sequence[] = $gamer->getId();
-        }
-
-        $this->turnSequence = Math::shuffleArray($sequence);
-        $this->activeGamerIndex = 0;
-        $this->activePhase = self::PHASE_GROW;
+        return $this->isActive;
     }
 
     /**
-     * @return array
+     * @param ChannelEvent $event
      */
-    public function distributeCarts()
+    public function fillNewPhaseEvent($event, $phase = self::PHASE_GROW)
     {
-        $neededPool = [];
-        $gotPool = [];
-        $maxNeeded = 0;
-
-        $result = [];
-        for ($i=0, $l=$this->getGamersCount(); $i<$l; $i++) {
-            $gamer = $this->getGamerByIndex($i);
-            $count = $gamer->isEmpty() ? Constants::START_CARTS_COUNT : $gamer->getCreaturesCount() + 1;
-            if ($maxNeeded < $count) {
-                $maxNeeded = $count;
-            }
-            $neededPool[$gamer->getId()] = $count;
-            $gotPool[$gamer->getId()] = 0;
-            $result[$gamer->getId()] = [];
+        if ($this->isActive && $this->isLastTurn && $phase == self::PHASE_GROW) {
+            $this->isActive = false;
+            $this->isWaitingForRevenge = true;
+            $this->revengeApprovements = [];
+            return;
         }
 
-        for ($iterator=0; $iterator<$maxNeeded; $iterator++) {
-            for ($i=0, $l=$this->getGamersCount(); $i<$l; $i++) {
-                $gamer = $this->getGamerByIndex($i);
-                if ($neededPool[$gamer->getId()] > $gotPool[$gamer->getId()]) {
-                    $cart = $this->cartPack->handOverOne();
-                    $gamer->receiveCart($cart);
-                    $gotPool[$gamer->getId()]++;
-                    $result[$gamer->getId()][] = $cart;
+        $this->activePhase = $phase;
+
+        if (!$this->isActive) {
+            $this->prepare();
+        } else {
+            $this->updateGamersSequence($this->isPhaseGrow());
+            foreach ($this->gamers as $gamer) {
+                $gamer->setPassed(false);
+            }
+        }
+
+        $event->addData([
+            'activePhase' => $this->getActivePhase(),
+            'turnSequence' => $this->getTurnSequence(),
+        ]);
+
+        if ($this->isPhaseGrow()) {
+            $this->foodCount = 0;
+            $newCarts = $this->distributeCarts();
+
+            $this->isLastTurn = $this->cartPack->isEmpty();
+            $event->addData([
+                'isLastTurn' => $this->isLastTurn,
+            ]);
+
+            foreach ($this->gamers as $id => $gamer) {
+                $cartsData = [];
+                /** @var Cart $cart */
+                foreach ($newCarts[$id] as $cart) {
+                    $cartsData[] = $cart->toArray();
                 }
-            }
-        }
 
-        return $result;
+                $event->setDataForConnection($id, [
+                    'carts' => $cartsData,
+                ]);
+            }
+        } elseif ($this->isPhaseFeed()) {
+            $this->foodCount = Math::rand(3, 8);
+            $event->addData([
+                'foodCount' => $this->getFoodCount(),
+            ]);
+        }
+    }
+
+    public function prepare()
+    {
+        $this->prepareCartPack();
+        $this->prepareGamers();
+
+        $this->activePhase = self::PHASE_GROW;
+        $this->foodCount = 0;
+        $this->isLastTurn = false;
+        $this->isWaitingForRevenge = false;
+        $this->revengeApprovements = [];
+        $this->isActive = true;
     }
 
     /**
@@ -131,7 +159,7 @@ class Game
      */
     public function getGamersCount()
     {
-        return $this->channel->getNeedleGamersCount();
+        return count($this->gamers);
     }
 
     /**
@@ -203,6 +231,10 @@ class Game
                 break;
             }
         }
+        
+        if ($this->isPhaseFeed()) {
+            $this->getActiveGamer()->prepareToFeedTurn();
+        }
     }
 
     /**
@@ -234,35 +266,6 @@ class Game
     }
 
     /**
-     * @return array
-     */
-    public function onFeedPhaseFinished()
-    {
-        $extinctionReport = $this->runExtinction();
-
-        if ($this->isLastTurn) {
-            $report = [
-                'gameOver' => true,
-                'extinction' => $extinctionReport,
-                'result' => $this->calcScore(),
-            ];
-            $this->isWaitingForRevenge = true;
-            $this->revengeApprovements = [];
-        } else {
-            $newTurnReport = $this->prepareGrowPhase();
-            $report = array_merge(
-                [
-                    'gameOver' => false,
-                    'extinction' => $extinctionReport,
-                ],
-                $newTurnReport
-            );
-        }
-
-        return $report;
-    }
-
-    /**
      * @param Gamer $gamer
      * @return bool
      */
@@ -272,20 +275,7 @@ class Game
             return false;
         }
 
-        return $gamer->canEat();
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function prepareFeedPhase()
-    {
-        $this->foodCount = Math::rand(3, 8);
-        foreach ($this->gamers as $gamer) {
-            $gamer->setPassed(false);
-        }
-        $this->activeGamerIndex = 0;
-        $this->activePhase = self::PHASE_FEED;
+        return $gamer->hasHungryCreature();
     }
 
     /**
@@ -301,7 +291,9 @@ class Game
      */
     public function wasteFood()
     {
-        $this->foodCount--;
+        if ($this->foodCount > 0) {
+            $this->foodCount--;
+        }
     }
 
     /**
@@ -314,6 +306,7 @@ class Game
             return [];
         }
 
+        $creature->getGamer()->onCreatureEaten();
         $feedReport = $creature->eat(self::FOOD_TYPE_RED);
 
 
@@ -321,36 +314,27 @@ class Game
     }
 
     /**
-     * @param string $gamerId
+     * @return bool
      */
-    public function approveRevenge($gamerId)
+    public function hasHungryCreature()
     {
+        foreach ($this->gamers as $gamer) {
+            if ($gamer->hasHungryCreature()) {
+                return true;
+            }
+        }
 
-        //TODO
         return false;
     }
 
-
-    /*******************************************************************************************************************
-     * PRIVATE
-     ******************************************************************************************************************/
-
-    private function incActiveGamerIndex()
-    {
-        $this->activeGamerIndex++;
-        if ($this->activeGamerIndex == count($this->gamers)) {
-            $this->activeGamerIndex = 0;
-        }
-    }
-
     /**
      * @return array
      */
-    private function runExtinction()
+    public function runExtinction()
     {
         $report = [];
         foreach ($this->gamers as $gamer) {
-            $report[$gamer->getId()] = $gamer->onFeedPhaseFinished();
+            $report[$gamer->getId()] = $gamer->runExtinction();
         }
 
         return $report;
@@ -359,37 +343,22 @@ class Game
     /**
      * @return array
      */
-    private function prepareGrowPhase()
+    public function restorePropertiesState()
     {
-        $report = [
-            'carts' => $this->distributeCarts(),
-        ];
-
-        if ($this->cartPack->isEmpty()) {
-            $this->isLastTurn = true;
-            $report['isLastTurn'] = $this->isLastTurn;
-        }
-
-        $this->foodCount = 0;
+        $result = [];
         foreach ($this->gamers as $gamer) {
-            $gamer->setPassed(false);
+            $report = $gamer->restorePropertiesState();
+            if (!empty($report)) {
+                $result[$gamer->getId()] = $report;
+            }
         }
-        $this->activeGamerIndex = 0;
-        $this->activePhase = self::PHASE_GROW;
-
-        $gamerId = array_shift($this->turnSequence);
-        $this->turnSequence[] = $gamerId;
-
-        $report['activePhase'] = $this->activePhase;
-        $report['turnSequence'] = $this->turnSequence;
-
-        return $report;
+        return $result;
     }
 
     /**
      * @return array
      */
-    private function calcScore()
+    public function calcScore()
     {
         $list = [];
         foreach ($this->gamers as $gamer) {
@@ -397,27 +366,164 @@ class Game
             if (!array_key_exists($score, $list)) {
                 $list[$score] = [];
             }
-            $list[$score][$gamer->getDropping()] = $gamer->getId();
+            $list[$score][] = [
+                'gamerId' => $gamer->getId(),
+                'dropping' => $gamer->getDropping(),
+            ];
         }
 
         ksort($list);
         $list = array_reverse($list, true);
         foreach ($list as &$item) {
-            ksort($item);
-            $item = array_reverse($item, true);
+            usort($item, function ($a, $b) {
+                if ($a['dropping'] > $b['dropping']) return -1;
+                if ($a['dropping'] < $b['dropping']) return 1;
+                return 0;
+            });
         }
         unset($item);
 
         $result = [];
-        foreach ($list as $score => $droppings) {
-            foreach ($droppings as $dropping => $gamerId) {
+        foreach ($list as $score => $inScore) {
+            foreach ($inScore as $data) {
                 $result[] = [
-                    'gamer' => $gamerId,
+                    'gamer' => $data['gamerId'],
                     'score' => $score,
-                    'dropping' => $dropping,
+                    'dropping' => $data['dropping'],
                 ];
             }
         }
         return $result;
+    }
+
+    /**
+     * @param string $gamerId
+     * @return array
+     */
+    public function approveRevenge($gamerId)
+    {
+        if (!$this->isWaitingForRevenge) {
+            return [];
+        }
+        
+        $this->revengeApprovements[] = $gamerId;
+        if (count($this->revengeApprovements) != $this->getGamersCount()) {
+            return [
+                'start' => false,
+                'approvesCount' => count($this->revengeApprovements),
+                'gamersCount' => $this->getGamersCount(),
+            ];
+        } else {
+            return [
+                'start' => true,
+            ];
+        }
+    }
+
+    /**
+     * @param $gamerId
+     */
+    public function onGamerLeave($gamerId)
+    {
+        unset($this->gamers[$gamerId]);
+        $this->getChannel()->trigger('gamer-leave', ['gamer' => $gamerId]);
+    }
+
+
+    /*******************************************************************************************************************
+     * PRIVATE
+     ******************************************************************************************************************/
+
+    private function prepareCartPack()
+    {
+        if (is_null($this->cartPack)) {
+            $this->cartPack = new CartPack();
+        }
+
+        $this->cartPack->reset();
+    }
+
+    private function prepareGamers()
+    {
+        if (empty($this->gamers)) {
+            $connections = $this->getChannel()->getConnections();
+            foreach ($connections as $connection) {
+                $gamer = new Gamer($this, $connection);
+                $this->gamers[$gamer->getId()] = $gamer;
+            }
+        } else {
+            $this->turnSequence = [];
+            foreach ($this->gamers as $gamer) {
+                $gamer->reset();
+            }
+        }
+
+        $this->updateGamersSequence();
+    }
+
+    /**
+     * @param bool $shift
+     * @throws Exception
+     */
+    private function updateGamersSequence($shift = false)
+    {
+        if (empty($this->turnSequence)) {
+            $this->turnSequence = Math::shuffleArray(array_keys($this->gamers));
+        } elseif ($shift) {
+            $gamerId = array_shift($this->turnSequence);
+            $this->turnSequence[] = $gamerId;
+        }
+
+        $this->activeGamerIndex = 0;
+        if ($this->isPhaseFeed()) {
+            $this->getActiveGamer()->prepareToFeedTurn();
+        }
+    }
+
+    /**
+     * @return array
+     */
+    private function distributeCarts()
+    {
+        $counters = [];
+        $carts = [];
+        foreach ($this->gamers as $gamerId => $gamer) {
+            $counters[$gamerId] = $gamer->isEmpty() ? Constants::START_CARTS_COUNT : $gamer->getCreaturesCount() + 1;
+            $carts[$gamerId] = [];
+        }
+
+        while (!empty($counters)) {
+            if ($this->cartPack->isEmpty()) {
+                break;
+            }
+
+            foreach ($this->gamers as $gamerId => $gamer) {
+                if (!array_key_exists($gamerId, $counters)) {
+                    continue;
+                }
+
+                $cart = $this->cartPack->handOverOne();
+                $gamer->receiveCart($cart);
+                $carts[$gamerId][] = $cart;
+                $counters[$gamerId]--;
+                if ($counters[$gamerId] == 0) {
+                    unset($counters[$gamerId]);
+                }
+
+                if ($this->cartPack->isEmpty()) {
+                    break;
+                }
+            }
+        }
+
+        return $carts;
+    }
+
+    private function incActiveGamerIndex()
+    {
+        $this->activeGamerIndex++;
+        if ($this->activeGamerIndex == count($this->gamers)) {
+            $this->activeGamerIndex = 0;
+        }
     }
 }

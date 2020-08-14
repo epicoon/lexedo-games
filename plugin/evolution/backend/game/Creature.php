@@ -38,8 +38,6 @@ class Creature
         $this->properties = [];
 
         $this->currentFood = 0;
-
-        //TODO - убрать такую механику. Существа, погибающие в течение фазы питания должны сбрасываться сразу же.
         $this->isDead = false;
     }
 
@@ -57,6 +55,14 @@ class Creature
     public function getGame()
     {
         return $this->gamer->getGame();
+    }
+
+    /**
+     * @return Gamer
+     */
+    public function getGamer()
+    {
+        return $this->gamer;
     }
 
     /**
@@ -84,31 +90,72 @@ class Creature
             return true;
         }
 
-        return $this->isHungry();
+        return $this->isUnderfed();
     }
 
     /**
-     * @param int $type
+     * @return Property[]
+     */
+    public function getProperties()
+    {
+        return $this->properties;
+    }
+
+    /**
+     * @param integer $type
+     * @return Property[]
+     */
+    public function getPropertiesByType($type)
+    {
+        $result = [];
+        foreach ($this->properties as $property) {
+            if ($property->is($type)) {
+                $result[] = $property;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param integer $id
+     * @return Property|null
+     */
+    public function getPropertyById($id)
+    {
+        return $this->properties[$id] ?? null;
+    }
+
+    /**
+     * @param integer $type
      * @return bool
      */
     public function canAttachProperty($type)
     {
-        $isSingle = PropertyBank::isSingle($type);
-        if (!$isSingle) {
-            return true;
-        }
-
-        foreach ($this->properties as $property) {
-            if ($property->getType() == $type) {
-                return false;
-            }
+        if (PropertyBank::isSingle($type)) {
+            return empty($this->getPropertiesByType($type));
         }
 
         return true;
     }
 
     /**
-     * @param Property $propertyType
+     * @param Creature $creature
+     * @param integer $propertyType
+     */
+    public function hasRelation($creature, $propertyType)
+    {
+        $props = $this->getPropertiesByType($propertyType);
+        foreach ($props as $property) {
+            if ($property->getRelatedCreature() === $creature) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param integer $propertyType
      * @return Property
      */
     public function addProperty($propertyType)
@@ -122,7 +169,7 @@ class Creature
      * @param string $foodType
      * @return array|null
      */
-    public function eat($foodType)
+    public function eat($foodType, $useProperties = true)
     {
         $eaten = false;
         $workFoodType = $foodType;
@@ -167,7 +214,9 @@ class Creature
             ]
         ];
 
-        //TODO учет свойств
+        if ($useProperties) {
+            //TODO учет свойств
+        }
 
         return $feedReport;
     }
@@ -175,7 +224,7 @@ class Creature
     /**
      * @return bool
      */
-    public function isHungry()
+    public function isUnderfed()
     {
         return ($this->getNeedFood() > 0);
     }
@@ -216,9 +265,9 @@ class Creature
     /**
      * @return bool
      */
-    public function canEat()
+    public function isHungry()
     {
-        if ($this->isHungry()) {
+        if ($this->isUnderfed()) {
             return true;
         }
 
@@ -260,8 +309,11 @@ class Creature
      */
     public function hasActivities()
     {
-        // TODO
-
+        foreach ($this->properties as $property) {
+            if ($property->hasActivity()) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -270,8 +322,11 @@ class Creature
      */
     public function hasPotentialActivities()
     {
-        // TODO
-
+        foreach ($this->properties as $property) {
+            if ($property->hasPotentialActivity()) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -290,14 +345,67 @@ class Creature
     }
 
     /**
+     * @return array
+     */
+    public function dropProperties()
+    {
+        $result = [];
+
+        foreach ($this->properties as $property) {
+            $relProp = $property->getRelatedProperty();
+            if ($relProp) {
+                $result[] = [
+                    $relProp->getCreature()->getId(),
+                    $relProp->getId(),
+                ];
+                $relProp->drop();
+            }
+
+            $this->getGamer()->incDroppingCounter();
+        }
+        $this->properties = [];
+
+        return $result;
+    }
+
+    /**
+     * @param Property $property
+     */
+    public function dropProperty($property)
+    {
+        if (!array_key_exists($property->getId(), $this->properties)) {
+            return;
+        }
+
+        unset($this->properties[$property->getId()]);
+        $this->getGamer()->incDroppingCounter();
+    }
+
+    /**
      * @return void
      */
-    public function reset()
+    public function prepareToFeedTurn()
+    {
+        foreach ($this->properties as $property) {
+            $property->prepareToFeedTurn();
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function onFeedPhaseFinished()
     {
         $this->currentFood = 0;
+
+        $result = [];
         foreach ($this->properties as $property) {
-            $property->reset();
+            $report = $property->onFeedPhaseFinished();
+            if ($report) {
+                $result[$property->getId()] =  $report;
+            }
         }
+        return $result;
     }
 
     /**

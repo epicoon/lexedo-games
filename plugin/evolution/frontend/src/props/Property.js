@@ -16,14 +16,24 @@ class Property #lx:namespace lexedo.games.Evolution {
 	- взята пища (одна / первая из двух)
 	- взята пища (вторая из двух)
 	*/
-	constructor(creature, type, id = 0) {
-		this.id = id;
-		this.creature = creature;
-		this.type = type;
-		this.statusBox = null;
+	constructor(config) {
+		this.creature = config.creature;
+		this.type = config.type;
+
+		this.id = config.id || 0;
+		this.relProperty = null;
+		this.asymm = config.asymm || 0;
+		this.color = config.color || null;
 
 		this.currentFood = 0;
+        this.isPaused = false;
+        this.isStopped = 0;
 		this.feedMode = false;
+
+		this.statusBox = null;
+		this.isVirtual = config.isVirtual || false;
+
+
 	}
 
 	static map() {
@@ -51,15 +61,19 @@ class Property #lx:namespace lexedo.games.Evolution {
 		return map;
 	}
 
-	static create(creature, type, id) {
+	static create(config) {
 		let map = this.map();
-		let className = map[type];
+		let className = map[config.type];
 		if (!className) return null;
-		return lx.createObject(className, [creature, id]);
+		return lx.createObject(className, [config]);
 	}
 
 	getEnvironment() {
 		return this.creature.getEnvironment();
+	}
+
+	getId() {
+		return this.id;
 	}
 
 	getGame() {
@@ -70,19 +84,43 @@ class Property #lx:namespace lexedo.games.Evolution {
 		return this.creature.gamer;
 	}
 
+	getCreature() {
+		return this.creature;
+	}
+
+	isAvailable() {
+        return !this.isPaused && (this.isStopped == 0);
+	}
+
 	getPicture() {
 		var catalog = this.getEnvironment().dataCatalog;
 		if (this.type == #evConst.PROPERTY_EXIST)
 			return catalog.getCreaturePicrute();
-		return catalog.getPropertyPictureUse(this.type);
+		return catalog.getPropertyPictureUse(this.type, this.asymm);
+	}
+
+	getColor() {
+		return this.color;
 	}
 
 	setStatusBox(statusBox) {
 		this.statusBox = statusBox;
 	}
 
+	setRelation(relProperty) {
+		this.relProperty = relProperty;
+	}
+
 	onClick(event) {
-		return false;
+		if (!this.isAvailable()) return false;
+
+		return true;
+	}
+
+	prepareToFeedTurn() {
+		this.actualizeState({
+			isPaused: false
+		});
 	}
 
 	getNeedFood() {
@@ -91,6 +129,11 @@ class Property #lx:namespace lexedo.games.Evolution {
 
 	getEatenFood() {
 		return this.currentFood;
+	}
+
+	getRelatedCreature() {
+		if (!this.relProperty) return null;
+		return this.relProperty.getCreature();
 	}
 
 	isFriendly() {
@@ -113,11 +156,9 @@ class Property #lx:namespace lexedo.games.Evolution {
 				this.statusBox.picture('_hungry.png');
 			else if (this.getNeedFood() == 2)
 				this.statusBox.picture('_hungry2.png');
-			this.statusBox.show();
 			this.feedMode = true;
 			this.currentFood = 0;
 		} else {
-			this.statusBox.hide();
 			this.statusBox.clear();
 			this.feedMode = false;
 		}
@@ -143,11 +184,28 @@ class Property #lx:namespace lexedo.games.Evolution {
 		this.currentFood++;
 	}
 
-	reset() {
-		//TODO
+	actualizeState(data) {
+		if (data.isPaused !== undefined) this.isPaused = data.isPaused;
+		if (data.isStopped !== undefined) this.isStopped = data.isStopped;
+
+		if (this.isStopped) {
+			if (!this.statusBox.contains('stopped'))
+				this.statusBox.add(lx.Box, {geom:true, key:'stopped', picture:'tools/stop.png'});
+		} else if (this.isPaused) {
+			if (!this.statusBox.contains('paused'))
+				this.statusBox.add(lx.Box, {geom:true, key:'paused', picture:'tools/pause.png'});
+		} else {
+			if (this.statusBox.contains('stopped')) this.statusBox.del('stopped');
+			if (this.statusBox.contains('paused')) this.statusBox.del('paused');
+		}
 	}
 
+	onAction(data) {
+		if (data.state) this.actualizeState(data.state);
+		this.onActionProcess(data);
+	}
 
-
-
+	onActionProcess(data) {
+		// abstract
+	}
 }

@@ -14,7 +14,10 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 
 		this.properties = new lx.Collection();
 		this.properties.add(
-			lexedo.games.Evolution.Property.create(this, #evConst.PROPERTY_EXIST)
+			lexedo.games.Evolution.Property.create({
+				creature: this,
+				type: #evConst.PROPERTY_EXIST
+			})
 		);
 	}
 
@@ -22,20 +25,45 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		return this.gamer.getEnvironment();
 	}
 
+	getId() {
+		return this.id;
+	}
+
+	getGamer() {
+		return this.gamer;
+	}
+
 	isDead() {
 		return this._isDead;
 	}
 
-	canAttachCart(cart) {
-		if (!cart.isPropertySingle()) return true;
-		var selected = this.properties.select(prop=>prop.type==cart.getTitleProperty());
-		return selected.isEmpty;
+	addProperty(config) {
+		this.dropVirtualProperties();
+		config.creature = this;
+		this.properties.add(
+			lexedo.games.Evolution.Property.create(config)
+		);
+		return this.properties.last();
 	}
 
-	addProperty(propertyType, propertyId) {
+	dropProperty(propertyId) {
+		var prop = this.getPropertyById(propertyId);
+		this.properties.remove(prop);
+	}
+
+	addVirtualProperty(type) {
 		this.properties.add(
-			lexedo.games.Evolution.Property.create(this, propertyType, propertyId)
+			lexedo.games.Evolution.Property.create({
+				creature: this,
+				type,
+				isVirtual: true
+			})
 		);
+	}
+
+	dropVirtualProperties() {
+		var virtualProperties = this.properties.select(prop=>prop.isVirtual);
+		virtualProperties.each(prop=>this.properties.remove(prop));
 	}
 
 	getPicture() {
@@ -53,6 +81,11 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		return this.properties;
 	}
 
+	getPropertiesByType(type) {
+		var selected = this.properties.select(prop=>prop.type==type);
+		return selected;
+	}
+
 	getPropertyById(id) {
 		var selected = this.properties.select(item=>item.id==id);
 		if (selected.isEmpty) return null;
@@ -63,18 +96,22 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		return this.properties.at(0);
 	}
 
+	prepareToFeedTurn() {
+		this.properties.each(property=>property.prepareToFeedTurn());
+	}
+
 	setFeedMode(bool) {
 		this.properties.each(property=>property.setFeedMode(bool));
 	}
 
-	isHungry() {
+	isUnderfed() {
 		if (this.isDead()) return false;
 		return (this.getNeedFood() > 0);
 	}
 
-	canEat() {
+	isHungry() {
 		if (this.isDead()) return false;
-		if (this.isHungry()) return true;
+		if (this.isUnderfed()) return true;
 		return (this.getCurrentFat() < this.getTotalFat());
 	}
 
@@ -122,7 +159,6 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	prepareToGrow() {
 		this.properties.each(property=>{
 			property.setFeedMode(false);
-			property.reset();
 		});
 	}
 }

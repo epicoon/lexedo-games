@@ -21,10 +21,17 @@ class MouseMode {
 
 	setMode(mode, e, data = {}) {
 		this.mode = mode;
+
+		if (this.data && this.data.lxHasMethod('reset'))
+			this.data.reset();
 		this.data = data;
 
 		this.game.mouse.setMode(mode, e);
 		this.__highlightProps();
+	}
+
+	renewHighlight() {
+		this.__highlightProps();		
 	}
 
 	isMode(mode) {
@@ -68,7 +75,7 @@ class MouseMode {
 		var props = [];
 		gamers.each(gamer=>{
 			gamer.getCreatures().each(creature=>{
-				if (creature.canAttachCart(cart))
+				if (this.data.checkDueCreature(creature))
 					props.push(creature.getExistProperty());
 			});
 		});
@@ -80,7 +87,7 @@ class MouseMode {
 
 		var props = [];
 		gamer.getCreatures().each(creature=>{
-			if (creature.canEat())
+			if (creature.isHungry())
 				props.push(creature.getExistProperty());
 		});
 		return props;

@@ -52,10 +52,10 @@ class Environment #lx:namespace lexedo.games {
 		}
 
 		this.game.onStuffed();
+		this.game.setPending(false);
 	}
 
 	onGameBegin(data) {
-		this.game.setPending(false);
 		this.game.onBegin(data);
 	}
 

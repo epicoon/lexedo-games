@@ -78,51 +78,85 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             return;
         }
 
-        if (!$cart->hasProperty($data['property'])) {
+        $propertyType = $data['property'];
+        if (!$cart->hasProperty($propertyType)) {
             $event->replaceEvent('error', [
                 'message' => 'Cart hasn\'t this property',
             ]);
             return;
         }
 
-        $isFriendly = PropertyBank::isFriendly($data['property']);
-        if (
-            ($isFriendly && $data['gamer'] != $data['creatureGamer'])
-            || (!$isFriendly && $data['gamer'] == $data['creatureGamer'])
-        ) {
-            $event->replaceEvent('error', [
-                'message' => 'Creature owner is wrong',
-            ]);
-            return;
+        $isFriendly = PropertyBank::isFriendly($propertyType);
+        $creatures = $data['creatures'];
+        foreach ($creatures as $creatureData) {
+            if (
+                ($isFriendly && $data['gamer'] != $creatureData['creatureGamer'])
+                || (!$isFriendly && $data['gamer'] == $creatureData['creatureGamer'])
+            ) {
+                $event->replaceEvent('error', [
+                    'message' => 'Creature owner is wrong',
+                ]);
+                return;
+            }
+
+            $creatureOwner = $this->game->getGamerById($creatureData['creatureGamer']);
+            if (!$creatureOwner) {
+                $event->replaceEvent('error', [
+                    'message' => 'Creature owner not found',
+                ]);
+                return;
+            }
+
+            $creature = $creatureOwner->getCreatureById($creatureData['creature']);
+            if (!$creature) {
+                $event->replaceEvent('error', [
+                    'message' => 'Creature not found',
+                ]);
+                return;
+            }
         }
 
-        $creatureOwner = $this->game->getGamerById($data['creatureGamer']);
-        if (!$creatureOwner) {
-            $event->replaceEvent('error', [
-                'message' => 'Creature owner not found',
-            ]);
-            return;
-        }
-
-        $creature = $creatureOwner->getCreatureById($data['creature']);
-        if (!$creature) {
-            $event->replaceEvent('error', [
-                'message' => 'Creature not found',
-            ]);
-            return;
-        }
-
-        if (!$creature->canAttachProperty($data['property'])) {
+        if (count($creatures) == 1) {
+            $creature = $creatureOwner->getCreatureById($creatures[0]['creature']);
+            if (!$creature->canAttachProperty($propertyType)) {
+                $event->replaceEvent('error', [
+                    'message' => 'Creature can not attach this property',
+                ]);
+                return;
+            }
+        } elseif (count($creatures) == 2) {
+            $creature0 = $creatureOwner->getCreatureById($creatures[0]['creature']);
+            $creature1 = $creatureOwner->getCreatureById($creatures[1]['creature']);
+            if ($creature0->hasRelation($creature1, $propertyType)) {
+                $event->replaceEvent('error', [
+                    'message' => 'This creatures are already attached by the same property',
+                ]);
+                return;
+            }
+        } else {
             $event->replaceEvent('error', [
                 'message' => 'Creature can not attach this property',
             ]);
             return;
         }
 
+        $properties = [];
+        $propertyIds = [];
+        foreach ($creatures as $creatureData) {
+            $creature = $creatureOwner->getCreatureById($creatureData['creature']);
+            $property = $creature->addProperty($propertyType);
+            $propertyIds[] = $property->getId();
+            $properties[] = $property;
+        }
+
+        if (count($properties) == 2) {
+            $properties[0]->setRelation($properties[1]);
+            $properties[1]->setRelation($properties[0]);
+        }
+
         $gamer->dropCart($cart);
-        $property = $creature->addProperty($data['property']);
         $event->addData([
-            'propertyId' => $property->getId(),
+            'propertyIds' => $propertyIds,
         ]);
 
         $this->onGrowPhaseAction($event, $gamer);
@@ -154,7 +188,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             return;
         }
 
-        if (!$creature->canEat()) {
+        if (!$creature->isHungry()) {
             $event->replaceEvent('error', [
                 'message' => 'Creature is not hungry',
             ]);
@@ -201,6 +235,13 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             return;
         }
 
+        if ($gamer->mustEat()) {
+            $event->replaceEvent('error', [
+                'message' => 'You have a hungry creature. You must feed it.',
+            ]);
+            return;
+        }
+
         $this->game->nextActiveGamer();
         $event->addSubEvent('change-active-gamer', [
             'old' => $gamer->getId(),
@@ -211,11 +252,53 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
     /**
      * @param ChannelEvent $event
      */
+    public function onPropertyAction($event)
+    {
+        $gamer = $this->checkGamerInPhase(Game::PHASE_FEED, $event);
+        if (!$gamer) {
+            return;
+        }
+
+        $data = $event->getData();
+        $creature = $gamer->getCreatureById($data['creature']);
+        if (!$creature) {
+            $event->replaceEvent('error', [
+                'message' => 'Creature not found',
+            ]);
+            return;
+        }
+
+        $property = $creature->getPropertyById($data['property']);
+        if (!$property) {
+            $event->replaceEvent('error', [
+                'message' => 'Property not found',
+            ]);
+            return;
+        }
+
+        $result = $property->runAction($data['data'] ?? []);
+        $event->addData([
+            'result' => $result,
+        ]);
+
+        $this->onFeedPhaseAction($event, $gamer);
+    }
+
+    /**
+     * @param ChannelEvent $event
+     */
     public function onApproveRevenge($event)
     {
+        if ($this->game->isActive()) {
+            $event->replaceEvent('error', [
+                'message' => 'Game is active',
+            ]);
+            return;
+        }
+
         $data = $event->getData();
         $result = $this->game->approveRevenge($data['gamer']);
-        if (!$result) {
+        if (empty($result)) {
             $event->replaceEvent('error', [
                 'message' => 'Problem while approving revenge',
             ]);
@@ -223,6 +306,10 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         }
 
         $event->addData(['report' => $result]);
+        if ($result['start']) {
+            $subEvent = $event->addSubEvent('game-begin');
+            $this->game->fillNewPhaseEvent($subEvent);
+        }
     }
 
 
@@ -282,12 +369,8 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         }
 
         if ($this->game->checkGrowPhaseFinished()) {
-            $this->game->prepareFeedPhase();
-            $event->addSubEvent('start-feed-phase', [
-                'activePhase' => $this->game->getActivePhase(),
-                'turnSequence' => $this->game->getTurnSequence(),
-                'foodCount' => $this->game->getFoodCount(),
-            ]);
+            $subEvent = $event->addSubEvent('start-feed-phase');
+            $this->game->fillNewPhaseEvent($subEvent, Game::PHASE_FEED);
         } else {
             $this->game->nextActiveGamer();
             $event->addSubEvent('change-active-gamer', [
@@ -305,6 +388,10 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
     {
         $event->setAsync(false);
 
+        if ($gamer->mustEat() || $gamer->hasActivities()) {
+            return;
+        }
+
         if (!$this->game->gamerAllowedToEat($gamer) && !$gamer->hasPotentialActivities()) {
             $gamer->setPassed(true);
             $event->addSubEvent('gamer-pass', [
@@ -313,34 +400,24 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         }
 
         if ($this->game->checkFeedPhaseFinished()) {
-            $report = $this->game->onFeedPhaseFinished();
-
-            $newCarts = $report['carts'] ?? null;
-            if ($newCarts) {
-                unset($report['carts']);
-            }
-
-            $subEvent = $event->addSubEvent('finish-feed-phase', $report);
-
-            if ($newCarts) {
-                $connections = $this->game->getChannel()->getConnections();
-                foreach ($connections as $id => $connection) {
-                    $cartsData = [];
-                    /** @var Cart $cart */
-                    foreach ($newCarts[$id] as $cart) {
-                        $cartsData[] = $cart->toArray();
-                    }
-
-                    $subEvent->setDataForConnection($id, [
-                        'carts' => $cartsData,
-                    ]);
-                }
+            $subEvent = $event->addSubEvent('finish-feed-phase');
+            $subEvent->addData([
+                'extinction' => $this->game->runExtinction(),
+                'properties' => $this->game->restorePropertiesState(),
+            ]);
+            $this->game->fillNewPhaseEvent($subEvent, Game::PHASE_GROW);
+            if ($this->game->isActive()) {
+                $subEvent->addData([
+                    'gameOver' => false,
+                ]);
+            } else {
+                $subEvent->addData([
+                    'gameOver' => true,
+                    'results' => $this->game->calcScore(),
+                ]);
             }
         } else {
-            if (!$gamer->hasActivities()) {
-                $this->game->nextActiveGamer();
-            }
-            
+            $this->game->nextActiveGamer();
             $event->addSubEvent('change-active-gamer', [
                 'old' => $gamer->getId(),
                 'new' => $this->game->getActiveGamer()->getId(),

@@ -37,6 +37,8 @@ Snippet.onLoad(()=>{
 	};
 	resultMatrix.showResult = function(result) {
 		results.reset(result);
+		Snippet->>butRestart.text('Реванш');
+		Snippet->>butRestart.disabled(false);
 		Plugin->>resultBox.show();
 	};
 	resultMatrix.matrix({
@@ -56,12 +58,5 @@ Snippet.onLoad(()=>{
 
 	Snippet->>butExit.click(()=>{
 		Plugin.root.parent.del();
-	});
-
-	resultMatrix.getEnvironment().subscribeEvent('revengeApproved', (data)=>{
-		console.log(data);
-
-		//TODO
-		// Plugin->>resultBox.hide();
 	});
 });

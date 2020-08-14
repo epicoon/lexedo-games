@@ -54,26 +54,8 @@ class EvolutionChannel extends GameChannel
 
     protected function beginGame()
     {
-        $this->game->prepare();
-        $newCarts = $this->game->distributeCarts();
-
-        $event = $this->createEvent('game-begin', [
-            'activePhase' => $this->game->getActivePhase(),
-            'turnSequence' => $this->game->getTurnSequence(),
-        ]);
-
-        foreach ($this->connections as $id => $connection) {
-            $cartsData = [];
-            /** @var Cart $cart */
-            foreach ($newCarts[$id] as $cart) {
-                $cartsData[] = $cart->toArray();
-            }
-
-            $event->setDataForConnection($id, [
-                'carts' => $cartsData,
-            ]);
-        }
-
+        $event = $this->createEvent('game-begin');
+        $this->game->fillNewPhaseEvent($event);
         $this->sendEvent($event);
     }
 
@@ -90,5 +72,13 @@ class EvolutionChannel extends GameChannel
 
             default: return null;
         }
+    }
+
+    /**
+     * @param string $gamerId
+     */
+    protected function onGamerDisconnect($gamerId)
+    {
+        $this->game->onGamerLeave($gamerId);
     }
 }

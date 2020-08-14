@@ -15,6 +15,18 @@ class DataCatalog #lx:namespace lexedo.games.Evolution {
 		return prop.single;
 	}
 
+	isPropertyPare(code) {
+		var prop = this.properties[code];
+		if (!prop) return false;
+		return prop.pare || false;	
+	}
+
+	isPropertySymmetric(code) {
+		var prop = this.properties[code];
+		if (!prop) return false;
+		return prop.symmetric === undefined ? true : prop.symmetric;
+	}
+
 	getPropertyPictureMax(code) {
 		return this.properties[code].imgBase + '.jpg';
 	}
@@ -23,7 +35,9 @@ class DataCatalog #lx:namespace lexedo.games.Evolution {
 		return this.properties[code].imgBase + '-m.png';
 	}
 
-	getPropertyPictureUse(code) {
+	getPropertyPictureUse(code, asymm) {
+		if (this.properties[code].symmetric === false)
+			return this.properties[code].imgBase + '-u-' + asymm + '.png';
 		return this.properties[code].imgBase + '-u.png';
 	}
 

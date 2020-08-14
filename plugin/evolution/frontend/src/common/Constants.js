@@ -21,6 +21,7 @@ class Constants #lx:namespace lexedo.games.Evolution {
 		PROPERTY_CARNIVAL = \lexedo\games\evolution\backend\game\PropertyBank::CARNIVAL,
 		PROPERTY_FAT = \lexedo\games\evolution\backend\game\PropertyBank::FAT,
 
+		PHASE_NONE = 'none',
 		PHASE_GROW = \lexedo\games\evolution\backend\game\Game::PHASE_GROW,
 		PHASE_FEED = \lexedo\games\evolution\backend\game\Game::PHASE_FEED,
 

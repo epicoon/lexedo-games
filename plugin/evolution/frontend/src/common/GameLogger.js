@@ -7,4 +7,12 @@ class GameLogger {
 	print(text) {
 		this.messages.insert(0, {text});
 	}
+
+	getCount() {
+		return this.messages.len;
+	}
+
+	reset() {
+		this.messages.clear();
+	}
 }

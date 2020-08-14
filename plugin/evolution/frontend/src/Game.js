@@ -22,6 +22,11 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		// this.isPending()
 	}
 
+	log(text) {
+		lx.Tost(text);
+		this.logger.print(text);
+	}
+
 	registerGamer(channelMate) {
 		let gamer = new lexedo.games.Evolution.Gamer(this, channelMate);
 		this.gamers[gamer.getId()] = gamer;
@@ -48,20 +53,30 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		return this.gamers[id];
 	}
 
-	log(text) {
-		this.logger.print(text);
+	onBegin(data) {
+		this.reset();
+		this.getLocalGamer().receiveCarts(data.carts);
+		this.resetPhase(data);
 	}
 
-	onBegin(data) {
-		this.getLocalGamer().receiveCarts(data.carts);
-		this.resetTurnSequence(data.activePhase, data.turnSequence);
-		this.gamersBySequence.at(0).setActive(true);
+	reset() {
+		this.turnSequence = [];
+		this.gamersBySequence.clear();
+		this.isLastTurn = false;
+
+		this.phase.reset();
+		this.logger.reset();
+		this.mode.reset();
+		this.eachGamer(gamer=>gamer.reset());
 	}
 
 	resetPhase(data) {
-		this.resetTurnSequence(data.activePhase, data.turnSequence);
+		this.turnSequence = data.turnSequence;
+		this.gamersBySequence.clear();
+		this.turnSequence.each(id=>this.gamersBySequence.add(this.getGamerById(id)));
+		this.phase.gamer = this.gamersBySequence.at(0);
+		this.phase.set(data.activePhase);
 		this.phase.setData(data);
-
 		this.eachGamer(g=>{
 			g.setActive(false);
 			g.isPassed = false;
@@ -74,31 +89,22 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		return this.phase.type == type;
 	}
 
-	resetTurnSequence(phase, turnSequence) {
-		this.turnSequence = turnSequence;
-		this.gamersBySequence.clear();
-		this.turnSequence.each(id=>this.gamersBySequence.add(this.getGamerById(id)));
-		this.phase.gamer = this.gamersBySequence.at(0);
-		this.phase.set(phase);
-	}
-
 	changeActiveGamer(oldId, newId) {
 		var oldGamer = this.getGamerById(oldId);
 		var newGamer = this.getGamerById(newId);
 		var currentGamer = this.getActiveGamer();
 
 		if (currentGamer != oldGamer) {
-			//TODO логировать?
 			console.error('Active gamer mismatch');
 		}
 
 		currentGamer.setActive(false);
 		newGamer.setActive(true);
-		this.phase.gamer = newGamer;
+		this.phase.actualize(newGamer);
 	}
 
 	runExtinction(data) {
-		// data[gamerId] = {dieOut:[creatureId], dropping:int}
+		// data[gamerId] = {creatures:[creatureId], properties:[creatureId, propertyId], dropping:int}
 		for (let gamerId in data) {
 			let gamer = this.getGamerById(gamerId);
 			gamer.runExtinction(data[gamerId]);
@@ -123,8 +129,6 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 
 function __setGui(self) {
 	let plugin = self.getPlugin();
-
-	plugin->>resultMatrix.env = self.getEnvironment();
 
 	// Список игроков
 	plugin->>gamersBox.matrix({
@@ -166,6 +170,7 @@ function __setGui(self) {
 		items: self.logger.messages,
 		itemRender: function(box, model) {
 			box.text(model.text);
+			if (self.logger.getCount() % 2) box.fill('#EEEEEE');
 		}
 	});
 
@@ -227,6 +232,17 @@ function __setGui(self) {
 				|| e.target.__lx.hasAncestor(cartMenu.__cart.box)
 			)) return;
 			cartMenu.close();
+		}
+	});
+
+	// Результаты игры
+	plugin->>resultMatrix.env = self.getEnvironment();
+	self.getEnvironment().subscribeEvent('revengeApproved', (data, isFromMe)=>{
+		if (data.start) plugin->>resultBox.hide();
+		else {
+			let but = plugin->>butRestart;
+			if (isFromMe) but.disabled(true);
+			but.text('Реванш (' + data.approvesCount + '/'+ data.gamersCount + ')');
 		}
 	});
 }

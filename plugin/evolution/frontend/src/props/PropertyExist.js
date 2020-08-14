@@ -10,7 +10,7 @@ class PropertyExist extends lexedo.games.Evolution.Property #lx:namespace lexedo
 	}
 
 	onClick(event) {
-		if (super.onClick()) return;
+		if (super.onClick() === false) return;
 
 		let mode = this.getGame().mode;
 		switch (true) {
@@ -30,29 +30,26 @@ class PropertyExist extends lexedo.games.Evolution.Property #lx:namespace lexedo
 	 ******************************************************************************************************************/
 
 	__onClickNewProperty(mode) {
-		let cart = mode.data.cart;
-		let isFriendly = cart.isPropertyFiendly();
-		if (
-			(isFriendly && !this.getGamer().isLocal())
-			|| (!isFriendly && this.getGamer().isLocal())
-		) {
+		if (!mode.data.checkDueGamer(this.getGamer())) {
 			lx.Tost.error('Creature owner is wrong');
-			return;
+			return;			
 		}
-
-		if (!this.creature.canAttachCart(cart)) {
+		if (!mode.data.checkDueCreature(this.creature)) {
 			lx.Tost.error('Creature can not attach this property');
 			return;
 		}
 
-		mode.reset();
-		this.getEnvironment().triggerChannelEvent('cart-to-property', {
-			gamer: cart.getGamer().getId(),
-			cart: cart.id,
-			creatureGamer: this.getGamer().getId(),
-			creature: this.creature.id,
-			property: cart.getTitleProperty()
-		});
+		mode.data.setCreature(this.creature);
+
+		if (mode.data.isReadyForTrigger()) {
+			this.getEnvironment().triggerChannelEvent(
+				'cart-to-property',
+				mode.data.prepareEventData()
+			);
+			mode.reset();
+		} else {
+			mode.renewHighlight();
+		}
 	}
 
 	__onClickFeed(mode) {

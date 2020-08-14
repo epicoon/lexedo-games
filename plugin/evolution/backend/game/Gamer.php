@@ -19,6 +19,9 @@ class Gamer
     /** @var bool */
     private $isPassed;
 
+    /** @var bool */
+    private $canGetFood;
+
     /** @var Cart[] */
     private $hand;
 
@@ -38,7 +41,16 @@ class Gamer
         $this->game = $game;
         $this->connection = $connection;
         $this->isPassed = false;
+        $this->canGetFood = false;
 
+        $this->hand = [];
+        $this->creatures = [];
+        $this->droppingCounter = 0;
+    }
+
+    public function reset()
+    {
+        $this->isPassed = false;
         $this->hand = [];
         $this->creatures = [];
         $this->droppingCounter = 0;
@@ -74,6 +86,26 @@ class Gamer
     public function isPassed()
     {
         return $this->isPassed;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->getGame()->getActiveGamer() === $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function mustEat()
+    {
+        return $this->canGetFood
+            && $this->isActive()
+            && $this->getGame()->isPhaseFeed()
+            && $this->getGame()->getFoodCount()
+            && $this->hasHungryCreature();
     }
 
     /**
@@ -120,7 +152,7 @@ class Gamer
     /**
      * @param integer $count
      */
-    public function incDroppingCounter($count)
+    public function incDroppingCounter($count = 1)
     {
         $this->droppingCounter += $count;
     }
@@ -188,10 +220,10 @@ class Gamer
     /**
      * @return bool
      */
-    public function canEat()
+    public function hasHungryCreature()
     {
         foreach ($this->creatures as $creature) {
-            if ($creature->canEat()) {
+            if ($creature->isHungry()) {
                 return true;
             }
         }
@@ -228,6 +260,31 @@ class Gamer
     }
 
     /**
+     * @param Creature $creature
+     * @return array
+     */
+    public function dropCreature($creature)
+    {
+        if (!array_key_exists($creature->getId(), $this->creatures)) {
+            return;
+        }
+
+        $relIds = $creature->dropProperties();
+        unset($this->creatures[$creature->getId()]);
+        $this->incDroppingCounter();
+
+        $result = [
+            'dropping' => $creature->getCartCount(),
+            'creatureId' => $creature->getId(),
+        ];
+        if (!empty($relIds)) {
+            $result['relIds'] = $relIds;
+        }
+
+        return $result;
+    }
+
+    /**
      * @param $id
      * @return Creature|null
      */
@@ -237,31 +294,65 @@ class Gamer
     }
 
     /**
+     * @return void
+     */
+    public function onCreatureEaten()
+    {
+        $this->canGetFood = false;
+    }
+
+    /**
      * @return array
      */
-    public function onFeedPhaseFinished()
+    public function runExtinction()
     {
         $report = [
-            'dieOut' => [],
             'dropping' => 0,
+            'creatures' => [],
+            'properties' => [],
         ];
 
         foreach ($this->creatures as $creature) {
             $creature->trySurvive();
 
             if ($creature->mustDieOut()) {
-                $report['dieOut'][] = $creature->getId();
-                $report['dropping']+= $creature->getCartCount();
-                
-                $this->incDroppingCounter($creature->getCartCount());
-                unset($this->creatures[$creature->getId()]);
+                $creatureDropReport = $this->dropCreature($creature);
+                $report['dropping'] += $creatureDropReport['dropping'];
+                $report['creatures'][] = $creatureDropReport['creatureId'];
+                if ($creatureDropReport['relIds'] ?? null) {
+                    $report['properties'] = array_merge($report['properties'], $creatureDropReport['relIds']);
+                }
                 continue;
             }
-            
-            $creature->reset();
         }
 
         return $report;
+    }
+
+    /**
+     * @return void
+     */
+    public function prepareToFeedTurn()
+    {
+        $this->canGetFood = true;
+        foreach ($this->creatures as $creature) {
+            $creature->prepareToFeedTurn();
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function restorePropertiesState()
+    {
+        $result = [];
+        foreach ($this->creatures as $creature) {
+            $report = $creature->onFeedPhaseFinished();
+            if (!empty($report)) {
+                $result[$creature->getId()] = $report;
+            }
+        }
+        return $result;
     }
 
     /**

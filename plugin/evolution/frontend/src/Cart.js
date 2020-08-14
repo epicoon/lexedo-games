@@ -56,6 +56,14 @@ class Cart #lx:namespace lexedo.games.Evolution {
 		return this.getEnvironment().dataCatalog.isPropertySingle(this.getTitleProperty());
 	}
 
+	isPropertyPare() {
+		return this.getEnvironment().dataCatalog.isPropertyPare(this.getTitleProperty());
+	}
+
+	isPropertySymmetric() {
+		return this.getEnvironment().dataCatalog.isPropertySymmetric(this.getTitleProperty());
+	}
+
 	useAsCreature() {
 		this.getEnvironment().triggerChannelEvent('cart-to-creature', {
 			gamer: this.gamer.getId(),
@@ -63,8 +71,12 @@ class Cart #lx:namespace lexedo.games.Evolution {
 		});
 	}
 
-	useAsProperty(e) {
-		this.getGame().mode.switchMode(#evConst.MOUSE_MODE_NEW_PROPERTY, e, {cart: this});
+	useAsProperty(mouseEvent) {
+		this.getGame().mode.switchMode(
+			#evConst.MOUSE_MODE_NEW_PROPERTY,
+			mouseEvent,
+			new CartToPropertyData(this)
+		);
 	}
 }
 
@@ -72,6 +84,79 @@ class Cart #lx:namespace lexedo.games.Evolution {
 /***********************************************************************************************************************
  * PRIVATE
  **********************************************************************************************************************/
+
+class CartToPropertyData {
+	constructor(cart) {
+		this.cart = cart;
+		this.step = -1;
+		this.stepLog = [];
+	}
+
+	getEnvironment() {
+		return this.cart.getEnvironment();
+	}
+
+	checkDueGamer(gamer) {
+		let isFriendly = this.cart.isPropertyFiendly();
+		return (isFriendly && gamer.isLocal())
+			|| (!isFriendly && !gamer.isLocal());
+	}
+
+	checkDueCreature(creature) {
+		if (this.cart.isPropertySingle()) {
+			var props = creature.getPropertiesByType(this.cart.getTitleProperty());
+			return props.isEmpty;
+		}
+
+		if (this.step == -1) return true;
+
+		if (this.step == 0 && creature == this.stepLog[0].creature)
+			return false;
+
+		var props = creature.getPropertiesByType(this.cart.getTitleProperty());
+		var result = true;
+		props.each(prop=>{
+			if (prop.getRelatedCreature() == this.stepLog[0].creature)
+				result = false;
+		});
+		return result;
+	}
+
+	setCreature(creature) {
+		creature.addVirtualProperty(this.cart.getTitleProperty());
+		this.stepLog.push({creature});
+		this.step++;
+	}
+
+	reset() {
+		this.stepLog.each(record=>record.creature.dropVirtualProperties());
+	}
+
+	isReadyForTrigger() {
+		if (this.cart.isPropertySingle())
+			return true;
+
+		return this.step == 1;
+	}
+
+	prepareEventData() {
+		var cart = this.cart;
+		var creatures = [];
+		this.stepLog.each(record=>{
+			creatures.push({
+				creatureGamer: record.creature.getGamer().getId(),
+				creature: record.creature.id,
+			});
+		});
+
+		return {
+			gamer: cart.getGamer().getId(),
+			cart: cart.id,
+			property: cart.getTitleProperty(),
+			creatures
+		};
+	}
+}
 
 function __setGui(self) {
 	if (!self.box.__inited) __initBox(self);

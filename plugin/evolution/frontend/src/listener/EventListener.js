@@ -12,15 +12,33 @@ class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexe
 	}
 
 	onCartToProperty(event) {
-		var gamer = this.getEnvironment().game.getGamerById(event.getData().gamer);
-		var cart  = gamer.getCartById(event.getData().cart);
-		var creatureOwner = this.getEnvironment().game.getGamerById(event.getData().creatureGamer);
-		var creature = creatureOwner.getCreatureById(event.getData().creature);
-		var propertyType = event.getData().property;
-		var propertyId = event.getData().propertyId;
+		var data = event.getData();
+		var gamer = this.getEnvironment().game.getGamerById(data.gamer);
+		var cart  = gamer.getCartById(data.cart);
+		var propertyType = data.property;
+		var propertyIds = data.propertyIds;
 
 		gamer.dropCart(cart);
-		creature.addProperty(propertyType, propertyId);
+		var color = null;
+		var newProperties = [];
+		data.creatures.each((creatureData, asymm)=>{
+			let creatureOwner = this.getEnvironment().game.getGamerById(creatureData.creatureGamer);
+			if (data.creatures.len == 2 && color === null)
+				color = creatureOwner.getColor();
+			let config = {
+				type: propertyType,
+				id: propertyIds[asymm],
+				asymm
+			};
+			if (color) config.color = color;
+			let creature = creatureOwner.getCreatureById(creatureData.creature);
+			newProperties.push(creature.addProperty(config));
+		});
+
+		if (newProperties.len == 2) {
+			newProperties[0].setRelation(newProperties[1]);
+			newProperties[1].setRelation(newProperties[0]);
+		}
 	}
 
 	onFeedCreature(event) {
@@ -33,6 +51,7 @@ class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexe
 			var creature = gamer.getCreatureById(creatureData.creatureId);
 			creature.feed(creatureData.propertyId, creatureData.foodType);
 		});
+		gamer.canGetFood = false;
 	}
 
 	onChangeActiveGamer(event) {
@@ -51,14 +70,25 @@ class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexe
 		this.getEnvironment().game.resetPhase(event.getData());
 	}
 
+	onPropertyAction(event) {
+		var data = event.getData();
+		var game = this.getEnvironment().game;
+
+		var gamer = game.getGamerById(data.gamer);
+		var creature = gamer.getCreatureById(data.creature);
+		var property = creature.getPropertyById(data.property);
+		property.onAction(data.result);
+	}
+
 	onFinishFeedPhase(event) {
 		var data = event.getData();
 		var game = this.getEnvironment().game;
 
 		game.runExtinction(data.extinction);
+		//TODO data.properties
 
 		if (data.gameOver) {
-			game.showResult(data.result);
+			game.showResult(data.results);
 		} else {
 			game.isLastTurn = data.isLastTurn;
 
@@ -70,8 +100,13 @@ class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexe
 
 	onApproveRevenge(event) {
 		let report = event.getData().report;
+		this.getEnvironment().triggerEvent('revengeApproved', [report, event.isFromMe()]);
+	}
+
+	onGamerLeave(event) {
+		console.log('!!!!!!!!!!!!!! onGamerLeave');
+		console.log(event);
 
 		//TODO
-		// this.getEnvironment().triggerEvent('revengeApproved', report);
 	}
 }

@@ -16,6 +16,7 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		this._id = channelMate.getId();
 		this._name = channelMate.name;
 		this._isLocal = channelMate.isLocal();
+		this._colorIndex = 0;
 
 		this._hand = new lx.Collection();
 		if (this._isLocal) __setGui(this);
@@ -40,16 +41,38 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		return this._isLocal;
 	}
 
+	reset() {
+		this.dropping = 0;
+		this.isPassed = false;
+		this.isActive = false;
+		this.canGetFood = false;
+		this._hand.clear();
+		this._creatures.clear();
+	}
+
 	setActive(val) {
 		this.isActive = val;
 		if (!val)
 			this.canGetFood = false;
 		else {
-			if (this._game.phaseIs(#evConst.PHASE_FEED) && this._game.phase.food)
+			if (this._game.phaseIs(#evConst.PHASE_FEED) && this._game.phase.food) {
 				this.canGetFood = true;
-			else
+				this._creatures.each(creature=>creature.prepareToFeedTurn());
+			} else
 				this.canGetFood = false;
 		}
+	}
+
+	mustEat() {
+		return (this.canGetFood && this._game.phase.food && this.hasHungryCreature());
+	}
+
+	hasHungryCreature() {
+		var result = false;
+		this._creatures.each(creature=>{
+			if (creature.isHungry()) result = true;
+		});
+		return result;
 	}
 
 	getCreaturesCount() {
@@ -103,13 +126,40 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	}
 
 	runExtinction(data) {
-		// data - {dieOut:[creatureId], dropping:int}
+		// data - {creatures:[creatureId], properties:[creatureId, propertyId], dropping:int}
 		this.dropping += data.dropping;
-		data.dieOut.each(creatureId=>this._creatures.remove(this.getCreatureById(creatureId)));
+		data.creatures.each(creatureId=>this._creatures.remove(this.getCreatureById(creatureId)));
+		data.properties.each(ids=>{
+			let creature = this.getCreatureById(ids[0]);
+			if (creature) creature.dropProperty(ids[1]);
+		});
 	}
 
 	prepareToGrow() {
 		this._creatures.each(creature=>creature.prepareToGrow());
+	}
+
+	getColor() {
+		var baseColors = [
+			'LimeGreen',
+			'red',
+			'Orange',
+			'DarkMagenta'
+		];
+
+		var baseColorIndex = this._colorIndex % 4;
+		var baseColor = baseColors[baseColorIndex];
+		var changeMode = Math.floor(this._colorIndex / 5);
+		this._colorIndex++;
+		switch (changeMode) {
+			case 0: return new lx.Color(baseColor);
+			case 1: return (new lx.Color(baseColor)).lighten(15);
+			case 2: return (new lx.Color(baseColor)).lighten(30);
+			case 3: return (new lx.Color(baseColor)).darken(15);
+			case 4: return (new lx.Color(baseColor)).darken(30);
+		}
+
+		return new lx.Color('black');
 	}
 }
 
@@ -160,6 +210,11 @@ function __bindButtons(self) {
 	self.bind(plugin->>growPassBut);
 
 	plugin->>feedEndTurnBut.click(function() {
+		if (self.mustEat()) {
+			lx.Tost.error('You have a hungry creature. You must feed it.');
+			return;
+		}
+
 		self.getEnvironment().triggerChannelEvent('gamer-end-turn', {
 			gamer: self.getId()
 		});		
@@ -209,10 +264,18 @@ function __setBinds(self) {
 				items: creature.getProperties(),
 				itemRender: function(cell, property) {
 					cell.picture(property.getPicture());
-					let statusBox = cell.add(lx.Box, {key:'status', geom:true});
-					statusBox.hide();
-					property.setStatusBox(statusBox);
-					cell.add(lx.Box, {geom:true, click:e=>property.onClick(e)});
+					let color = property.getColor();
+					if (color) cell.border({
+						width: 5,
+						color: property.getColor()
+					});
+					if (property.isVirtual) {
+						cell.opacity(0.5);
+					} else {
+						let statusBox = cell.add(lx.Box, {key:'status', geom:true});
+						property.setStatusBox(statusBox);
+						cell.add(lx.Box, {geom:true, click:e=>property.onClick(e)});
+					}
 				}
 			});
 		}

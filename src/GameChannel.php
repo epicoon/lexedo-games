@@ -157,6 +157,16 @@ abstract class GameChannel extends Channel
                 'follow' => false,
             ]);
             $this->app->getCommonChannel()->sendEvent($event);
+
+            $this->onGamerDisconnect($connection->getId());
         }
+    }
+
+    /**
+     * @param string $gamerId
+     */
+    protected function onGamerDisconnect($gamerId)
+    {
+        // pass
     }
 }
