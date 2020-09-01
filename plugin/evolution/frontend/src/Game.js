@@ -111,6 +111,11 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		}
 	}
 
+	applyPropertiesState(data) {
+		for (let gamerId in data)
+			this.getGamerById(gamerId).applyPropertiesState(data[gamerId]);
+	}
+
 	prepareToGrow() {
 		this.eachGamer(gamer=>gamer.prepareToGrow());
 	}

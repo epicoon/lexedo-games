@@ -26,14 +26,3 @@ service:
       class: lexedo\games\GamesServer
       config:
         single: true
-        delay: 80
-        host: lxloc
-        port: 8003
-        checkOrigin: false
-        allowedOrigins:
-          - lxloc
-        components:
-          logger:
-            class: lx\ApplicationLogger
-            ignoredCategories:
-              - lifecycle

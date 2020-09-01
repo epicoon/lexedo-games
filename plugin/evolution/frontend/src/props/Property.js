@@ -200,6 +200,14 @@ class Property #lx:namespace lexedo.games.Evolution {
 		}
 	}
 
+	triggerPropertyAction() {
+		this.getEnvironment().triggerChannelEvent('property-action', {
+			gamer: this.getGamer().getId(),
+			creature: this.getCreature().getId(),
+			property: this.getId()
+		});
+	}
+
 	onAction(data) {
 		if (data.state) this.actualizeState(data.state);
 		this.onActionProcess(data);

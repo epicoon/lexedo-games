@@ -161,4 +161,9 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 			property.setFeedMode(false);
 		});
 	}
+
+	applyPropertiesState(data) {
+		for (let id in data)
+			this.getPropertyById(id).actualizeState(data[id]);
+	}
 }

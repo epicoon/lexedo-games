@@ -35,12 +35,10 @@ class TrampBehavior extends PropertyBehavior
     public function run()
     {
         $this->getGame()->wasteFood();
-        $this->getProperty()->setPaused();
+        $this->property->setPaused();
         return [
             'foodCount' => $this->getGame()->getFoodCount(),
-            'state' => [
-                'isPaused' => $this->getProperty()->isPaused(),
-            ],
+            'state' => $this->getStateReport(),
         ];
     }
 }

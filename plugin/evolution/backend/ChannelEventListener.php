@@ -276,6 +276,13 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             return;
         }
 
+        if (!$property->isAvailable()) {
+            $event->replaceEvent('error', [
+                'message' => 'Property is unavailable',
+            ]);
+            return;
+        }
+
         $result = $property->runAction($data['data'] ?? []);
         $event->addData([
             'result' => $result,
@@ -424,7 +431,4 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             ]);
         }
     }
-
-
-
 }

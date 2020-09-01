@@ -17,6 +17,7 @@ class Mouse {
 			case #evConst.MOUSE_MODE_NONE:
 				this.box.hide();
 				break;
+
 			case #evConst.MOUSE_MODE_FEED:
 				this.box.size('40px', '40px');
 				this.box.picture('mouse/_food.png');

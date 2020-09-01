@@ -248,11 +248,6 @@ class Property
         }
         
         return $this->behavior->getStateReport();
-
-        //TODO - to behavior
-//        return [
-//            'isStopped' => $this->isStopped,
-//        ];
     }
 
     /**

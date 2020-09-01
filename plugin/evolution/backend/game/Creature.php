@@ -167,9 +167,11 @@ class Creature
 
     /**
      * @param string $foodType
+     * @param bool $useFat
+     * @param bool $useProperties
      * @return array|null
      */
-    public function eat($foodType, $useProperties = true)
+    public function eat($foodType, $useFat = true, $useProperties = true)
     {
         $eaten = false;
         $workFoodType = $foodType;
@@ -186,7 +188,7 @@ class Creature
                     break;
                 }
             }
-            if (!$eaten) {
+            if (!$eaten && $useFat) {
                 foreach ($this->properties as $property) {
                     if ($property->is(PropertyBank::FAT) && !$property->hasFat()) {
                         $property->eat();
@@ -401,7 +403,7 @@ class Creature
         $result = [];
         foreach ($this->properties as $property) {
             $report = $property->onFeedPhaseFinished();
-            if ($report) {
+            if (!empty($report)) {
                 $result[$property->getId()] =  $report;
             }
         }

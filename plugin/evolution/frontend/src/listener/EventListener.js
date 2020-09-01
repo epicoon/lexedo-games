@@ -47,10 +47,7 @@ class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexe
 		this.getEnvironment().game.phase.food = data.currentFood;
 
 		var gamer = this.getEnvironment().game.getGamerById(data.gamer);
-		data.feedReport.each(creatureData=>{
-			var creature = gamer.getCreatureById(creatureData.creatureId);
-			creature.feed(creatureData.propertyId, creatureData.foodType);
-		});
+		gamer.feedCreatures(data.feedReport);
 		gamer.canGetFood = false;
 	}
 
@@ -85,7 +82,7 @@ class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexe
 		var game = this.getEnvironment().game;
 
 		game.runExtinction(data.extinction);
-		//TODO data.properties
+		game.applyPropertiesState(data.properties);
 
 		if (data.gameOver) {
 			game.showResult(data.results);

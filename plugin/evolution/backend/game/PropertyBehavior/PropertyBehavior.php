@@ -81,14 +81,6 @@ class PropertyBehavior
     }
 
     /**
-     * @return array|null
-     */
-    public function getStateReport()
-    {
-        return null;
-    }
-
-    /**
      * @return bool
      */
     public function hasActivity()
@@ -102,6 +94,24 @@ class PropertyBehavior
     public function hasPotentialActivity()
     {
         return false;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStateReport()
+    {
+        $result = [];
+
+        if ($this->property->isPaused()) {
+            $result['isPaused'] = true;
+        }
+
+        if ($this->property->getStopped()) {
+            $result['isStopped'] = $this->property->getStopped();
+        }
+
+        return $result;
     }
 
     /**

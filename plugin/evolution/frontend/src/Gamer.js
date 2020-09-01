@@ -125,6 +125,13 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		this._creatures.each(c=>c.setFeedMode(bool));
 	}
 
+	feedCreatures(feedReport) {
+		feedReport.each(creatureData=>{
+			var creature = this.getCreatureById(creatureData.creatureId);
+			creature.feed(creatureData.propertyId, creatureData.foodType);
+		});		
+	}
+
 	runExtinction(data) {
 		// data - {creatures:[creatureId], properties:[creatureId, propertyId], dropping:int}
 		this.dropping += data.dropping;
@@ -133,6 +140,11 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 			let creature = this.getCreatureById(ids[0]);
 			if (creature) creature.dropProperty(ids[1]);
 		});
+	}
+
+	applyPropertiesState(data) {
+		for (let id in data)
+			this.getCreatureById(id).applyPropertiesState(data[id]);
 	}
 
 	prepareToGrow() {
