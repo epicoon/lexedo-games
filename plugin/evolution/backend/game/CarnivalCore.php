@@ -50,11 +50,11 @@ class CarnivalCore
 
         $carnivalGamerIndex = $this->game->getGamerIndex($carnivalGamer);
         $gamerIndex = $carnivalGamerIndex + 1;
-        while ($gamerIndex != $carnivalGamerIndex) {
-            if ($gamerIndex == $this->game->getGamersCount()) {
-                $gamerIndex = 0;
-            }
+        if ($gamerIndex == $this->game->getGamersCount()) {
+            $gamerIndex = 0;
+        }
 
+        while ($gamerIndex != $carnivalGamerIndex) {
             $gamer = $this->game->getGamerByIndex($gamerIndex);
             $scavenger = $this->getScavengerForGamer($gamer);
             if ($scavenger) {
@@ -62,6 +62,9 @@ class CarnivalCore
             }
 
             $gamerIndex++;
+            if ($gamerIndex == $this->game->getGamersCount()) {
+                $gamerIndex = 0;
+            }
         }
 
         return null;

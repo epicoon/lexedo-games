@@ -93,14 +93,9 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		return this.phase.type == type;
 	}
 
-	changeActiveGamer(oldId, newId) {
-		var oldGamer = this.getGamerById(oldId);
+	changeActiveGamer(newId) {
 		var newGamer = this.getGamerById(newId);
 		var currentGamer = this.getActiveGamer();
-
-		if (currentGamer != oldGamer) {
-			console.error('Active gamer mismatch');
-		}
 
 		currentGamer.setActive(false);
 		newGamer.setActive(true);

@@ -114,6 +114,13 @@ class Property #lx:namespace lexedo.games.Evolution {
 	}
 
 	onClick(event) {
+		let mode = this.getGame().mode;
+		if (mode.isMode(#evConst.MOUSE_MODE_USE_PROPERTY)) {
+			if (mode.data.property === this) return true;
+			mode.data.property.processTarget(this);
+			return false;
+		}
+
 		if (!this.isAvailable()) return false;
 
 		return true;

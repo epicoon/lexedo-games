@@ -9,8 +9,7 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		this.id = id;
 		this.gamer = gamer;
 
-		//TODO - убрать такую механику. Существа, погибающие в течение фазы питания должны сбрасываться сразу же.
-		this._isDead = false;
+		this.isPoisoned = false;
 
 		this.properties = new lx.Collection();
 		this.properties.add(
@@ -153,6 +152,11 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	applyPropertiesState(data) {
 		for (let id in data)
 			this.getPropertyById(id).actualizeState(data[id]);
+	}
+
+	poison() {
+		this.isPoisoned = true;
+		this.getExistProperty().setPoisoned();
 	}
 
 	isBig() {

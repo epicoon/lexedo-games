@@ -31,6 +31,8 @@ class PropertyBehavior
             case PropertyBank::INTERACT: return new InteractBehavior($property);
             case PropertyBank::COOP: return new CoopBehavior($property);
             case PropertyBank::CARNIVAL: return new CarnivalBehavior($property);
+            case PropertyBank::MIMICRY: return new MimicryBehavior($property);
+            case PropertyBank::DROP_TAIL: return new DropTailBehavior($property);
 
             default: return new self($property);
         }

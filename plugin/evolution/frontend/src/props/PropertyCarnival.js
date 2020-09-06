@@ -28,7 +28,6 @@ class PropertyCarnival extends lexedo.games.Evolution.Property #lx:namespace lex
 		this.getGame().mode.reset();
 
 		let preyGamer = this.getGame().getGamerById(data.preyGamer);
-		this.getEnvironment().attakCore.processAttakResult(this.getCreature(), data);
 
 		this.getGame().log(
 			'Игрок '
@@ -36,6 +35,9 @@ class PropertyCarnival extends lexedo.games.Evolution.Property #lx:namespace lex
 			+ ' атаковал существо игрока '
 			+ preyGamer.getName()
 		);
+
+		this.getGamer().canGetFood = false;
+		this.getEnvironment().attakCore.processAttakResult(this.getCreature(), data);
 	}
 
 	/**

@@ -408,10 +408,9 @@ class Creature
     /**
      * @return array
      */
-    public function dropProperties()
+    public function dropRelPropertiesOnDie()
     {
         $result = [];
-
         foreach ($this->properties as $property) {
             $relProp = $property->getRelatedProperty();
             if ($relProp) {
@@ -419,27 +418,47 @@ class Creature
                     $relProp->getCreature()->getId(),
                     $relProp->getId(),
                 ];
-                $relProp->drop();
+                $relProp->getCreature()->removeProperty($relProp);
             }
-
-            $this->getGamer()->incDroppingCounter();
         }
-        $this->properties = [];
-
         return $result;
     }
 
     /**
      * @param Property $property
+     * @return array
      */
     public function dropProperty($property)
     {
+        if (!$this->removeProperty($property)) {
+            return [];
+        }
+
+        $this->getGamer()->incDroppingCounter();
+        $result = [
+            [$this->getGamer()->getId(), $this->getId(), $property->getId(), 1]
+        ];
+
+        $relProp = $property->getRelatedProperty();
+        if ($relProp) {
+            $result[] = [$relProp->getGamer()->getId(), $relProp->getCreature()->getId(), $relProp->getId(), 0];
+            $relProp->getCreature()->removeProperty($relProp);
+        }
+        return $result;
+    }
+
+    /**
+     * @param Property $property
+     * @return bool
+     */
+    public function removeProperty($property)
+    {
         if (!array_key_exists($property->getId(), $this->properties)) {
-            return;
+            return false;
         }
 
         unset($this->properties[$property->getId()]);
-        $this->getGamer()->incDroppingCounter();
+        return true;
     }
 
     /**
@@ -479,6 +498,14 @@ class Creature
             $result += $property->calcScore();
         }
         return $result;
+    }
+
+    /**
+     * @return void
+     */
+    public function poison()
+    {
+        $this->isPoisoned = true;
     }
 
     /**

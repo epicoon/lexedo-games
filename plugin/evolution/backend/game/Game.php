@@ -65,7 +65,7 @@ class Game
         $this->isActive = false;
         $this->gamers = [];
         $this->turnSequence = [];
-        $this->attakCore = new AttakCore();
+        $this->attakCore = new AttakCore($this);
 
         $this->foodCount = 0;
         $this->isLastTurn = false;
@@ -101,7 +101,7 @@ class Game
      * @param Creature $carnival
      * @return array|null
      */
-    public function onCreatureUsedAttak($carnival)
+    public function onCreatureSuccessfullAttak($carnival)
     {
         $carnivalCore = new CarnivalCore($this);
         return $carnivalCore->onAttak($carnival);

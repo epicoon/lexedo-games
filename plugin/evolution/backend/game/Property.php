@@ -300,14 +300,6 @@ class Property
     /**
      * @return void
      */
-    public function drop()
-    {
-        $this->getCreature()->dropProperty($this);
-    }
-
-    /**
-     * @return void
-     */
     public function prepareToFeedTurn()
     {
         $this->isPaused = false;

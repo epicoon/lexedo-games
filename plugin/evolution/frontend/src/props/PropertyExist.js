@@ -28,6 +28,14 @@ class PropertyExist extends lexedo.games.Evolution.Property #lx:namespace lexedo
 		}
 	}
 
+	setPoisoned() {
+		this.statusBox.add(lx.Box, {
+			geom: true,
+			key: 'poison',
+			picture: 'tools/poisoned.png'
+		});
+	}
+
 
 	/*******************************************************************************************************************
 	 * PRIVATE

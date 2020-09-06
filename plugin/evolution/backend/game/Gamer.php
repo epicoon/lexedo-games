@@ -291,12 +291,13 @@ class Gamer
             return;
         }
 
-        $relIds = $creature->dropProperties();
+        $relIds = $creature->dropRelPropertiesOnDie();
+        $dropped = $creature->getCartCount();
+        $this->incDroppingCounter($dropped);
         unset($this->creatures[$creature->getId()]);
-        $this->incDroppingCounter();
 
         $result = [
-            'dropping' => $creature->getCartCount(),
+            'dropping' => $dropped,
             'creatureId' => $creature->getId(),
         ];
         if (!empty($relIds)) {
@@ -334,12 +335,19 @@ class Gamer
 
     /**
      * @param Creature $carnival
-     * @return array|null
      */
-    public function onCreatureUsedAttak($carnival)
+    public function onCreatureAttak($carnival)
     {
         $this->canGetFood = false;
-        return $this->getGame()->onCreatureUsedAttak($carnival);
+    }
+
+    /**
+     * @param Creature $carnival
+     * @return array|null
+     */
+    public function onCreatureSuccessfullAttak($carnival)
+    {
+        return $this->getGame()->onCreatureSuccessfullAttak($carnival);
     }
 
     /**

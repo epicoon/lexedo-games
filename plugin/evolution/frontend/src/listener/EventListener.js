@@ -56,10 +56,7 @@ class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexe
 	}
 
 	onChangeActiveGamer(event) {
-		this.getEnvironment().game.changeActiveGamer(
-			event.getData().old,
-			event.getData().new
-		);
+		this.getEnvironment().game.changeActiveGamer(event.getData().new);
 	}
 
 	onGamerPass(event) {

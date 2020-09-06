@@ -317,7 +317,9 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             'result' => $result,
         ]);
 
-        $this->onFeedPhaseAction($event, $gamer);
+        if (!$this->game->getAttakCore()->isOnHold()) {
+            $this->onFeedPhaseAction($event, $gamer);
+        }
     }
 
     /**
@@ -378,6 +380,20 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             return null;
         }
 
+        
+        $gamerOnHold = $this->game->getAttakCore()->getPendingGamer();
+        if ($gamerOnHold) {
+            if ($gamer === $gamerOnHold) {
+                return $gamer;
+            } else {
+                $event->replaceEvent('error', [
+                    'message' => 'We are waiting for attaked gamer decision',
+                ]);
+                $event->setReceivers([$event->getInitiator()->getId()]);
+                return null;
+            }
+        }
+        
         if ($gamer !== $this->game->getActiveGamer()) {
             $event->replaceEvent('error', [
                 'message' => 'It is not your turn',
