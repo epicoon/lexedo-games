@@ -26,6 +26,11 @@ class PropertyBehavior
         switch ($property->getType()) {
             case PropertyBank::TRAMP: return new TrampBehavior($property);
             case PropertyBank::HIBERNATE: return new HibernateBehavior($property);
+            case PropertyBank::PIRACY: return new PiracyBehavior($property);
+            case PropertyBank::FAT: return new FatBehavior($property);
+            case PropertyBank::INTERACT: return new InteractBehavior($property);
+            case PropertyBank::COOP: return new CoopBehavior($property);
+            case PropertyBank::CARNIVAL: return new CarnivalBehavior($property);
 
             default: return new self($property);
         }
@@ -85,7 +90,7 @@ class PropertyBehavior
      */
     public function hasActivity()
     {
-        return false;
+        return $this->getProperty()->isAvailable() && $this->hasPotentialActivity();
     }
 
     /**
@@ -97,17 +102,18 @@ class PropertyBehavior
     }
 
     /**
+     * @param array $map
      * @return array
      */
-    public function getStateReport()
+    public function getStateReport($map = [])
     {
         $result = [];
 
-        if ($this->property->isPaused()) {
-            $result['isPaused'] = true;
+        if (in_array('isPaused', $map) || $this->property->isPaused()) {
+            $result['isPaused'] = $this->property->isPaused();
         }
 
-        if ($this->property->getStopped()) {
+        if (in_array('isStopped', $map) || $this->property->getStopped()) {
             $result['isStopped'] = $this->property->getStopped();
         }
 
@@ -115,10 +121,20 @@ class PropertyBehavior
     }
 
     /**
-     * @return array
+     * @param string $foodType
+     * @return array|null
      */
-    public function run()
+    public function onFeed($foodType)
     {
-        return [];
+        return null;
+    }
+
+    /**
+     * @return array|false
+     * @param array $data
+     */
+    public function run($data = [])
+    {
+        return false;
     }
 }

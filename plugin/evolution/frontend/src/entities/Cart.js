@@ -104,6 +104,14 @@ class CartToPropertyData {
 
 	checkDueCreature(creature) {
 		if (this.cart.isPropertySingle()) {
+			if (this.cart.getTitleProperty() == #evConst.PROPERTY_CARNIVAL) {
+				if (creature.hasProperty(#evConst.PROPERTY_SCAVENGER))
+					return false;
+			} else if (this.cart.getTitleProperty() == #evConst.PROPERTY_SCAVENGER) {
+				if (creature.hasProperty(#evConst.PROPERTY_CARNIVAL))
+					return false;
+			}
+
 			var props = creature.getPropertiesByType(this.cart.getTitleProperty());
 			return props.isEmpty;
 		}
@@ -133,7 +141,7 @@ class CartToPropertyData {
 	}
 
 	isReadyForTrigger() {
-		if (this.cart.isPropertySingle())
+		if (!this.cart.isPropertyPare())
 			return true;
 
 		return this.step == 1;
@@ -210,9 +218,12 @@ function __initBox(self) {
 		cartMenu.height(rect.height + 115 + 'px');
 		cartMenu.show();
 
-		cartMenu->newPropertyBut.disabled(
-			self.getEnvironment().game.getLocalGamer().getCreaturesCount() == 0
+		let creaturesCount = self.getEnvironment().game.getLocalGamer().getCreaturesCount();
+		let disable = (
+			(creaturesCount == 0)
+			|| (self.isPropertyPare() && creaturesCount < 2)
 		);
+		cartMenu->newPropertyBut.disabled(disable);
 
 		self.box.style('zIndex', 100);
 		cartMenu.__cart = self;

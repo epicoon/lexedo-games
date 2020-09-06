@@ -36,6 +36,12 @@ class Property
     /** @var Property|null */
     private $relProperty;
 
+    /** @var int */
+    private $asymm;
+
+    /** @var bool */
+    private $isAvatar;
+
     public function __construct($creature, $type)
     {
         $this->id = ++self::$idCounter;
@@ -48,6 +54,32 @@ class Property
 
         $this->behavior = PropertyBehavior::create($this);
         $this->relProperty = null;
+        $this->asymm = 0;
+        $this->isAvatar = false;
+    }
+
+    /**
+     * @param Property $property1
+     * @param Property $property2
+     * @return array|null
+     */
+    public static function bindPareProperties($property1, $property2)
+    {
+        if ($property1->getType() != $property2->getType()) {
+            return false;
+        }
+
+        $property1->setRelation($property2);
+        $property2->setRelation($property1);
+        $property2->setAvatar();
+        
+        if (PropertyBank::isSymmetric($property1->getType())) {
+            return null;
+        }
+
+        $property1->setAsymm(0);
+        $property2->setAsymm(1);
+        return [0, 1];
     }
 
     /**
@@ -74,6 +106,27 @@ class Property
         return !$this->isPaused && ($this->isStopped == 0);
     }
 
+    public function setAvatar()
+    {
+        $this->isAvatar = true;
+    }
+
+    /**
+     * @param int $asymm
+     */
+    public function setAsymm($asymm)
+    {
+        $this->asymm = $asymm;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAsymm()
+    {
+        return $this->asymm;
+    }
+
     /**
      * @return Game
      */
@@ -96,6 +149,14 @@ class Property
     public function getCreature()
     {
         return $this->creature;
+    }
+
+    /**
+     * @return PropertyBehavior
+     */
+    public function getBehavior()
+    {
+        return $this->behavior;
     }
 
     /**
@@ -168,6 +229,10 @@ class Property
      */
     public function getEatenFood()
     {
+        if ($this->is(PropertyBank::FAT)) {
+            return 0;
+        }
+
         return $this->currentFood;
     }
 
@@ -189,6 +254,19 @@ class Property
     public function eat()
     {
         $this->currentFood++;
+    }
+
+    /**
+     * @return bool
+     */
+    public function loseFood()
+    {
+        if ($this->currentFood < 1) {
+            return false;
+        }
+
+        $this->currentFood--;
+        return true;
     }
 
     /**
@@ -240,22 +318,49 @@ class Property
      */
     public function onFeedPhaseFinished()
     {
+        if ($this->is(PropertyBank::FAT)) {
+            return [];
+        }
+
         $this->currentFood = 0;
 
         $this->isPaused = false;
+        $map = [];
         if ($this->isStopped > 0) {
             $this->isStopped--;
+            $map[] = 'isStopped';
         }
         
-        return $this->behavior->getStateReport();
+        return $this->behavior->getStateReport($map);
+    }
+
+    /**
+     * @param string $foodType
+     * @return array|null
+     */
+    public function onFeed($foodType)
+    {
+        return $this->behavior->onFeed($foodType);
     }
 
     /**
      * @param array $data
-     * @return array
+     * @return array|false
      */
     public function runAction($data = [])
     {
-        return $this->behavior->run();
+        return $this->behavior->run($data);
+    }
+
+    /**
+     * @return integer
+     */
+    public function calcScore()
+    {
+        if ($this->isAvatar) {
+            return 0;
+        }
+
+        return $this->getNeedFood() + 1;
     }
 }

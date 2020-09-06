@@ -1,5 +1,6 @@
 #lx:private;
 
+#lx:macros ev {lexedo.games.Evolution};
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
 class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
@@ -14,6 +15,8 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		this.logger = new GameLogger(this);
 		this.mouse = new Mouse(this);
 		this.mode = new MouseMode(this);
+
+		this.getEnvironment().attakCore = new #ev.AttakCore(this);
 
 		__setGui(this);
 
@@ -78,6 +81,7 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		this.phase.set(data.activePhase);
 		this.phase.setData(data);
 		this.eachGamer(g=>{
+			g.unpauseProperties();
 			g.setActive(false);
 			g.isPassed = false;
 			g.setCreaturesFeedMode(this.phase.isFeed());
@@ -101,6 +105,23 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		currentGamer.setActive(false);
 		newGamer.setActive(true);
 		this.phase.actualize(newGamer);
+	}
+
+	applyFeedReport(feedReport) {
+		feedReport.each(data=>{
+			let gamer = this.getGamerById(data.gamerId);
+			let creature = gamer.getCreatureById(data.creatureId);
+			creature.feed(data.propertyId, data.foodType);
+			if (data.pareState) {
+				data.pareState.each(pareData=>{
+					creature.getPropertyById(pareData.propertyId)
+						.actualizeState(pareData.state);
+					gamer.getCreatureById(pareData.relCreatureId)
+						.getPropertyById(pareData.relPropertyId)
+						.actualizeState(pareData.relState);
+				});
+			}
+		});		
 	}
 
 	runExtinction(data) {

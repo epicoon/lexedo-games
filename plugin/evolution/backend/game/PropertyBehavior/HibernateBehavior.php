@@ -30,20 +30,22 @@ class HibernateBehavior extends PropertyBehavior
         ;
     }
 
-    /**
-     * @return array
-     */
-    public function getStateReport()
-    {
-        $result = parent::getStateReport();
-        $result['isStopped'] = $this->property->getStopped();
-        return $result;
-    }
+//    /**
+//     * TODO - кажется не нужно теперь с мапингом родительского метода
+//     * @return array
+//     */
+//    public function getStateReport()
+//    {
+//        $result = parent::getStateReport();
+//        $result['isStopped'] = $this->property->getStopped();
+//        return $result;
+//    }
 
     /**
-     * @return array
+     * @return array|false
+     * @param array $data
      */
-    public function run()
+    public function run($data = [])
     {
         if (!$this->getCreature()->isUnderfed()) {
             return [];
@@ -52,6 +54,7 @@ class HibernateBehavior extends PropertyBehavior
         $feedReport = [];
         $currentFeedReport = $this->property->getCreature()->eat(
             Game::FOOD_TYPE_BLUE,
+            1,
             false,
             false
         );
@@ -59,6 +62,7 @@ class HibernateBehavior extends PropertyBehavior
             $feedReport = array_merge($feedReport, $currentFeedReport);
             $currentFeedReport = $this->property->getCreature()->eat(
                 Game::FOOD_TYPE_BLUE,
+                1,
                 false,
                 false
             );

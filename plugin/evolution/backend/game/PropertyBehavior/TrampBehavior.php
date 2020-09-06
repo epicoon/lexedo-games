@@ -11,17 +11,6 @@ class TrampBehavior extends PropertyBehavior
     /**
      * @return bool
      */
-    public function hasActivity()
-    {
-        return $this->getProperty()->isAvailable()
-            && $this->getGame()->getFoodCount()
-            && $this->getGame()->hasHungryCreature()
-        ;
-    }
-
-    /**
-     * @return bool
-     */
     public function hasPotentialActivity()
     {
         return $this->getGame()->getFoodCount()
@@ -30,9 +19,10 @@ class TrampBehavior extends PropertyBehavior
     }
 
     /**
-     * @return array
+     * @return array|false
+     * @param array $data
      */
-    public function run()
+    public function run($data = [])
     {
         $this->getGame()->wasteFood();
         $this->property->setPaused();

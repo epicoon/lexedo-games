@@ -16,26 +16,31 @@ class Mouse {
 		switch (mode) {
 			case #evConst.MOUSE_MODE_NONE:
 				this.box.hide();
-				break;
+				return;
 
 			case #evConst.MOUSE_MODE_FEED:
-				this.box.size('40px', '40px');
-				this.box.picture('mouse/_food.png');
-				self::__moveBox(this, e);
-				this.box.show();
+				this.__init('mouse/_food.png', '40px', '40px');
 				break;
-
 			case #evConst.MOUSE_MODE_NEW_PROPERTY:
-				//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				this.box.size('40px', '40px');
-				this.box.picture('mouse/_food.png');
-				self::__moveBox(this, e);
-				this.box.show();
+				var pic = this.getEnvironment().dataCatalog.getPropertyPictureUse(
+					this.game.mode.data.cart.getTitleProperty()
+				);
+				this.__init(pic, '37px', '60px');
+				break;
+			case #evConst.MOUSE_MODE_USE_PROPERTY:
+				var pic = this.game.mode.data.property.getPicture();
+				this.__init(pic, '37px', '60px');
 				break;
 		}
+
+		self::__moveBox(this, e);
+		this.box.show();
 	}
 
-
+	__init(pic, w, h) {
+		this.box.size(w, h);
+		this.box.picture(pic);
+	}
 
 	static __moveBox(self, e) {
 		self.box.left(e.clientX + 10 + 'px');

@@ -254,4 +254,22 @@ class PropertyBank
     {
         return self::$data[$type]['needFood'] ?? 0;
     }
+
+    /**
+     * @param integer $type
+     * @return bool|null
+     */
+    public static function isSymmetric($type)
+    {
+        $data = self::$data[$type] ?? null;
+        if (!$data) {
+            return null;
+        }
+
+        if (!array_key_exists('pare', $data)) {
+            return true;
+        }
+
+        return $data['symmetric'];
+    }
 }

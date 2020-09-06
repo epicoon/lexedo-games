@@ -33,10 +33,6 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		return this.gamer;
 	}
 
-	isDead() {
-		return this._isDead;
-	}
-
 	addProperty(config) {
 		this.dropVirtualProperties();
 		config.creature = this;
@@ -96,8 +92,8 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		return this.properties.at(0);
 	}
 
-	prepareToFeedTurn() {
-		this.properties.each(property=>property.prepareToFeedTurn());
+	unpauseProperties() {
+		this.properties.each(property=>property.unpause());
 	}
 
 	setFeedMode(bool) {
@@ -105,43 +101,36 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	}
 
 	isUnderfed() {
-		if (this.isDead()) return false;
 		return (this.getNeedFood() > 0);
 	}
 
 	isHungry() {
-		if (this.isDead()) return false;
 		if (this.isUnderfed()) return true;
 		return (this.getCurrentFat() < this.getTotalFat());
 	}
 
 	getNeedFood() {
-		if (this.isDead()) return 0;
 		return this.getTotalNeedFood() - this.getEatenFood();
 	}
 
 	getTotalNeedFood() {
-		if (this.isDead()) return 0;
 		var result = 0;
 		this.properties.each(property=>result+=property.getNeedFood());
 		return result;
 	}
 
 	getEatenFood() {
-		if (this.isDead()) return 0;
 		var result = 0;
 		this.properties.each(property=>result+=property.getEatenFood());
 		return result;
 	}
 
 	getTotalFat() {
-		if (this.isDead()) return 0;
 		var selected = this.properties.select(prop=>prop.type==#evConst.PROPERTY_FAT);
 		return selected.len;
 	}
 
 	getCurrentFat() {
-		if (this.isDead()) return 0;
 		var selected = this.properties.select(prop=>prop.type==#evConst.PROPERTY_FAT);
 		var totalFat = 0;
 		selected.each(fat=>totalFat+=fat.hasFat());
@@ -149,7 +138,6 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	}
 
 	feed(propertyId, foodType) {
-		if (this.isDead()) return;
 		var property = (propertyId == 0)
 			? this.getExistProperty()
 			: this.getPropertyById(propertyId);
@@ -165,5 +153,43 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	applyPropertiesState(data) {
 		for (let id in data)
 			this.getPropertyById(id).actualizeState(data[id]);
+	}
+
+	isBig() {
+		return this.hasProperty(#evConst.PROPERTY_BIG);		
+	}
+
+	isSwimming() {
+		return this.hasProperty(#evConst.PROPERTY_SWIM);		
+	}
+
+	isHidden() {
+		return this.hasProperty(#evConst.PROPERTY_HIDE);		
+	}
+
+	isAcute() {
+		return this.hasProperty(#evConst.PROPERTY_ACUTE);		
+	}
+
+	isHole() {
+		return this.hasProperty(#evConst.PROPERTY_HOLE);
+	}
+
+	isSymbiont() {
+		let match = false;
+		this.properties.each(property=>{
+			if (property.getType() == #evConst.PROPERTY_SYMBIOSIS && property.asymm == 0)
+				match = true;
+		});
+		return match;
+	}
+
+	hasProperty(type) {
+		let match = false;
+		this.properties.each(property=>{
+			if (property.getType() == type)
+				match = true;
+		});
+		return match;
 	}
 }

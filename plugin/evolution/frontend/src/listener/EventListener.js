@@ -1,4 +1,9 @@
 class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexedo.games.Evolution {
+	onError(event) {
+		lx.Tost.error(event.getData().message);
+		this.getEnvironment().game.mode.reset();
+	}
+
 	onChatMessage(event) {
 		this.getEnvironment().game.chat.receive(event);
 	}
@@ -16,20 +21,19 @@ class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexe
 		var gamer = this.getEnvironment().game.getGamerById(data.gamer);
 		var cart  = gamer.getCartById(data.cart);
 		var propertyType = data.property;
-		var propertyIds = data.propertyIds;
 
 		gamer.dropCart(cart);
 		var color = null;
 		var newProperties = [];
-		data.creatures.each((creatureData, asymm)=>{
+		data.creatures.each((creatureData)=>{
 			let creatureOwner = this.getEnvironment().game.getGamerById(creatureData.creatureGamer);
 			if (data.creatures.len == 2 && color === null)
 				color = creatureOwner.getColor();
 			let config = {
 				type: propertyType,
-				id: propertyIds[asymm],
-				asymm
+				id: creatureData.property
 			};
+			if (creatureData.asymm) config.asymm = creatureData.asymm;
 			if (color) config.color = color;
 			let creature = creatureOwner.getCreatureById(creatureData.creature);
 			newProperties.push(creature.addProperty(config));
@@ -47,7 +51,7 @@ class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexe
 		this.getEnvironment().game.phase.food = data.currentFood;
 
 		var gamer = this.getEnvironment().game.getGamerById(data.gamer);
-		gamer.feedCreatures(data.feedReport);
+		this.getEnvironment().game.applyFeedReport(data.feedReport);
 		gamer.canGetFood = false;
 	}
 

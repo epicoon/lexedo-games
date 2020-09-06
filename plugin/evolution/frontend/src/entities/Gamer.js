@@ -18,6 +18,8 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		this._isLocal = channelMate.isLocal();
 		this._colorIndex = 0;
 
+		this.creatureHasUsedFat = null;
+
 		this._hand = new lx.Collection();
 		if (this._isLocal) __setGui(this);
 
@@ -46,6 +48,7 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		this.isPassed = false;
 		this.isActive = false;
 		this.canGetFood = false;
+		this.creatureHasUsedFat = null;
 		this._hand.clear();
 		this._creatures.clear();
 	}
@@ -57,14 +60,23 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		else {
 			if (this._game.phaseIs(#evConst.PHASE_FEED) && this._game.phase.food) {
 				this.canGetFood = true;
-				this._creatures.each(creature=>creature.prepareToFeedTurn());
+				this.creatureHasUsedFat = null;
+				this.unpauseProperties();
 			} else
 				this.canGetFood = false;
 		}
 	}
+	
+	unpauseProperties() {
+		this._creatures.each(creature=>creature.unpauseProperties());
+	}
 
 	mustEat() {
 		return (this.canGetFood && this._game.phase.food && this.hasHungryCreature());
+	}
+
+	isAvailableToUseFat(creature) {
+        return this.canGetFood && (this.creatureHasUsedFat === null || this.creatureHasUsedFat === creature);
 	}
 
 	hasHungryCreature() {
@@ -125,11 +137,14 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		this._creatures.each(c=>c.setFeedMode(bool));
 	}
 
-	feedCreatures(feedReport) {
-		feedReport.each(creatureData=>{
-			var creature = this.getCreatureById(creatureData.creatureId);
-			creature.feed(creatureData.propertyId, creatureData.foodType);
-		});		
+	dropCreature(data) {
+		// data - {dropping:int, creatureId:int, ?relIds:[creatureId, propertyId]}
+		this.dropping += data.dropping;
+		this._creatures.remove(this.getCreatureById(data.creatureId));
+		if (data.relProps) data.relProps.each(ids=>{
+			let creature = this.getCreatureById(ids[0]);
+			if (creature) creature.dropProperty(ids[1]);
+		});
 	}
 
 	runExtinction(data) {
@@ -222,6 +237,10 @@ function __bindButtons(self) {
 	self.bind(plugin->>growPassBut);
 
 	plugin->>feedEndTurnBut.click(function() {
+
+		console.log( self );
+		console.log( self.mustEat() );
+
 		if (self.mustEat()) {
 			lx.Tost.error('You have a hungry creature. You must feed it.');
 			return;

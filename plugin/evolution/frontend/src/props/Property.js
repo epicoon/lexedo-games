@@ -25,15 +25,13 @@ class Property #lx:namespace lexedo.games.Evolution {
 		this.asymm = config.asymm || 0;
 		this.color = config.color || null;
 
-		this.currentFood = 0;
+		this.foodCollection = new lx.Collection();
         this.isPaused = false;
         this.isStopped = 0;
 		this.feedMode = false;
 
 		this.statusBox = null;
 		this.isVirtual = config.isVirtual || false;
-
-
 	}
 
 	static map() {
@@ -74,6 +72,10 @@ class Property #lx:namespace lexedo.games.Evolution {
 
 	getId() {
 		return this.id;
+	}
+
+	getType() {
+		return this.type;
 	}
 
 	getGame() {
@@ -117,7 +119,7 @@ class Property #lx:namespace lexedo.games.Evolution {
 		return true;
 	}
 
-	prepareToFeedTurn() {
+	unpause() {
 		this.actualizeState({
 			isPaused: false
 		});
@@ -128,7 +130,7 @@ class Property #lx:namespace lexedo.games.Evolution {
 	}
 
 	getEatenFood() {
-		return this.currentFood;
+		return this.foodCollection.len;
 	}
 
 	getRelatedCreature() {
@@ -157,9 +159,10 @@ class Property #lx:namespace lexedo.games.Evolution {
 			else if (this.getNeedFood() == 2)
 				this.statusBox.picture('_hungry2.png');
 			this.feedMode = true;
-			this.currentFood = 0;
 		} else {
+			this.foodCollection.clear();
 			this.statusBox.clear();
+			this.statusBox.picture('');
 			this.feedMode = false;
 		}
 	}
@@ -170,18 +173,16 @@ class Property #lx:namespace lexedo.games.Evolution {
 			return;
 		}
 
-		var needFood = this.getNeedFood();
-		var picture;
-		if (foodType == #evConst.FOOD_TYPE_FAT) {
-			picture = '_fat.png';
-		} else {
-			picture = (foodType == #evConst.FOOD_TYPE_RED) ? '_redFood' : '_blueFood';
-			if (needFood == 2) picture += (this.currentFood) ? '21' : '22';
-			picture += '.png';
-		}
+		var food = new lexedo.games.Evolution.Food(this, foodType);
+		food.locate();
+		this.foodCollection.add(food);
+	}
 
-		this.statusBox.add(lx.Box, {geom: true, picture});
-		this.currentFood++;
+	loseFood() {
+		var food = this.foodCollection.pop();
+		if (!food) return;
+
+		food.drop();
 	}
 
 	actualizeState(data) {
@@ -200,11 +201,12 @@ class Property #lx:namespace lexedo.games.Evolution {
 		}
 	}
 
-	triggerPropertyAction() {
+	triggerPropertyAction(data = {}) {
 		this.getEnvironment().triggerChannelEvent('property-action', {
 			gamer: this.getGamer().getId(),
 			creature: this.getCreature().getId(),
-			property: this.getId()
+			property: this.getId(),
+			data
 		});
 	}
 
@@ -215,5 +217,25 @@ class Property #lx:namespace lexedo.games.Evolution {
 
 	onActionProcess(data) {
 		// abstract
+	}
+
+	/**
+	 * @return lexedo.games.Evolution.Property[]
+	 */
+	getTargets() {
+		return [];
+	}
+
+	/**
+	 * @param {lexedo.games.Evolution.Property} target
+	 * @return bool
+	 */
+	checkTarget(target) {
+		var targets = this.getTargets();
+		for (var i=0, l=targets.len; i<l; i++)
+			if (targets[i] == target) return true;
+
+		lx.Tost.warning('Неподходящая цель');
+		return false;
 	}
 }

@@ -57,6 +57,8 @@ class MouseMode {
 				return this.__getHPNew();
 			case #evConst.MOUSE_MODE_FEED:
 				return this.__getHPFeed();
+			case #evConst.MOUSE_MODE_USE_PROPERTY:
+				return this.__getHPUse();
 		}
 	}
 
@@ -91,5 +93,9 @@ class MouseMode {
 				props.push(creature.getExistProperty());
 		});
 		return props;
+	}
+
+	__getHPUse() {
+		return this.data.property.getTargets();
 	}
 }

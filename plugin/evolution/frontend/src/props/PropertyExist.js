@@ -21,6 +21,10 @@ class PropertyExist extends lexedo.games.Evolution.Property #lx:namespace lexedo
 			case mode.isMode(#evConst.MOUSE_MODE_FEED):
 				this.__onClickFeed(mode);
 				break;
+
+			case mode.isMode(#evConst.MOUSE_MODE_USE_PROPERTY):
+				this.__onClickUseProperty(mode);
+				break;
 		}
 	}
 
@@ -58,5 +62,9 @@ class PropertyExist extends lexedo.games.Evolution.Property #lx:namespace lexedo
 			gamer: this.getGame().getLocalGamer().getId(),
 			creature: this.creature.id
 		});
+	}
+
+	__onClickUseProperty(mode) {
+		mode.data.property.processTarget(this);
 	}
 }

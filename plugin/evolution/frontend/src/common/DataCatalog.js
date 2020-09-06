@@ -35,7 +35,7 @@ class DataCatalog #lx:namespace lexedo.games.Evolution {
 		return this.properties[code].imgBase + '-m.png';
 	}
 
-	getPropertyPictureUse(code, asymm) {
+	getPropertyPictureUse(code, asymm = 0) {
 		if (this.properties[code].symmetric === false)
 			return this.properties[code].imgBase + '-u-' + asymm + '.png';
 		return this.properties[code].imgBase + '-u.png';

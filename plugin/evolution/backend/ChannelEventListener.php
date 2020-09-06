@@ -4,6 +4,7 @@ namespace lexedo\games\evolution\backend;
 
 use lexedo\games\evolution\backend\game\Game;
 use lexedo\games\evolution\backend\game\Gamer;
+use lexedo\games\evolution\backend\game\Property;
 use lexedo\games\evolution\backend\game\PropertyBank;
 use lx\socket\Channel\ChannelEvent;
 
@@ -141,22 +142,36 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         }
 
         $properties = [];
-        $propertyIds = [];
+        $creaturesData = [];
         foreach ($creatures as $creatureData) {
             $creature = $creatureOwner->getCreatureById($creatureData['creature']);
             $property = $creature->addProperty($propertyType);
-            $propertyIds[] = $property->getId();
+            $creaturesData[] = [
+                'creatureGamer' => $creature->getGamer()->getId(),
+                'creature' => $creature->getId(),
+                'property' => $property->getId(),
+            ];
             $properties[] = $property;
         }
 
         if (count($properties) == 2) {
-            $properties[0]->setRelation($properties[1]);
-            $properties[1]->setRelation($properties[0]);
+            $asymmData = Property::bindPareProperties($properties[0], $properties[1]);
+            if ($asymmData === false) {
+                $event->replaceEvent('error', [
+                    'message' => 'Pare property is wrong',
+                ]);
+                return;
+            }
+
+            if ($asymmData) {
+                $creaturesData[0]['asymm'] = $asymmData[0];
+                $creaturesData[1]['asymm'] = $asymmData[1];
+            }
         }
 
         $gamer->dropCart($cart);
         $event->addData([
-            'propertyIds' => $propertyIds,
+            'creatures' => $creaturesData,
         ]);
 
         $this->onGrowPhaseAction($event, $gamer);
@@ -169,6 +184,13 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
     {
         $gamer = $this->checkGamerInPhase(Game::PHASE_FEED, $event);
         if (!$gamer) {
+            return;
+        }
+
+        if (!$gamer->isAvailableToFeedCreature()) {
+            $event->replaceEvent('error', [
+                'message' => 'You are not available to feed a creature',
+            ]);
             return;
         }
 
@@ -237,7 +259,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
 
         if ($gamer->mustEat()) {
             $event->replaceEvent('error', [
-                'message' => 'You have a hungry creature. You must feed it.',
+                'message' => 'You have a hungry creature. You must feed it. !!!',
             ]);
             return;
         }
@@ -284,6 +306,13 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         }
 
         $result = $property->runAction($data['data'] ?? []);
+        if ($result === false) {
+            $event->replaceEvent('error', [
+                'message' => 'Operation is unavailable',
+            ]);
+            return;
+        }
+
         $event->addData([
             'result' => $result,
         ]);

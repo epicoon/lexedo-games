@@ -30,10 +30,14 @@ class Constants #lx:namespace lexedo.games.Evolution {
 		FOOD_TYPE_FAT = \lexedo\games\evolution\backend\game\Game::FOOD_TYPE_FAT,
 
 		MOUSE_MODE_NONE = 0,
-		MOUSE_MODE_MOVE_CREATURE = 1,
-		MOUSE_MODE_MOVE_PROPERTY = 2,
-		MOUSE_MODE_NEW_PROPERTY = 3,
-		MOUSE_MODE_USE_PROPERTY = 4, /* MIMICRY, DROP_TAIL, PIRACY, CARNIVAL */
-		MOUSE_MODE_FEED = 5
+		MOUSE_MODE_NEW_PROPERTY = 1,
+		MOUSE_MODE_USE_PROPERTY = 2, /* MIMICRY, DROP_TAIL, PIRACY, CARNIVAL */
+		MOUSE_MODE_FEED = 3,
+		// MOUSE_MODE_MOVE_CREATURE = 1,
+		// MOUSE_MODE_MOVE_PROPERTY = 2,
+
+		ATTAK_RESULT_SUCCESS = \lexedo\games\evolution\backend\game\Constants::ATTAK_RESULT_SUCCESS,
+		ATTAK_RESULT_PENDING = \lexedo\games\evolution\backend\game\Constants::ATTAK_RESULT_PENDING,
+		ATTAK_RESULT_FAIL = \lexedo\games\evolution\backend\game\Constants::ATTAK_RESULT_FAIL,
 	;
 }

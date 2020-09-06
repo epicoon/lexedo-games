@@ -40,6 +40,9 @@ class Game
     /** @var string */
     private $activePhase;
 
+    /** @var AttakCore */
+    private $attakCore;
+
     /** @var integer */
     private $foodCount;
 
@@ -62,6 +65,7 @@ class Game
         $this->isActive = false;
         $this->gamers = [];
         $this->turnSequence = [];
+        $this->attakCore = new AttakCore();
 
         $this->foodCount = 0;
         $this->isLastTurn = false;
@@ -83,6 +87,24 @@ class Game
     public function isActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * @return AttakCore
+     */
+    public function getAttakCore()
+    {
+        return $this->attakCore;
+    }
+
+    /**
+     * @param Creature $carnival
+     * @return array|null
+     */
+    public function onCreatureUsedAttak($carnival)
+    {
+        $carnivalCore = new CarnivalCore($this);
+        return $carnivalCore->onAttak($carnival);
     }
 
     /**
@@ -195,6 +217,14 @@ class Game
     }
 
     /**
+     * @return Gamer[]
+     */
+    public function getGamers()
+    {
+        return $this->gamers;
+    }
+
+    /**
      * @return Gamer
      */
     public function getActiveGamer()
@@ -209,6 +239,15 @@ class Game
     public function getGamerById($id)
     {
         return $this->gamers[$id] ?? null;
+    }
+
+    /**
+     * @param Gamer $gamer
+     * @return int
+     */
+    public function getGamerIndex($gamer)
+    {
+        return array_search($gamer->getId(), $this->turnSequence);
     }
 
     /**

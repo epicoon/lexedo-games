@@ -22,6 +22,9 @@ class Gamer
     /** @var bool */
     private $canGetFood;
 
+    /** @var Creature|null */
+    private $creatureHasUsedFat;
+
     /** @var Cart[] */
     private $hand;
 
@@ -41,7 +44,9 @@ class Gamer
         $this->game = $game;
         $this->connection = $connection;
         $this->isPassed = false;
+
         $this->canGetFood = false;
+        $this->creatureHasUsedFat = null;
 
         $this->hand = [];
         $this->creatures = [];
@@ -94,6 +99,23 @@ class Gamer
     public function isActive()
     {
         return $this->getGame()->getActiveGamer() === $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAvailableToFeedCreature()
+    {
+        return $this->canGetFood && ($this->creatureHasUsedFat === null);
+    }
+
+    /**
+     * @param Creature $creature
+     * @return bool
+     */
+    public function isAvailableToUseFat($creature)
+    {
+        return $this->canGetFood && ($this->creatureHasUsedFat === null || $this->creatureHasUsedFat === $creature);
     }
 
     /**
@@ -278,7 +300,7 @@ class Gamer
             'creatureId' => $creature->getId(),
         ];
         if (!empty($relIds)) {
-            $result['relIds'] = $relIds;
+            $result['relProps'] = $relIds;
         }
 
         return $result;
@@ -302,6 +324,25 @@ class Gamer
     }
 
     /**
+     * @param Creature $creature
+     */
+    public function onCreatureUseFat($creature)
+    {
+        $this->canGetFood = false;
+        $this->creatureHasUsedFat = $creature;
+    }
+
+    /**
+     * @param Creature $carnival
+     * @return array|null
+     */
+    public function onCreatureUsedAttak($carnival)
+    {
+        $this->canGetFood = false;
+        return $this->getGame()->onCreatureUsedAttak($carnival);
+    }
+
+    /**
      * @return array
      */
     public function runExtinction()
@@ -319,8 +360,8 @@ class Gamer
                 $creatureDropReport = $this->dropCreature($creature);
                 $report['dropping'] += $creatureDropReport['dropping'];
                 $report['creatures'][] = $creatureDropReport['creatureId'];
-                if ($creatureDropReport['relIds'] ?? null) {
-                    $report['properties'] = array_merge($report['properties'], $creatureDropReport['relIds']);
+                if ($creatureDropReport['relProps'] ?? null) {
+                    $report['properties'] = array_merge($report['properties'], $creatureDropReport['relProps']);
                 }
                 continue;
             }
@@ -335,6 +376,8 @@ class Gamer
     public function prepareToFeedTurn()
     {
         $this->canGetFood = true;
+        $this->creatureHasUsedFat = null;
+
         foreach ($this->creatures as $creature) {
             $creature->prepareToFeedTurn();
         }

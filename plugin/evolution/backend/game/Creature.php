@@ -25,7 +25,7 @@ class Creature
     private $currentFood;
 
     /** @var bool */
-    private $isDead;
+    private $isPoisoned;
 
     /**
      * Creature constructor.
@@ -38,7 +38,7 @@ class Creature
         $this->properties = [];
 
         $this->currentFood = 0;
-        $this->isDead = false;
+        $this->isPoisoned = false;
     }
 
     /**
@@ -76,9 +76,9 @@ class Creature
     /**
      * @return bool
      */
-    public function isDead()
+    public function isPoisoned()
     {
-        return $this->isDead;
+        return $this->isPoisoned;
     }
 
     /**
@@ -86,7 +86,7 @@ class Creature
      */
     public function mustDieOut()
     {
-        if ($this->isDead()) {
+        if ($this->isPoisoned()) {
             return true;
         }
 
@@ -131,6 +131,14 @@ class Creature
      */
     public function canAttachProperty($type)
     {
+        if ($type == PropertyBank::SCAVENGER && $this->hasProperty(PropertyBank::CARNIVAL)) {
+            return false;
+        }
+
+        if ($type == PropertyBank::CARNIVAL && $this->hasProperty(PropertyBank::SCAVENGER)) {
+            return false;
+        }
+
         if (PropertyBank::isSingle($type)) {
             return empty($this->getPropertiesByType($type));
         }
@@ -167,12 +175,28 @@ class Creature
 
     /**
      * @param string $foodType
+     * @param int $eatCount
      * @param bool $useFat
      * @param bool $useProperties
      * @return array|null
      */
-    public function eat($foodType, $useFat = true, $useProperties = true)
+    public function eat($foodType, $eatCount = 1, $useFat = true, $useProperties = true)
     {
+        if ($eatCount > 1) {
+            $result = $this->eat($foodType, 1, $useFat, $useProperties);
+            if (!$result) {
+                return null;
+            }
+
+            for ($i = 1; $i < $eatCount; $i++) {
+                $report = $this->eat($foodType, 1, $useFat, false);
+                if ($report) {
+                    $result = array_merge($result, $report);
+                }
+            }
+            return $result;
+        }
+
         $eaten = false;
         $workFoodType = $foodType;
         $propertyId = 0;
@@ -209,18 +233,53 @@ class Creature
         }
 
         $feedReport = [
-            [
-                'creatureId' => $this->getId(),
-                'propertyId' => $propertyId,
-                'foodType' => $workFoodType,
-            ]
+            'gamerId' => $this->getGamer()->getId(),
+            'creatureId' => $this->getId(),
+            'propertyId' => $propertyId,
+            'foodType' => $workFoodType,
         ];
 
+        $commonReport = [];
         if ($useProperties) {
-            //TODO учет свойств
+            foreach ($this->properties as $property) {
+                $report = $property->onFeed($foodType);
+                if ($report) {
+                    $feedReport['pareState'][] = $report['pareState'];
+                    $commonReport = array_merge($commonReport, $report['feedReport']);
+                }
+            }
         }
 
-        return $feedReport;
+        $commonReport = array_merge([$feedReport], $commonReport);
+
+        return $commonReport;
+    }
+
+    /**
+     * @return int [[propertyId]]
+     */
+    public function loseFood()
+    {
+        $prevProp = null;
+        foreach ($this->properties as $property) {
+            if ($property->getNeedFood()) {
+                if ($property->getEatenFood() == 0) {
+                    break;
+                }
+
+                $prevProp = $property;
+            }
+        }
+
+        if ($prevProp === null) {
+            $this->currentFood--;
+            $result = 0;
+        } else {
+            $prevProp->loseFood();
+            $result = $prevProp->getId();
+        }
+
+        return $result;
     }
 
     /**
@@ -298,7 +357,7 @@ class Creature
     {
         $result = 0;
         foreach ($this->properties as $property) {
-            if ($property->getType() == PropertyBank::FAT) {
+            if ($property->is(PropertyBank::FAT)) {
                 $result++;
             }
         }
@@ -417,8 +476,77 @@ class Creature
     {
         $result = 2;
         foreach ($this->properties as $property) {
-            $result += ($property->getNeedFood() + 1);
+            $result += $property->calcScore();
         }
         return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBig()
+    {
+        return $this->hasProperty(PropertyBank::BIG);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSwimming()
+    {
+        return $this->hasProperty(PropertyBank::SWIM);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHidden()
+    {
+        return $this->hasProperty(PropertyBank::HIDE);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAcute()
+    {
+        return $this->hasProperty(PropertyBank::ACUTE);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHole()
+    {
+        return $this->hasProperty(PropertyBank::HOLE);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSymbiont()
+    {
+        foreach ($this->properties as $property) {
+            if ($property->is(PropertyBank::SYMBIOSIS) && ($property->getAsymm() == 0)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $type
+     * @return bool
+     */
+    public function hasProperty($type)
+    {
+        foreach ($this->properties as $property) {
+            if ($property->is($type)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
