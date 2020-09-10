@@ -1,14 +1,14 @@
 {
     "lexedo.games": {
         "name": "lexedo.games",
-        "path": "vendor\/lexedo\/games\/module\/Environment.js"
+        "path": "module\/Environment.js"
     },
     "lexedo.games.ChessLocal": {
         "name": "lexedo.games.ChessLocal",
-        "path": "vendor\/lexedo\/games\/plugin\/chesslike\/frontend\/modules\/ChessLocal.js"
+        "path": "plugin\/chesslike\/frontend\/modules\/ChessLocal.js"
     },
     "lexedo.games.ChessOnline": {
         "name": "lexedo.games.ChessOnline",
-        "path": "vendor\/lexedo\/games\/plugin\/chesslike\/frontend\/modules\/ChessOnline.js"
+        "path": "plugin\/chesslike\/frontend\/modules\/ChessOnline.js"
     }
 }
