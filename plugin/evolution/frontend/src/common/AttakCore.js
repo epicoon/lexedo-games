@@ -29,17 +29,17 @@ class AttakCore #lx:namespace lexedo.games.Evolution {
 		var msg = false;
 
 		if (carnival === prey)
-			msg = 'Существо не может атаковать себя';
+			msg = #lx:i18n(tost.CreatureSelfAttak);
 		else if (prey.isBig() && !carnival.isBig())
-			msg = 'Хищник должен быть большим, чтобы атаковать большое существо';
+			msg = #lx:i18n(tost.CarnivalHasToBeBig);
 		else if (prey.isSwimming() !== carnival.isSwimming())
-			msg = 'Хищник и жертва должны обитать в одной среде';
+			msg = #lx:i18n(tost.CarnivalAndPreySameEnv);
 		else if (prey.isHidden() && !carnival.isAcute())
-			msg = 'Хищник должен иметь острое зрение, чтобы увидеть цель';
+			msg = #lx:i18n(tost.CarnivalHasToHaveAcute);
 		else if (prey.isHole() && !prey.isUnderfed())
-			msg = 'Цель - норное существо и уже накормлено, не может быть атаковано';
+			msg = #lx:i18n(tost.CreatureInHole);
 		else if (prey.isSymbiont())
-			msg = 'Цель защищена симбионтом';
+			msg = #lx:i18n(tost.CreatureSymbiont);
 
 		if (msg) {
 			if (showMsg) lx.Tost.warning(msg);
@@ -55,16 +55,13 @@ class AttakCore #lx:namespace lexedo.games.Evolution {
 	 */
 	processAttakResult(carnival, data) {
 		this.__unholdAttak();
-		data.log.each(msg=>this.game.log(msg));
+		// data.log.each(msg=>this.game.log(msg));
 
 		let preyGamer = this.game.getGamerById(data.preyGamer);
 
 		if (data.result == #evConst.ATTAK_RESULT_PENDING) {
 			this.__holdAttak(data);
-			this.game.log(
-				'Атакованное существо игрока ' + preyGamer.getName()
-				+ ' имеет защитные свойства. Нужно подождать, когда он их применит.'
-			);
+			this.game.log(#lx:i18n(logMsg.waitingForDefens, {name: preyGamer.getName()}));
 			return;
 		}
 
@@ -112,9 +109,9 @@ class AttakCore #lx:namespace lexedo.games.Evolution {
 		});
 
 		if (carnivalGamer.isLocal()) {
-			this.game.phase.hint = 'Ожидание действий игрока...';
+			this.game.phase.hint = #lx:i18n(phaseHint.Waiting);
 		} else if (preyGamer.isLocal()) {
-			this.game.phase.hint = 'Ваше существо атаковано. Выберите способ защиты.';
+			this.game.phase.hint = #lx:i18n(phaseHint.Attaked);
 		}
 	}
 

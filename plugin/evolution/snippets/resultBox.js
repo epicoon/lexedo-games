@@ -19,8 +19,8 @@ resultMatrix.overflow('auto');
 
 buts.gridProportional({step:'10px', cols:2});
 buts.begin();
-	new lx.Button({key:'butRestart', text:'Реванш'});
-	new lx.Button({key:'butExit', text:'Закрыть'});
+	new lx.Button({key:'butRestart', text:#lx:i18n(revenge)});
+	new lx.Button({key:'butExit', text:#lx:i18n(close)});
 buts.end();
 
 
@@ -37,7 +37,7 @@ Snippet.onLoad(()=>{
 	};
 	resultMatrix.showResult = function(result) {
 		results.reset(result);
-		Snippet->>butRestart.text('Реванш');
+		Snippet->>butRestart.text(#lx:i18n(revenge));
 		Snippet->>butRestart.disabled(false);
 		Plugin->>resultBox.show();
 	};

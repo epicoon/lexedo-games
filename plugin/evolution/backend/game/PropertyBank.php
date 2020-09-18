@@ -49,7 +49,6 @@ class PropertyBank
 
     public static $data = [
         self::BIG => [
-            'name' => 'большой',
             'imgBase' => '000big',
             'friendly' => true,
             'single' => true,
@@ -57,14 +56,12 @@ class PropertyBank
             'needFood' => 1,
         ],
         self::FAST => [
-            'name' => 'быстрый',
             'imgBase' => '001fast',
             'friendly' => true,
             'single' => true,
             'active' => false,
         ],
         self::INTERACT => [
-            'name' => 'взаимодействие',
             'imgBase' => '002interact',
             'friendly' => true,
             'single' => false,
@@ -73,56 +70,48 @@ class PropertyBank
             'symmetric' => true,
         ],
         self::SWIM => [
-            'name' => 'плавание',
             'imgBase' => '003swim',
             'friendly' => true,
             'single' => true,
             'active' => false,
         ],
         self::HIDE => [
-            'name' => 'камуфляж',
             'imgBase' => '004hide',
             'friendly' => true,
             'single' => true,
             'active' => false,
         ],
         self::MIMICRY => [
-            'name' => 'мимикрия',
             'imgBase' => '005mimicry',
             'friendly' => true,
             'single' => true,
             'active' => false,
         ],
         self::HOLE => [
-            'name' => 'норное',
             'imgBase' => '006hole',
             'friendly' => true,
             'single' => true,
             'active' => false,
         ],
         self::ACUTE => [
-            'name' => 'острое зрение',
             'imgBase' => '007acute',
             'friendly' => true,
             'single' => true,
             'active' => false,
         ],
         self::DROP_TAIL => [
-            'name' => 'отбрасывание хвоста',
             'imgBase' => '008drop',
             'friendly' => true,
             'single' => true,
             'active' => false,
         ],
         self::SCAVENGER => [
-            'name' => 'падальщик',
             'imgBase' => '009scavenger',
             'friendly' => true,
             'single' => true,
             'active' => false,
         ],
         self::PARASITE => [
-            'name' => 'паразит',
             'imgBase' => '010parasite',
             'friendly' => false,
             'single' => true,
@@ -130,14 +119,12 @@ class PropertyBank
             'needFood' => 2,
         ],
         self::PIRACY => [
-            'name' => 'пиратство',
             'imgBase' => '011piracy',
             'friendly' => true,
             'single' => true,
             'active' => true,
         ],
         self::SYMBIOSIS => [
-            'name' => 'симбиоз',
             'imgBase' => '012simbios',
             'friendly' => true,
             'single' => false,
@@ -146,7 +133,6 @@ class PropertyBank
             'symmetric' => false,
         ],
         self::COOP => [
-            'name' => 'сотрудничество',
             'imgBase' => '013coop',
             'friendly' => true,
             'single' => false,
@@ -155,28 +141,24 @@ class PropertyBank
             'symmetric' => true,
         ],
         self::HIBERNATE => [
-            'name' => 'спячка',
             'imgBase' => '014hibern',
             'friendly' => true,
             'single' => true,
             'active' => true,
         ],
         self::TRAMP => [
-            'name' => 'топотун',
             'imgBase' => '015tramp',
             'friendly' => true,
             'single' => true,
             'active' => true,
         ],
         self::VENOM => [
-            'name' => 'ядовитое',
             'imgBase' => '016venom',
             'friendly' => true,
             'single' => true,
             'active' => false,
         ],
         self::CARNIVAL => [
-            'name' => 'хищник',
             'imgBase' => '017carniv',
             'friendly' => true,
             'single' => true,
@@ -184,7 +166,6 @@ class PropertyBank
             'needFood' => 1,
         ],
         self::FAT => [
-            'name' => 'жировой запас',
             'imgBase' => '018fat',
             'friendly' => true,
             'single' => false,

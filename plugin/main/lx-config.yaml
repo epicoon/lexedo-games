@@ -1,5 +1,8 @@
 class: lexedo\games\main\Plugin
 
+title: i18nKey_title
+icon: @site/web/images/lexedogames.png
+
 rootSnippet: snippets/_root.js
 snippets: snippets
 
@@ -9,6 +12,7 @@ jsBootstrap: frontend/_bootstrap.js
 images: @web/images/games
 css: assets/css
 
+#cacheType: smart
 cacheType: build
 
 respondents:

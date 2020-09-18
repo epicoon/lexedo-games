@@ -2,11 +2,13 @@
 
 namespace lexedo\games\evolution\backend;
 
+use lx;
 use lexedo\games\evolution\backend\game\Game;
 use lexedo\games\evolution\backend\game\Gamer;
 use lexedo\games\evolution\backend\game\Property;
 use lexedo\games\evolution\backend\game\PropertyBank;
 use lx\socket\Channel\ChannelEvent;
+use lx\socket\Connection;
 
 /**
  * Class ChannelEventListener
@@ -46,9 +48,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         $data = $event->getData();
         $cart = $gamer->getCartById($data['cart']);
         if (!$cart) {
-            $event->replaceEvent('error', [
-                'message' => 'Cart not found',
-            ]);
+            $this->setError($event, 'error.CartNotFound');
             return;
         }
 
@@ -73,17 +73,13 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         $data = $event->getData();
         $cart = $gamer->getCartById($data['cart']);
         if (!$cart) {
-            $event->replaceEvent('error', [
-                'message' => 'Cart not found',
-            ]);
+            $this->setError($event, 'error.CartNotFound');
             return;
         }
 
         $propertyType = $data['property'];
         if (!$cart->hasProperty($propertyType)) {
-            $event->replaceEvent('error', [
-                'message' => 'Cart hasn\'t this property',
-            ]);
+            $this->setError($event, 'error.WrongPropertyForCart');
             return;
         }
 
@@ -94,25 +90,19 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
                 ($isFriendly && $data['gamer'] != $creatureData['creatureGamer'])
                 || (!$isFriendly && $data['gamer'] == $creatureData['creatureGamer'])
             ) {
-                $event->replaceEvent('error', [
-                    'message' => 'Creature owner is wrong',
-                ]);
+                $this->setError($event, 'error.WrongOwnerForCreature');
                 return;
             }
 
             $creatureOwner = $this->game->getGamerById($creatureData['creatureGamer']);
             if (!$creatureOwner) {
-                $event->replaceEvent('error', [
-                    'message' => 'Creature owner not found',
-                ]);
+                $this->setError($event, 'error.CreatureOwnerNotFound');
                 return;
             }
 
             $creature = $creatureOwner->getCreatureById($creatureData['creature']);
             if (!$creature) {
-                $event->replaceEvent('error', [
-                    'message' => 'Creature not found',
-                ]);
+                $this->setError($event, 'error.CreatureNotFound');
                 return;
             }
         }
@@ -120,24 +110,18 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         if (count($creatures) == 1) {
             $creature = $creatureOwner->getCreatureById($creatures[0]['creature']);
             if (!$creature->canAttachProperty($propertyType)) {
-                $event->replaceEvent('error', [
-                    'message' => 'Creature can not attach this property',
-                ]);
+                $this->setError($event, 'error.WrongPropertyForCreature');
                 return;
             }
         } elseif (count($creatures) == 2) {
             $creature0 = $creatureOwner->getCreatureById($creatures[0]['creature']);
             $creature1 = $creatureOwner->getCreatureById($creatures[1]['creature']);
             if ($creature0->hasRelation($creature1, $propertyType)) {
-                $event->replaceEvent('error', [
-                    'message' => 'This creatures are already attached by the same property',
-                ]);
+                $this->setError($event, 'error.ParePropertyAlreadyExists');
                 return;
             }
         } else {
-            $event->replaceEvent('error', [
-                'message' => 'Creature can not attach this property',
-            ]);
+            $this->setError($event, 'error.WrongPropertyForCreature');
             return;
         }
 
@@ -157,9 +141,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         if (count($properties) == 2) {
             $asymmData = Property::bindPareProperties($properties[0], $properties[1]);
             if ($asymmData === false) {
-                $event->replaceEvent('error', [
-                    'message' => 'Pare property is wrong',
-                ]);
+                $this->setError($event, 'error.WrongPareProperty');
                 return;
             }
 
@@ -188,40 +170,30 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         }
 
         if (!$gamer->isAvailableToFeedCreature()) {
-            $event->replaceEvent('error', [
-                'message' => 'You are not available to feed a creature',
-            ]);
+            $this->setError($event, 'error.NotAvailableToFeed');
             return;
         }
 
         if (!$this->game->getFoodCount()) {
-            $event->replaceEvent('error', [
-                'message' => 'There is no food',
-            ]);
+            $this->setError($event, 'error.NoFood');
             return;
         }
 
         $data = $event->getData();
         $creature = $gamer->getCreatureById($data['creature']);
         if (!$creature) {
-            $event->replaceEvent('error', [
-                'message' => 'Creature not found',
-            ]);
+            $this->setError($event, 'error.CreatureNotFound');
             return;
         }
 
         if (!$creature->isHungry()) {
-            $event->replaceEvent('error', [
-                'message' => 'Creature is not hungry',
-            ]);
+            $this->setError($event, 'error.CreatureNotHungry');
             return;
         }
 
         $feedReport = $this->game->feedCreature($creature);
         if (!$feedReport) {
-            $event->replaceEvent('error', [
-                'message' => 'Problem while creature feed',
-            ]);
+            $this->setError($event, 'error.FeedProblem');
             return;
         }
 
@@ -258,9 +230,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         }
 
         if ($gamer->mustEat()) {
-            $event->replaceEvent('error', [
-                'message' => 'You have a hungry creature. You must feed it. !!!',
-            ]);
+            $this->setError($event, 'tost.HaveToFeed');
             return;
         }
 
@@ -284,38 +254,40 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         $data = $event->getData();
         $creature = $gamer->getCreatureById($data['creature']);
         if (!$creature) {
-            $event->replaceEvent('error', [
-                'message' => 'Creature not found',
-            ]);
+            $this->setError($event, 'error.CreatureNotFound');
             return;
         }
 
         $property = $creature->getPropertyById($data['property']);
         if (!$property) {
-            $event->replaceEvent('error', [
-                'message' => 'Property not found',
-            ]);
+            $this->setError($event, 'error.PropertyNotFound');
             return;
         }
 
         if (!$property->isAvailable()) {
-            $event->replaceEvent('error', [
-                'message' => 'Property is unavailable',
-            ]);
+            $this->setError($event, 'error.PropertyIsUnavailable');
             return;
         }
 
         $result = $property->runAction($data['data'] ?? []);
         if ($result === false) {
-            $event->replaceEvent('error', [
-                'message' => 'Operation is unavailable',
-            ]);
+            $this->setError($event, 'error.OperationIsUnavailable');
             return;
+        }
+        
+        $log = $result['log'] ?? null;
+        if ($log) {
+            unset($result['log']);
+            $event->addData([
+                'log' => $log,
+            ]);
         }
 
         $event->addData([
             'result' => $result,
         ]);
+
+        $this->localizeEvent($event);
 
         if (!$this->game->getAttakCore()->isOnHold()) {
             $this->onFeedPhaseAction($event, $gamer);
@@ -328,18 +300,14 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
     public function onApproveRevenge($event)
     {
         if ($this->game->isActive()) {
-            $event->replaceEvent('error', [
-                'message' => 'Game is active',
-            ]);
+            $this->setError($event, 'error.GameIsActive');
             return;
         }
 
         $data = $event->getData();
         $result = $this->game->approveRevenge($data['gamer']);
         if (empty($result)) {
-            $event->replaceEvent('error', [
-                'message' => 'Problem while approving revenge',
-            ]);
+            $this->setError($event, 'error.RevengeProblem');
             return;
         }
 
@@ -365,18 +333,13 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         $data = $event->getData();
 
         if ($this->game->getActivePhase() != $phase) {
-            $event->replaceEvent('error', [
-                'message' => 'Wrong game phase',
-            ]);
+            $this->setError($event, 'error.WrongGamePhase');
             return null;
         }
 
         $gamer = $this->game->getGamerById($data['gamer']);
         if (!$gamer) {
-            $event->replaceEvent('error', [
-                'message' => 'Gamer not found',
-            ]);
-            $event->setReceivers([$event->getInitiator()->getId()]);
+            $this->setError($event, 'error.GamerNotFound');
             return null;
         }
 
@@ -386,19 +349,13 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             if ($gamer === $gamerOnHold) {
                 return $gamer;
             } else {
-                $event->replaceEvent('error', [
-                    'message' => 'We are waiting for attaked gamer decision',
-                ]);
-                $event->setReceivers([$event->getInitiator()->getId()]);
+                $this->setError($event, 'error.WaitingForAttaked');
                 return null;
             }
         }
         
         if ($gamer !== $this->game->getActiveGamer()) {
-            $event->replaceEvent('error', [
-                'message' => 'It is not your turn',
-            ]);
-            $event->setReceivers([$event->getInitiator()->getId()]);
+            $this->setError($event, 'error.NotYourTurn');
             return null;
         }
 
@@ -474,6 +431,55 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
                 'old' => $gamer->getId(),
                 'new' => $this->game->getActiveGamer()->getId(),
             ]);
+        }
+    }
+
+    /**
+     * @param ChannelEvent $event
+     * @param string $message
+     */
+    private function setError($event, $message)
+    {
+        $event->replaceEvent('error', [
+            'message' => $message,
+        ]);
+        $event->setReceivers($event->getInitiator());
+
+        $this->localizeEvent($event);
+    }
+
+    /**
+     * @param ChannelEvent $event
+     */
+    private function localizeEvent($event)
+    {
+        $data = $event->getData();
+        $log = $data['log'] ?? null;
+        unset($data['log']);
+        $message = $data['message'] ?? null;
+        unset($data['message']);
+        $event->setData($data);
+
+        $recievers = $event->getReceivers();
+        /** @var Connection $reciever */
+        foreach ($recievers as $reciever) {
+            $id = $this->game->getChannel()->getConnectionCommonId($reciever);
+            $cookie = lx::$app->getCommonChannel()->getUserCookie($id);
+            $lang = $cookie['lang'] ?? 'en-EN';
+
+            if ($message) {
+                $tMessage = $this->game->t($message, $lang);
+                $event->addDataForConnection($reciever->getId(), 'message', $tMessage);
+            }
+
+            if ($log) {
+                $tLog = [];
+                foreach ($log as $key) {
+                    $tLog[] = $this->game->t($key, $lang);
+                }
+                $data['log'] = $tLog;
+                $event->addDataForConnection($reciever->getId(), 'log', $tMessage);
+            }
         }
     }
 }

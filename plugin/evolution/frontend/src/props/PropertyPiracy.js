@@ -8,7 +8,7 @@ class PropertyPiracy extends lexedo.games.Evolution.Property #lx:namespace lexed
 
 		var targets = this.getTargets();
 		if (!targets.len) {
-			lx.Tost('Нет целей');
+			lx.Tost(#lx:i18n(tost.noTargets));
 			return;
 		}
 
@@ -27,11 +27,7 @@ class PropertyPiracy extends lexedo.games.Evolution.Property #lx:namespace lexed
 		targetProperty.loseFood();
 		this.getGame().applyFeedReport(data.feedReport);
 
-		this.getGame().log(
-			'Игрок '
-			+ this.getGamer().getName()
-			+ ' воспользовался свойством "пиратство"'
-		);
+		this.getGame().log(#lx:i18n(logMsg.piracyUsed, {name: this.getGamer().getName()}));
 	}
 
 	/**

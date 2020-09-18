@@ -56,7 +56,7 @@ class EventListener extends ChannelEventListener
         $channel->addUserWaiting(
             $token,
             $event->getInitiator()->getId(),
-            $app->getCommonChannel()->getUser($event->getInitiator())
+            $app->getCommonChannel()->getUser($event->getInitiator()->getId())
         );
 
         $app->getCommonChannel()->addCurrentGame($channel);
@@ -100,7 +100,7 @@ class EventListener extends ChannelEventListener
         $channel->addUserWaiting(
             $token,
             $event->getInitiator()->getId(),
-            $app->getCommonChannel()->getUser($event->getInitiator())
+            $app->getCommonChannel()->getUser($event->getInitiator()->getId())
         );
 
         $subEvent = $event->replaceEvent('gameJoining', [

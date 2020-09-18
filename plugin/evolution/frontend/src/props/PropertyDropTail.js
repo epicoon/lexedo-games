@@ -16,11 +16,7 @@ class PropertyDropTail extends lexedo.games.Evolution.Property #lx:namespace lex
 	onActionProcess(data) {
 		this.getGame().mode.reset();
 
-		this.getGame().log(
-			'Игрок '
-			+ this.getGamer().getName()
-			+ ' использовал отбрасывание хвоста'
-		);
+		this.getGame().log(#lx:i18n(logMsg.dropTailUsed, {name: this.getGamer().getName()}));
 
 		this.getEnvironment().attakCore.processTailAttakResult(
 			this.getEnvironment().attakCore.getCarnival(),

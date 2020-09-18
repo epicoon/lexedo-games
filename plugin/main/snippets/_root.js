@@ -24,17 +24,17 @@ mainBox.border();
 mainBox.begin();
 	
 	var commonChatWindow = new lx.ActiveBox({
-		header: 'Common chat',
+		header: #lx:i18n(Common_chat),
 		geom: [0, 0, 25, 100]
 	});
 
 	var gamesWindow = new lx.ActiveBox({
-		header: 'Games',
+		header: #lx:i18n(Available_games),
 		geom: [25, 0, 50, 100]
 	});
 
 	var pendingGamesWindow = new lx.ActiveBox({
-		header: 'Available games',
+		header: #lx:i18n(Current_games),
 		geom: [75, 0, 25, 100]
 	});
 

@@ -43,11 +43,11 @@ class PropertyExist extends lexedo.games.Evolution.Property #lx:namespace lexedo
 
 	__onClickNewProperty(mode) {
 		if (!mode.data.checkDueGamer(this.getGamer())) {
-			lx.Tost.error('Creature owner is wrong');
+			lx.Tost.error(#lx:i18n(tost.CreatureOwnerIsWrong));
 			return;			
 		}
 		if (!mode.data.checkDueCreature(this.creature)) {
-			lx.Tost.error('Creature can not attach this property');
+			lx.Tost.error(#lx:i18n(tost.CreatureCanNotAttachThisProperty));
 			return;
 		}
 

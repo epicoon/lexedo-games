@@ -78,12 +78,21 @@ class CommonChannel extends Channel
     }
 
     /**
-     * @param Connection $connection
+     * @param string $connectionId
      * @return ModelInterface
      */
-    public function getUser($connection)
+    public function getUser($connectionId)
     {
-        return $this->userList[$connection->getId()] ?? null;
+        return $this->userList[$connectionId]['user'] ?? null;
+    }
+
+    /**
+     * @param string $connectionId
+     * @return array
+     */
+    public function getUserCookie($connectionId)
+    {
+        return $this->userList[$connectionId]['cookie'] ?? null;
     }
 
     /**
@@ -104,7 +113,12 @@ class CommonChannel extends Channel
             return false;
         }
 
-        $this->userList[$connection->getId()] = $user;
+        $cookie = $this->parseCookie($authData['cookie'] ?? '');
+
+        $this->userList[$connection->getId()] = [
+            'user' => $user,
+            'cookie' => $cookie,
+        ];
         return true;
     }
 
@@ -116,5 +130,24 @@ class CommonChannel extends Channel
         unset($this->userList[$connection->getId()]);
 
         parent::onDisconnect($connection);
+    }
+
+    /**
+     * @param string $cookieString
+     * @return array
+     */
+    private function parseCookie($cookieString)
+    {
+        preg_match_all('/([^:]+?)=(.+?)(?:;|$)/', $cookieString, $matches);
+        if (empty($matches[0])) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($matches[0] as $i => $match) {
+            $result[trim($matches[1][$i], ' ')] = trim($matches[2][$i], ' ');
+        }
+
+        return $result;
     }
 }

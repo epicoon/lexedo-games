@@ -113,11 +113,11 @@ class AttakCore
         if ($prey->hasProperty(PropertyBank::FAST)) {
             $success = Math::gamble(0.5);
             if ($success) {
-                $result['log'][] = 'Существо убежало, атака хищника не удалась';
+                $result['log'][] = 'logMsg.creatureRanAway';
                 $result['result'] = Constants::ATTAK_RESULT_FAIL;
                 return $result;
             } else {
-                $result['log'][] = 'Существо пыталось убежать, но не смогло';
+                $result['log'][] = 'logMsg.creatureRanAwayFail';
             }
         }
         

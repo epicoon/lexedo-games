@@ -37,7 +37,10 @@ Plugin.core.lists.currentGamesList = currentGamesList;
 	Plugin.core.socketEventListener = new Plugin.core.classes.SocketEventListener(Plugin);
 	Plugin.core.socket = new Plugin.core.classes.WebSocketClient(Plugin);
 
-	Plugin.core.socket.connect({name: lx.User.name}, {auth: lx.Storage.get('lxauthtoken')});
+	Plugin.core.socket.connect({name: lx.User.name}, {
+		auth: lx.Storage.get('lxauthtoken'),
+		cookie: document.cookie
+	});
 });
 
 
@@ -90,7 +93,7 @@ currentGamesBox.matrix({
 
 
 function createGame(gameData) {
-	var params = ['New game name', 'Password'];
+	var params = [#lx:i18n(NewGameName), #lx:i18n(Password)];
 	if (gameData.minGamers != gameData.maxGamers)
 		params.push('Number of gamers ('+gameData.minGamers+'-'+gameData.maxGamers+')');
 
@@ -113,12 +116,12 @@ function createGame(gameData) {
 
 function switchRelationToGame(game) {
 	if (game.follow) {
-		Plugin->confirmPopup.open('Do you want leave game?', ()=>{
+		Plugin->confirmPopup.open(#lx:i18n(ToLeave), ()=>{
 			game.box.del();
 		});
 	} else {
 		//TODO password
-		Plugin->confirmPopup.open('Do you want join game?', ()=>{
+		Plugin->confirmPopup.open(#lx:i18n(ToJoin), ()=>{
 			
 			Plugin.core.__inConnecting = {};
 

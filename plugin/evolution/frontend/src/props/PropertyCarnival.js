@@ -15,7 +15,7 @@ class PropertyCarnival extends lexedo.games.Evolution.Property #lx:namespace lex
 
 		var targets = this.getTargets();
 		if (!targets.len) {
-			lx.Tost('Нет целей');
+			lx.Tost(#lx:i18n(tost.noTargets));
 			return;
 		}
 
@@ -29,12 +29,10 @@ class PropertyCarnival extends lexedo.games.Evolution.Property #lx:namespace lex
 
 		let preyGamer = this.getGame().getGamerById(data.preyGamer);
 
-		this.getGame().log(
-			'Игрок '
-			+ this.getGamer().getName()
-			+ ' атаковал существо игрока '
-			+ preyGamer.getName()
-		);
+		this.getGame().log(#lx:i18n(logMsg.carnivalUsed, {
+			carnivalGamerName: this.getGamer().getName(),
+			preyGamerName: preyGamer.getName()
+		}));
 
 		this.getGamer().canGetFood = false;
 		this.getEnvironment().attakCore.processAttakResult(this.getCreature(), data);

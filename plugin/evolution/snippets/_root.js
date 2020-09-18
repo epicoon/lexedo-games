@@ -54,7 +54,7 @@ gameInfoBox.fill('lightgreen');
 gameInfoBox.streamProportional({indent: '10px'});
 gameInfoBox.begin();
 	var lbl = new lx.Box({height: '40px'});
-	lbl.text('Игроки');
+	lbl.text(#lx:i18n(gamers));
 	lbl.align(lx.CENTER, lx.MIDDLE);
 
 	// Список игроков
@@ -64,7 +64,7 @@ gameInfoBox.begin();
 
 	// Чат/лог
 	var logWrapper = new lx.Box({height: 2});
-	var logs = logWrapper.add(lx.MultiBox, {geom:true, marks:['Чат', 'Лог']});
+	var logs = logWrapper.add(lx.MultiBox, {geom:true, marks:[#lx:i18n(chat), #lx:i18n(log)]});
 	var chat = logs.sheet(0).add(lx.Box, {geom:true})
 		.streamProportional({step:'10px'});
 	chat.add(lx.Input, {key:'chatMessageBox', height:'40px'});
@@ -94,12 +94,12 @@ gameInfoBox.begin();
 		var phaseGrowMenu = phaseMenu.add(lx.Box, {geom:true, key:'phaseGrowMenu'});
 		var phaseFeedMenu = phaseMenu.add(lx.Box, {geom:true, key:'phaseFeedMenu'});
 		phaseMenu.getChildren().each(child=>child.hide());
-		phaseGrowMenu.add(lx.Button, {size:[100, '40px'], key:'growPassBut', text:'Пасс'});
+		phaseGrowMenu.add(lx.Button, {size:[100, '40px'], key:'growPassBut', text:#lx:i18n(pass)});
 		phaseGrowMenu.align(lx.CENTER, lx.MIDDLE);
-		var foodInfoBox = phaseFeedMenu.add(lx.Box, {geom:[0, 0, 100, '40px'], key:'foodInfoBox', text:'Пища: 0'});
+		var foodInfoBox = phaseFeedMenu.add(lx.Box, {geom:[0, 0, 100, '40px'], key:'foodInfoBox', text:#lx:i18n(food) + ': 0'});
 		foodInfoBox.align(lx.CENTER, lx.MIDDLE);
 		phaseFeedMenu.add(lx.Box, {geom:true, key:'foodBut', style:{cursor:'pointer'}});
-		phaseFeedMenu.add(lx.Button, {geom:[0, '50px', 100, '40px'], key:'feedEndTurnBut', text:'Передать ход'});
+		phaseFeedMenu.add(lx.Button, {geom:[0, '50px', 100, '40px'], key:'feedEndTurnBut', text:#lx:i18n(endTurn)});
 	phaseInfo.end();
 gameInfoBox.end();
 
@@ -113,12 +113,12 @@ var cartMenu = new lx.Box({
 cartMenu.fill('white');
 cartMenu.add(lx.Button, {
 	key: 'newCreatureBut',
-	text: 'Существо',
+	text: #lx:i18n(creature),
 	geom: ['10px', '10px', null, '40px', '10px']
 });
 cartMenu.add(lx.Button, {
 	key: 'newPropertyBut',
-	text: 'Свойство',
+	text: #lx:i18n(property),
 	geom: ['10px', '60px', null, '40px', '10px']
 });
 cartMenu.hide();
@@ -129,7 +129,7 @@ cartMenu.hide();
 var resultBox = new lx.ActiveBox({	
 	key: 'resultBox',
 	geom: [20, 25, 60, 30],
-	header: 'Результаты'
+	header: #lx:i18n(results)
 });
 resultBox.setSnippet('resultBox');
 resultBox.hide();

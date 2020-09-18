@@ -12,10 +12,6 @@ class PropertyHibernate extends lexedo.games.Evolution.Property #lx:namespace le
 
 	onActionProcess(data) {
 		this.getGame().applyFeedReport(data.feedReport);
-		this.getGame().log(
-			'Игрок '
-			+ this.getGamer().getName()
-			+ ' воспользовался свойством "спячка"'
-		);
+		this.getGame().log(#lx:i18n(logMsg.hibernateUsed, {name: this.getGamer().getName()}));
 	}
 }

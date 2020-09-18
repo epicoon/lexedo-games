@@ -27,17 +27,17 @@ class GamePhase extends lx.BindableModel {
 	actualize(gamer = null) {
 		if (gamer) this.gamer = gamer;
 		if (this.type == #evConst.PHASE_GROW) {
-			this.name = 'Фаза развития';
+			this.name = #lx:i18n(phaseName.Growing);
 			if (this.gamer.isLocal())
-				this.hint = 'Используйте карту';
+				this.hint = #lx:i18n(phaseHint.UseCart);
 			else
-				this.hint = 'Ожидание действий оппонента...';
+				this.hint = #lx:i18n(phaseHint.Waiting);
 		} else if (this.type == #evConst.PHASE_FEED) {
-			this.name = 'Фаза питания';
+			this.name = #lx:i18n(phaseName.Feeding);
 			if (this.gamer.isLocal())
-				this.hint = 'Берите фишки еды, и/или используйте свойства';
+				this.hint = #lx:i18n(phaseHint.UseProperties);
 			else
-				this.hint = 'Ожидание действий оппонента...';
+				this.hint = #lx:i18n(phaseHint.Waiting);
 		}
 	}
 
@@ -48,7 +48,4 @@ class GamePhase extends lx.BindableModel {
 	isFeed() {
 		return this.type == #evConst.PHASE_FEED;
 	}
-
-
-
 }

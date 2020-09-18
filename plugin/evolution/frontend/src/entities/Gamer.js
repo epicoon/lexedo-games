@@ -237,12 +237,8 @@ function __bindButtons(self) {
 	self.bind(plugin->>growPassBut);
 
 	plugin->>feedEndTurnBut.click(function() {
-
-		console.log( self );
-		console.log( self.mustEat() );
-
 		if (self.mustEat()) {
-			lx.Tost.error('You have a hungry creature. You must feed it.');
+			lx.Tost.error(#lx:i18n(tost.HaveToFeed));
 			return;
 		}
 

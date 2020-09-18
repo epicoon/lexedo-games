@@ -204,8 +204,8 @@ function __setGui(self) {
 		if (!gamer) return;
 
 		var text = gamer.isLocal()
-			? 'Ваш ход'
-			: 'Ходит игрок ' + gamer.getName();
+			? #lx:i18n(yourTurn)
+			: #lx:i18n(opponentTurn, {name: gamer.getName()});
 		this.text(text);
 	});
 	plugin->>phaseHint.setField('hint', function(val) {
@@ -223,7 +223,7 @@ function __setGui(self) {
 		}
 	});
 	plugin->>foodInfoBox.setField('food', function(val) {
-		this.text('Пища: ' + val);
+		this.text(#lx:i18n(food) + ': ' + val);
 	});
 	self.phase.bind(plugin->>phaseInfoBox);
 
@@ -263,7 +263,7 @@ function __setGui(self) {
 		else {
 			let but = plugin->>butRestart;
 			if (isFromMe) but.disabled(true);
-			but.text('Реванш (' + data.approvesCount + '/'+ data.gamersCount + ')');
+			but.text(#lx:i18n(revenge) + ' (' + data.approvesCount + '/'+ data.gamersCount + ')');
 		}
 	});
 }

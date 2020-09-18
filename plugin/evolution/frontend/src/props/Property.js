@@ -242,7 +242,7 @@ class Property #lx:namespace lexedo.games.Evolution {
 		for (var i=0, l=targets.len; i<l; i++)
 			if (targets[i] == target) return true;
 
-		lx.Tost.warning('Неподходящая цель');
+		lx.Tost.warning(#lx:i18n(tost.wrongTarget));
 		return false;
 	}
 }

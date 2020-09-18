@@ -2,7 +2,10 @@
 
 namespace lexedo\games\evolution\backend\game;
 
+use lx;
+use lx\I18nHelper;
 use lexedo\games\evolution\backend\EvolutionChannel;
+use lexedo\games\evolution\Plugin;
 use lx\Math;
 use Exception;
 use lx\socket\Channel\ChannelEvent;
@@ -55,6 +58,9 @@ class Game
     /** @var array */
     private $revengeApprovements;
 
+    /** @var Plugin */
+    private $plugin;
+
     /**
      * Game constructor.
      * @param EvolutionChannel $channel
@@ -71,6 +77,8 @@ class Game
         $this->isLastTurn = false;
         $this->isWaitingForRevenge = false;
         $this->revengeApprovements = [];
+
+        $this->plugin = lx::$app->getPlugin('lexedo/games:evolution');
     }
 
     /**
@@ -79,6 +87,24 @@ class Game
     public function getChannel()
     {
         return $this->channel;
+    }
+
+    /**
+     * @return Plugin
+     */
+    public function getPlugin()
+    {
+        return $this->plugin;
+    }
+
+    /**
+     * @param string $key
+     * @param string $lang
+     * @return string
+     */
+    public function t($key, $lang)
+    {
+        return I18nHelper::translate($key, $this->getPlugin()->i18nMap, $lang);
     }
 
     /**

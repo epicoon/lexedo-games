@@ -10,7 +10,7 @@ class PropertyMimicry extends lexedo.games.Evolution.Property #lx:namespace lexe
 
 		var targets = this.getTargets();
 		if (!targets.len) {
-			lx.Tost('Нет целей');
+			lx.Tost(#lx:i18n(tost.noTargets));
 			return;
 		}
 
@@ -22,11 +22,7 @@ class PropertyMimicry extends lexedo.games.Evolution.Property #lx:namespace lexe
 	onActionProcess(data) {
 		this.getGame().mode.reset();
 
-		this.getGame().log(
-			'Игрок '
-			+ this.getGamer().getName()
-			+ ' при помощи мимикрии перенаправил атаку на другое существо'
-		);
+		this.getGame().log(#lx:i18n(logMsg.mimicryUsed, {name: this.getGamer().getName()}));
 
 		this.getEnvironment().attakCore.processAttakResult(
 			this.getEnvironment().attakCore.getCarnival(),

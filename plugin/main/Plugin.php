@@ -2,11 +2,14 @@
 
 namespace lexedo\games\main;
 
-class Plugin extends \lx\Plugin {
+use lx\auth\RbacResourceInterface;
+
+class Plugin extends \lx\Plugin implements RbacResourceInterface
+{
     public function getPermissions()
     {
         return [
-            \lx\Plugin::DEFAULT_SOURCE_METHOD => ['client_w', 'client_r'],
+            \lx\Plugin::DEFAULT_RESOURCE_METHOD => ['client_w', 'client_r'],
         ];
     }
 }

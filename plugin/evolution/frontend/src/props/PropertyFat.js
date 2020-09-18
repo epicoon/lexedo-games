@@ -19,11 +19,7 @@ class PropertyFat extends lexedo.games.Evolution.Property #lx:namespace lexedo.g
 		this.getGamer().canGetFood = false;
 		this.getGamer().creatureHasUsedFat = this.getCreature();
 
-		this.getGame().log(
-			'Игрок '
-			+ this.getGamer().getName()
-			+ ' воспользовался свойством "жировой запас"'
-		);
+		this.getGame().log(#lx:i18n(logMsg.fatUsed, {name: this.getGamer().getName()}));
 	}
 
 	hasFat() {

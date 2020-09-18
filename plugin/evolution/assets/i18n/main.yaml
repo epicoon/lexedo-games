@@ -1,0 +1,133 @@
+en-EN:
+  revenge: Revenge
+  close: Close
+  gamers: Gamers
+  chat: Chat
+  log: Log
+  pass: Pass
+  food: Food
+  endTurn: End turn
+  creature: Creature
+  property: Property
+  results: Results
+  yourTurn: Your turn
+  opponentTurn: There is the turn of the gamer ${name}
+
+  phaseName.Growing: Growing phase
+  phaseName.Feeding: Feeding phase
+  phaseHint.UseCart: Use a cart
+  phaseHint.UseProperties: Take a food and/or use properties
+  phaseHint.Waiting: Waiting for opponent actions...
+  phaseHint.Attaked: Your create has been attaked. Choose a way to defend.
+
+  tost.noTargets: There are no targets
+  tost.CreatureOwnerIsWrong: Creature owner is wrong
+  tost.CreatureCanNotAttachThisProperty: Creature can not attach this property
+  tost.wrongTarget: Wrong target
+  tost.HaveToFeed: You have a hungry creature. You have to feed it.
+  tost.CreatureSelfAttak: Creature can not attak itself
+  tost.CarnivalHasToBeBig: Carnival has to be big to be able to attak a big creature
+  tost.CarnivalAndPreySameEnv: Carnival and prey have to live in the same environment
+  tost.CarnivalHasToHaveAcute: Carnival has to have acute eyesight to see the target
+  tost.CreatureInHole: Target creature is burrowing and already  Цель - норное существо и уже fed, so it can not be attaked
+  tost.CreatureSymbiont: Target is defensed by symbiont
+
+  logMsg.trampUsed: Gamer ${name} has used property "trump" and destroed one of food from food storage
+  logMsg.piracyUsed: Gamer ${name} has used property "piracy"
+  logMsg.mimicryUsed: Gamer ${name} has used property "mimicry" and redirected attak to another creature
+  logMsg.hibernateUsed: Gamer ${name} has used property "hibernate"
+  logMsg.fatUsed: Gamer ${name} has used property "fat tissue"
+  logMsg.dropTailUsed: Gamer ${name} has used property "drop tail"
+  logMsg.carnivalUsed: Gamer ${carnivalGamerName} has attaked creature of gamer ${preyGamerName}
+  logMsg.waitingForDefens: Attaked creature of gamer ${name} has defensive properties. Waiting for his decision.
+  logMsg.creatureRanAway: Creature has run away. Carnival attak has failed.
+  logMsg.creatureRanAwayFail: Creature tried to run away but failed.
+
+  error.CartNotFound: Cart not found
+  error.WrongPropertyForCart: Cart hasn't this property
+  error.WrongOwnerForCreature: Creature owner is wrong
+  error.CreatureOwnerNotFound: Creature owner not found
+  error.CreatureNotFound: Creature not found
+  error.PropertyNotFound: Property not found
+  error.WrongPropertyForCreature: Creature can not attach this property
+  error.ParePropertyAlreadyExists: This creatures are already attached by the same property
+  error.WrongPareProperty: Pare property is wrong
+  error.NotAvailableToFeed: You are not available to feed a creature
+  error.NoFood: There is no food
+  error.CreatureNotHungry: The creature is not hungry
+  error.FeedProblem: Problem while creature feed
+  error.PropertyIsUnavailable: Property is unavailable
+  error.OperationIsUnavailable: Operation is unavailable
+  error.GameIsActive: Game is active
+  error.RevengeProblem: Problem while approving revenge
+  error.WrongGamePhase: Wrong game phase
+  error.GamerNotFound: Gamer not found
+  error.WaitingForAttaked: We are waiting for attaked gamer decision
+  error.NotYourTurn: It is not your turn
+
+ru-RU:
+  revenge: Реванш
+  close: Закрыть
+  gamers: Игроки
+  chat: Чат
+  log: Лог
+  pass: Пасс
+  food: Пища
+  endTurn: Передать ход
+  creature: Существо
+  property: Свойство
+  results: Результаты
+  yourTurn: Ваш ход
+  opponentTurn: Ходит игрок ${name}
+
+  phaseName.Growing: Фаза развития
+  phaseName.Feeding: Фаза питания
+  phaseHint.UseCart: Используйте карту
+  phaseHint.UseProperties: Берите фишки еды, и/или используйте свойства
+  phaseHint.Waiting: Ожидание действий оппонента...
+  phaseHint.Attaked: Ваше существо атаковано. Выберите способ защиты.
+
+  tost.noTargets: Нет целей
+  tost.CreatureOwnerIsWrong: Неверный владелец существа
+  tost.CreatureCanNotAttachThisProperty: Существо не может получить данное свойство
+  tost.wrongTarget: Неподходящая цель
+  tost.HaveToFeed: У Вас есть голодное существо. Нужно его покормить.
+  tost.CreatureSelfAttak: Существо не может атаковать себя
+  tost.CarnivalHasToBeBig: Хищник должен быть большим, чтобы атаковать большое существо
+  tost.CarnivalAndPreySameEnv: Хищник и жертва должны обитать в одной среде
+  tost.CarnivalHasToHaveAcute: Хищник должен иметь острое зрение, чтобы увидеть цель
+  tost.CreatureInHole: Цель - норное существо и уже накормлено, не может быть атаковано
+  tost.CreatureSymbiont: Цель защищена симбионтом
+
+  logMsg.trampUsed: Игрок ${name} воспользовался свойством "топотун" и уничтожил единицу еды из кормовой базы
+  logMsg.piracyUsed: Игрок ${name} воспользовался свойством "пиратство"
+  logMsg.mimicryUsed: Игрок ${name} при помощи мимикрии перенаправил атаку на другое существо
+  logMsg.hibernateUsed: Игрок ${name} воспользовался свойством "спячка"
+  logMsg.fatUsed: Игрок ${name} воспользовался свойством "жировой запас"
+  logMsg.dropTailUsed: Игрок ${name} воспользовался свойством "отбрасывание хвоста"
+  logMsg.carnivalUsed: Игрок ${carnivalGamerName} атаковал существо игрока ${preyGamerName}
+  logMsg.waitingForDefens: Атакованное существо игрока ${name} имеет защитные свойства. Нужно подождать, когда он их применит.
+  logMsg.creatureRanAway: Существо убежало, атака хищника не удалась.
+  logMsg.creatureRanAwayFail: Существо пыталось убежать, но не смогло.
+
+  error.CartNotFound: Карта не найдена
+  error.WrongPropertyForCart: Карта не имеет этого свойства
+  error.WrongOwnerForCreature: Неверный владелец существа
+  error.CreatureOwnerNotFound: Владелец существа не найден
+  error.CreatureNotFound: Существо не найдено
+  error.PropertyNotFound: Свойство не найдено
+  error.WrongPropertyForCreature: Существо не может получить данное свойство
+  error.ParePropertyAlreadyExists: Эти существа уже связаны подобным свойством
+  error.WrongPareProperty: Неверное парное свойство
+  error.NotAvailableToFeed: Вы не можете кормить существ
+  error.NoFood: Еды нет
+  error.CreatureNotHungry: Существо не голодное
+  error.FeedProblem: При попытке покормить существо возникли проблемы
+  error.PropertyIsUnavailable: Свойство недоступно
+  error.OperationIsUnavailable: Действие недоступно
+  error.GameIsActive: Игра активна
+  error.RevengeProblem: При принятии реванша возникли проблемы
+  error.WrongGamePhase: Неверная фаза игры
+  error.GamerNotFound: Игрок не найден
+  error.WaitingForAttaked: Ожидается решение атакованного игрока
+  error.NotYourTurn: Сейчас не Ваш ход
