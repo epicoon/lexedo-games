@@ -99,6 +99,14 @@ class Property
     }
 
     /**
+     * @return string
+     */
+    public function getName()
+    {
+        return PropertyBank::getName($this->type);
+    }
+
+    /**
      * @return bool
      */
     public function isAvailable()
@@ -341,7 +349,18 @@ class Property
      */
     public function runAction($data = [])
     {
-        return $this->behavior->run($data);
+        $result = $this->behavior->run($data);
+        if ($result !== false) {
+            $key = $this->behavior->getLogKey();
+            if ($key) {
+                $this->getGame()->log($key, [
+                    'name' => $this->getGamer()->getUser()->name,
+                    'property' => $this->getName(),
+                ]);
+            }
+        }
+
+        return $result;
     }
 
     /**

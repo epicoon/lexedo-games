@@ -3,7 +3,7 @@
 namespace lexedo\games\evolution\backend\game;
 
 use lx;
-use lx\I18nHelper;
+use lexedo\games\evolution\backend\I18nHelper;
 use lexedo\games\evolution\backend\EvolutionChannel;
 use lexedo\games\evolution\Plugin;
 use lx\Math;
@@ -24,6 +24,9 @@ class Game
 
     /** @var EvolutionChannel */
     private $channel;
+
+    /** @var array */
+    private $log;
 
     /** @var bool */
     private $isActive;
@@ -68,6 +71,8 @@ class Game
     public function __construct($channel)
     {
         $this->channel = $channel;
+
+        $this->log = [];
         $this->isActive = false;
         $this->gamers = [];
         $this->turnSequence = [];
@@ -98,13 +103,34 @@ class Game
     }
 
     /**
-     * @param string $key
-     * @param string $lang
-     * @return string
+     * @param string $msg
+     * @param array $params
      */
-    public function t($key, $lang)
+    public function log($msgKey, $params = [])
     {
-        return I18nHelper::translate($key, $this->getPlugin()->i18nMap, $lang);
+        $event = $this->prepareLogEvent($msgKey, $params);
+        $this->getChannel()->sendEvent($event);
+    }
+
+    /**
+     * @param string $msgKey
+     * @param array $params
+     * @param ChannelEvent|null $parentEvent
+     * @return ChannelEvent
+     */
+    public function prepareLogEvent($msgKey, $params = [], $parentEvent = null)
+    {
+        $this->log[] = [
+            'key' => $msgKey,
+            'params' => $params,
+        ];
+
+        $event = $parentEvent
+            ? $parentEvent->addSubEvent('log', ['log' => [$msgKey, $params]])
+            : $this->getChannel()->createEvent('log', ['log' => [$msgKey, $params]]);
+        I18nHelper::localizeEvent($event);
+
+        return $event;
     }
 
     /**
@@ -113,6 +139,14 @@ class Game
     public function isActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLastTurn()
+    {
+        return $this->isLastTurn;
     }
 
     /**
@@ -147,8 +181,10 @@ class Game
 
         $this->activePhase = $phase;
 
+        $firstTurn = false;
         if (!$this->isActive) {
             $this->prepare();
+            $firstTurn = true;
         } else {
             $this->updateGamersSequence($this->isPhaseGrow());
             foreach ($this->gamers as $gamer) {
@@ -162,10 +198,18 @@ class Game
         ]);
 
         if ($this->isPhaseGrow()) {
+            if (!$firstTurn) {
+                $this->log('logMsg.growBegin');
+            }
+
             $this->foodCount = 0;
             $newCarts = $this->distributeCarts();
 
             $this->isLastTurn = $this->cartPack->isEmpty();
+            if ($this->isLastTurn) {
+                $this->log('logMsg.lastTurn');
+            }
+
             $event->addData([
                 'isLastTurn' => $this->isLastTurn,
             ]);
@@ -183,6 +227,11 @@ class Game
             }
         } elseif ($this->isPhaseFeed()) {
             $this->foodCount = Math::rand(3, 8);
+
+            $this->log('logMsg.feedBegin', [
+                'food' => $this->foodCount,
+            ]);
+
             $event->addData([
                 'foodCount' => $this->getFoodCount(),
             ]);
@@ -374,6 +423,9 @@ class Game
         $creature->getGamer()->onCreatureEaten();
         $feedReport = $creature->eat(self::FOOD_TYPE_RED);
 
+        $this->log('logMsg.feed', [
+            'name' => $creature->getGamer()->getUser()->name,
+        ]);
 
         return $feedReport;
     }
@@ -399,7 +451,15 @@ class Game
     {
         $report = [];
         foreach ($this->gamers as $gamer) {
-            $report[$gamer->getId()] = $gamer->runExtinction();
+            $gamerReport = $gamer->runExtinction();
+
+            $this->log('logMsg.extinction', [
+                'name' => $gamer->getUser()->name,
+                'deadCreatures' => count($gamerReport['creatures']),
+                'droppedCarts' => $gamerReport['dropping'],
+            ]);
+
+            $report[$gamer->getId()] = $gamerReport;
         }
 
         return $report;

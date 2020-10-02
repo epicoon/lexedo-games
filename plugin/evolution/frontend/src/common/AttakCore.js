@@ -6,6 +6,10 @@ class AttakCore #lx:namespace lexedo.games.Evolution {
 		this.hold = null;
 	}
 
+	getEnvironment() {
+		return this.game.getEnvironment();
+	}
+
 	getPendingGamer() {
 		if (this.hold === null) return null;
 		return this.hold.prey.getGamer();
@@ -55,13 +59,11 @@ class AttakCore #lx:namespace lexedo.games.Evolution {
 	 */
 	processAttakResult(carnival, data) {
 		this.__unholdAttak();
-		// data.log.each(msg=>this.game.log(msg));
 
 		let preyGamer = this.game.getGamerById(data.preyGamer);
 
 		if (data.result == #evConst.ATTAK_RESULT_PENDING) {
 			this.__holdAttak(data);
-			this.game.log(#lx:i18n(logMsg.waitingForDefens, {name: preyGamer.getName()}));
 			return;
 		}
 
@@ -100,12 +102,12 @@ class AttakCore #lx:namespace lexedo.games.Evolution {
 		prey.getExistProperty().statusBox.add(lx.Box, {
 			geom: true,
 			key: 'prey',
-			picture: '_attakedCreature.png'
+			picture: this.getEnvironment().dataCatalog.getAttakedCreaturePicrute()
 		});
 		carnival.getExistProperty().statusBox.add(lx.Box, {
 			geom: true,
 			key: 'carnival',
-			picture: '_activeCreature.png'
+			picture: this.getEnvironment().dataCatalog.getActiveCreaturePicrute()
 		});
 
 		if (carnivalGamer.isLocal()) {

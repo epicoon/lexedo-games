@@ -12,6 +12,5 @@ class PropertyTramp extends lexedo.games.Evolution.Property #lx:namespace lexedo
 
 	onActionProcess(data) {
 		this.getGame().phase.food = data.foodCount;
-		this.getGame().log(#lx:i18n(logMsg.trampUsed, {name: this.getGamer().getName()}));
 	}
 }

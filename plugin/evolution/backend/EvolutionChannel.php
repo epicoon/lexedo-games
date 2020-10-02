@@ -21,25 +21,22 @@ class EvolutionChannel extends GameChannel
      */
     public static function getConfigProtocol()
     {
-        $protocol = parent::getConfigProtocol();
-        $protocol['eventListener'] = ChannelEventListener::class;
-        return $protocol;
+        return array_merge(parent::getConfigProtocol(), [
+            'eventListener' => ChannelEventListener::class,
+        ]);
     }
 
     public function init()
     {
         $this->game = new Game($this);
-        $this->getEventListener()->setGame($this->game);
     }
 
     /**
-     * @return ChannelEventListener
+     * @return Game
      */
-    public function getEventListener()
+    public function getGame()
     {
-        /** @var ChannelEventListener $result */
-        $result = $this->eventListener;
-        return $result;
+        return $this->game;
     }
 
     /**
@@ -56,22 +53,8 @@ class EvolutionChannel extends GameChannel
     {
         $event = $this->createEvent('game-begin');
         $this->game->fillNewPhaseEvent($event);
+        $this->game->prepareLogEvent('logMsg.begin', [], $event);
         $this->sendEvent($event);
-    }
-
-    /**
-     * For development only!
-     *
-     * @param string $key
-     * @return mixed|null
-     */
-    public function forDump($key)
-    {
-        switch ($key) {
-            case 'game': return $this->game;
-
-            default: return null;
-        }
     }
 
     /**

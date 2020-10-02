@@ -2,6 +2,7 @@
 
 namespace lexedo\games\evolution\backend;
 
+use lexedo\games\GamesServer;
 use lx;
 use lexedo\games\evolution\backend\game\Game;
 use lexedo\games\evolution\backend\game\Gamer;
@@ -13,18 +14,17 @@ use lx\socket\Connection;
 /**
  * Class ChannelEventListener
  * @package lexedo\games\evolution\backend
+ *
+ * @method EvolutionChannel getChannel()
  */
 class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
 {
-    /** @var Game */
-    private $game;
-
     /**
-     * @param Game $game
+     * @return Game
      */
-    public function setGame($game)
+    public function getGame()
     {
-        $this->game = $game;
+        return $this->getChannel()->getGame();
     }
 
     /**
@@ -34,6 +34,11 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
     {
         return ['chat-message'];
     }
+
+
+    /*******************************************************************************************************************
+     * EVENT HANDLERS
+     ******************************************************************************************************************/
 
     /**
      * @param ChannelEvent $event
@@ -56,6 +61,8 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         $event->addData([
             'creatureId' => $creature->getId(),
         ]);
+        
+        $this->getGame()->log('logMsg.newCreature', ['name' => $gamer->getUser()->name]);
 
         $this->onGrowPhaseAction($event, $gamer);
     }
@@ -94,7 +101,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
                 return;
             }
 
-            $creatureOwner = $this->game->getGamerById($creatureData['creatureGamer']);
+            $creatureOwner = $this->getGame()->getGamerById($creatureData['creatureGamer']);
             if (!$creatureOwner) {
                 $this->setError($event, 'error.CreatureOwnerNotFound');
                 return;
@@ -156,6 +163,11 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             'creatures' => $creaturesData,
         ]);
 
+        $this->getGame()->log('logMsg.newProperty', [
+            'name' => $gamer->getUser()->name,
+            'property' => $properties[0]->getName(),
+        ]);
+
         $this->onGrowPhaseAction($event, $gamer);
     }
 
@@ -174,7 +186,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             return;
         }
 
-        if (!$this->game->getFoodCount()) {
+        if (!$this->getGame()->getFoodCount()) {
             $this->setError($event, 'error.NoFood');
             return;
         }
@@ -191,14 +203,14 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             return;
         }
 
-        $feedReport = $this->game->feedCreature($creature);
+        $feedReport = $this->getGame()->feedCreature($creature);
         if (!$feedReport) {
             $this->setError($event, 'error.FeedProblem');
             return;
         }
 
         $event->addData([
-            'currentFood' => $this->game->getFoodCount(),
+            'currentFood' => $this->getGame()->getFoodCount(),
             'feedReport' => $feedReport,
         ]);
 
@@ -234,10 +246,10 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             return;
         }
 
-        $this->game->nextActiveGamer();
+        $this->getGame()->nextActiveGamer();
         $event->addSubEvent('change-active-gamer', [
             'old' => $gamer->getId(),
-            'new' => $this->game->getActiveGamer()->getId(),
+            'new' => $this->getGame()->getActiveGamer()->getId(),
         ]);
     }
 
@@ -287,9 +299,9 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             'result' => $result,
         ]);
 
-        $this->localizeEvent($event);
+        I18nHelper::localizeEvent($event);
 
-        if (!$this->game->getAttakCore()->isOnHold()) {
+        if (!$this->getGame()->getAttakCore()->isOnHold()) {
             $this->onFeedPhaseAction($event, $gamer);
         }
     }
@@ -299,13 +311,13 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
      */
     public function onApproveRevenge($event)
     {
-        if ($this->game->isActive()) {
+        if ($this->getGame()->isActive()) {
             $this->setError($event, 'error.GameIsActive');
             return;
         }
 
         $data = $event->getData();
-        $result = $this->game->approveRevenge($data['gamer']);
+        $result = $this->getGame()->approveRevenge($data['gamer']);
         if (empty($result)) {
             $this->setError($event, 'error.RevengeProblem');
             return;
@@ -314,7 +326,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         $event->addData(['report' => $result]);
         if ($result['start']) {
             $subEvent = $event->addSubEvent('game-begin');
-            $this->game->fillNewPhaseEvent($subEvent);
+            $this->getGame()->fillNewPhaseEvent($subEvent);
         }
     }
 
@@ -332,19 +344,19 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
     {
         $data = $event->getData();
 
-        if ($this->game->getActivePhase() != $phase) {
+        if ($this->getGame()->getActivePhase() != $phase) {
             $this->setError($event, 'error.WrongGamePhase');
             return null;
         }
 
-        $gamer = $this->game->getGamerById($data['gamer']);
+        $gamer = $this->getGame()->getGamerById($data['gamer']);
         if (!$gamer) {
             $this->setError($event, 'error.GamerNotFound');
             return null;
         }
 
         
-        $gamerOnHold = $this->game->getAttakCore()->getPendingGamer();
+        $gamerOnHold = $this->getGame()->getAttakCore()->getPendingGamer();
         if ($gamerOnHold) {
             if ($gamer === $gamerOnHold) {
                 return $gamer;
@@ -354,7 +366,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             }
         }
         
-        if ($gamer !== $this->game->getActiveGamer()) {
+        if ($gamer !== $this->getGame()->getActiveGamer()) {
             $this->setError($event, 'error.NotYourTurn');
             return null;
         }
@@ -377,14 +389,14 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             ]);
         }
 
-        if ($this->game->checkGrowPhaseFinished()) {
+        if ($this->getGame()->checkGrowPhaseFinished()) {
             $subEvent = $event->addSubEvent('start-feed-phase');
-            $this->game->fillNewPhaseEvent($subEvent, Game::PHASE_FEED);
+            $this->getGame()->fillNewPhaseEvent($subEvent, Game::PHASE_FEED);
         } else {
-            $this->game->nextActiveGamer();
+            $this->getGame()->nextActiveGamer();
             $event->addSubEvent('change-active-gamer', [
                 'old' => $gamer->getId(),
-                'new' => $this->game->getActiveGamer()->getId(),
+                'new' => $this->getGame()->getActiveGamer()->getId(),
             ]);
         }
     }
@@ -401,35 +413,37 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             return;
         }
 
-        if (!$this->game->gamerAllowedToEat($gamer) && !$gamer->hasPotentialActivities()) {
+        if (!$this->getGame()->gamerAllowedToEat($gamer) && !$gamer->hasPotentialActivities()) {
             $gamer->setPassed(true);
             $event->addSubEvent('gamer-pass', [
                 'gamer' => $gamer->getId(),
             ]);
         }
 
-        if ($this->game->checkFeedPhaseFinished()) {
+        if ($this->getGame()->checkFeedPhaseFinished()) {
+            $this->getGame()->log('logMsg.feedEnd');
+
             $subEvent = $event->addSubEvent('finish-feed-phase');
             $subEvent->addData([
-                'extinction' => $this->game->runExtinction(),
-                'properties' => $this->game->restorePropertiesState(),
+                'extinction' => $this->getGame()->runExtinction(),
+                'properties' => $this->getGame()->restorePropertiesState(),
             ]);
-            $this->game->fillNewPhaseEvent($subEvent, Game::PHASE_GROW);
-            if ($this->game->isActive()) {
+            $this->getGame()->fillNewPhaseEvent($subEvent, Game::PHASE_GROW);
+            if ($this->getGame()->isActive()) {
                 $subEvent->addData([
                     'gameOver' => false,
                 ]);
             } else {
                 $subEvent->addData([
                     'gameOver' => true,
-                    'results' => $this->game->calcScore(),
+                    'results' => $this->getGame()->calcScore(),
                 ]);
             }
         } else {
-            $this->game->nextActiveGamer();
+            $this->getGame()->nextActiveGamer();
             $event->addSubEvent('change-active-gamer', [
                 'old' => $gamer->getId(),
-                'new' => $this->game->getActiveGamer()->getId(),
+                'new' => $this->getGame()->getActiveGamer()->getId(),
             ]);
         }
     }
@@ -445,41 +459,6 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         ]);
         $event->setReceivers($event->getInitiator());
 
-        $this->localizeEvent($event);
-    }
-
-    /**
-     * @param ChannelEvent $event
-     */
-    private function localizeEvent($event)
-    {
-        $data = $event->getData();
-        $log = $data['log'] ?? null;
-        unset($data['log']);
-        $message = $data['message'] ?? null;
-        unset($data['message']);
-        $event->setData($data);
-
-        $recievers = $event->getReceivers();
-        /** @var Connection $reciever */
-        foreach ($recievers as $reciever) {
-            $id = $this->game->getChannel()->getConnectionCommonId($reciever);
-            $cookie = lx::$app->getCommonChannel()->getUserCookie($id);
-            $lang = $cookie['lang'] ?? 'en-EN';
-
-            if ($message) {
-                $tMessage = $this->game->t($message, $lang);
-                $event->addDataForConnection($reciever->getId(), 'message', $tMessage);
-            }
-
-            if ($log) {
-                $tLog = [];
-                foreach ($log as $key) {
-                    $tLog[] = $this->game->t($key, $lang);
-                }
-                $data['log'] = $tLog;
-                $event->addDataForConnection($reciever->getId(), 'log', $tMessage);
-            }
-        }
+        I18nHelper::localizeEvent($event);
     }
 }

@@ -9,9 +9,7 @@
 
 
 /*
-- интернационализация
 - сохранение/загрузка
-- игровой лог
 */
 
 
@@ -24,4 +22,3 @@ Plugin.environment = new lexedo.games.Environment(Plugin, {
 		connectionEventListener: 'lexedo.games.Evolution.ConnectionEventListener'
 	}
 });
-

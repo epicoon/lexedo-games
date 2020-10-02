@@ -24,6 +24,7 @@ class EventListener extends ChannelEventListener
             $event->replaceEvent('error', [
                 'message' => 'Wrong game type'
             ]);
+            $event->setReceivers($event->getInitiator());
             return;
         }
 
@@ -31,6 +32,7 @@ class EventListener extends ChannelEventListener
             $event->replaceEvent('error', [
                 'message' => 'Wrong gamers count'
             ]);
+            $event->setReceivers($event->getInitiator());
             return;
         }
 
@@ -55,11 +57,10 @@ class EventListener extends ChannelEventListener
         $token = Math::randHash();
         $channel->addUserWaiting(
             $token,
-            $event->getInitiator()->getId(),
-            $app->getCommonChannel()->getUser($event->getInitiator()->getId())
+            $app->getCommonChannel()->getUser($event->getInitiator())
         );
 
-        $app->getCommonChannel()->addCurrentGame($channel);
+        $app->getCommonChannel()->openWaitedGame($channel);
 
         $subEvent = $event->replaceEvent('gameCreated', [
             'channelKey' => $channelKey,
@@ -67,7 +68,7 @@ class EventListener extends ChannelEventListener
             'gameName' => $eventData['name'],
             'gamersRequired' => $eventData['gamers'],
         ]);
-        $subEvent->setDataForConnection($event->getInitiator()->getId(), ['token' => $token]);
+        $subEvent->setDataForConnection($event->getInitiator(), ['token' => $token]);
     }
 
     /**
@@ -86,6 +87,7 @@ class EventListener extends ChannelEventListener
             $event->replaceEvent('error', [
                 'message' => 'Game not found'
             ]);
+            $event->setReceivers($event->getInitiator());
             return;
         }
 
@@ -93,20 +95,20 @@ class EventListener extends ChannelEventListener
             $event->replaceEvent('error', [
                 'message' => 'Game is stuffed'
             ]);
+            $event->setReceivers($event->getInitiator());
             return;
         }
 
         $token = Math::randHash();
         $channel->addUserWaiting(
             $token,
-            $event->getInitiator()->getId(),
-            $app->getCommonChannel()->getUser($event->getInitiator()->getId())
+            $app->getCommonChannel()->getUser($event->getInitiator())
         );
 
         $subEvent = $event->replaceEvent('gameJoining', [
             'channelKey' => $eventData['key'],
             'token' => $token,
         ]);
-        $subEvent->setReceivers([$event->getInitiator()->getId()]);
+        $subEvent->setReceivers($event->getInitiator());
     }
 }

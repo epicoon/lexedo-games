@@ -48,21 +48,11 @@ abstract class GameChannel extends Channel
 
     /**
      * @param string $token
-     * @param string $commonConnectionId
      * @param ModelInterface $user
      */
-    public function addUserWaiting($token, $commonConnectionId, $user)
+    public function addUserWaiting($token, $user)
     {
-        $this->usersWaitingList[$token] = [$commonConnectionId, $user];
-    }
-
-    /**
-     * @param Connection $connection
-     * @return string
-     */
-    public function getConnectionCommonId($connection)
-    {
-        return $this->userList[$connection->getId()][0] ?? null;
+        $this->usersWaitingList[$token] = $user;
     }
 
     /**
@@ -71,7 +61,7 @@ abstract class GameChannel extends Channel
      */
     public function getUser($connection)
     {
-        return $this->userList[$connection->getId()][1] ?? null;
+        return $this->userList[$connection->getId()] ?? null;
     }
 
     /**
@@ -117,19 +107,12 @@ abstract class GameChannel extends Channel
             $this->app->getCommonChannel()->trigger('game-stuffed', [
                 'channel' => $this->getName(),
             ]);
-            $this->app->getCommonChannel()->delCurrentGame($this);
+            $this->app->getCommonChannel()->closeWaitedGame($this);
             $this->isStuffed = true;
             $this->trigger('game-stuffed');
             $this->beginGame();
         } else {
-            $event = $this->app->getCommonChannel()->createEvent('game-state-change', [
-                'channel' => $this->getName(),
-                'count' => $this->getConnectionsCount(),
-            ]);
-            $event->setDataForConnection($this->getConnectionCommonId($connection), [
-                'follow' => true,
-            ]);
-            $this->app->getCommonChannel()->sendEvent($event);
+            $this->app->getCommonChannel()->onGameNewUser($this, $this->getUser($connection));
         }
     }
 
@@ -138,28 +121,20 @@ abstract class GameChannel extends Channel
      */
     public function onDisconnect(Connection $connection): void
     {
-        unset($this->userList[$connection->getId()]);
-
         parent::onDisconnect($connection);
 
         if ($this->getConnectionsCount() == 0) {
             $this->app->getCommonChannel()->trigger('game-close', [
                 'channel' => $this->getName(),
             ]);
-            $this->app->getCommonChannel()->delCurrentGame($this);
+            $this->app->getCommonChannel()->closeWaitedGame($this);
             $this->app->channels->close($this->getName());
         } else {
-            $event = $this->app->getCommonChannel()->createEvent('game-state-change', [
-                'channel' => $this->getName(),
-                'count' => $this->getConnectionsCount(),
-            ]);
-            $event->setDataForConnection($this->getConnectionCommonId($connection), [
-                'follow' => false,
-            ]);
-            $this->app->getCommonChannel()->sendEvent($event);
-
+            $this->app->getCommonChannel()->onGameLeaveUser($this, $this->getUser($connection));
             $this->onGamerDisconnect($connection->getId());
         }
+
+        unset($this->userList[$connection->getId()]);
     }
 
     /**

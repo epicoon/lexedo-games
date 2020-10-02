@@ -40,6 +40,10 @@ class InteractBehavior extends PropertyBehavior
         if (!$feedReport) {
             return null;
         }
+        
+        $this->getGame()->log('logMsg.propOnFeed', [
+            'property' => $this->property->getName(),
+        ]);
 
         return [
             'feedReport' => $feedReport,

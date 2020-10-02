@@ -253,4 +253,35 @@ class PropertyBank
 
         return $data['symmetric'];
     }
+
+    /**
+     * @param integer $type
+     * @return string
+     */
+    public static function getName($type)
+    {
+        switch ($type) {
+            case self::BIG: return 'prop.Big';
+            case self::FAST: return 'prop.Fast';
+            case self::INTERACT: return 'prop.Interact';
+            case self::SWIM: return 'prop.Swim';
+            case self::HIDE: return 'prop.Hide';
+            case self::MIMICRY: return 'prop.Mimicry';
+            case self::HOLE: return 'prop.Hole';
+            case self::ACUTE: return 'prop.Acute';
+            case self::DROP_TAIL: return 'prop.DropTail';
+            case self::SCAVENGER: return 'prop.Scavenger';
+            case self::PARASITE: return 'prop.Parasite';
+            case self::PIRACY: return 'prop.Piracy';
+            case self::SYMBIOSIS: return 'prop.Symbiosis';
+            case self::COOP: return 'prop.Coop';
+            case self::HIBERNATE: return 'prop.Hibernate';
+            case self::TRAMP: return 'prop.Tramp';
+            case self::VENOM: return 'prop.Venom';
+            case self::CARNIVAL: return 'prop.Carnival';
+            case self::FAT: return 'prop.Fat';
+        }
+
+        return '';
+    }
 }

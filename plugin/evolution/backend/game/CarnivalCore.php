@@ -28,6 +28,11 @@ class CarnivalCore
         $scavenger = $this->findScavenger($carnival);
         if ($scavenger) {
             $foodReport = $scavenger->eat(Game::FOOD_TYPE_BLUE);
+
+            $this->game->log('', [
+                'name' => $scavenger->getGamer()->getUser()->name,
+            ]);
+
             return [
                 'feedReport' => $foodReport,
             ];

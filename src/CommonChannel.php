@@ -13,6 +13,9 @@ use lx\socket\Connection;
  */
 class CommonChannel extends Channel
 {
+    /** @var Connection[] */
+    private $userConnetionMap = [];
+
     /** @var array  */
     private $userList = [];
 
@@ -27,9 +30,9 @@ class CommonChannel extends Channel
      */
     public static function getConfigProtocol()
     {
-        $protocol = parent::getConfigProtocol();
-        $protocol['eventListener'] = EventListener::class;
-        return $protocol;
+        return array_merge(parent::getConfigProtocol(), [
+            'eventListener' => EventListener::class,
+        ]);
     }
 
     /**
@@ -38,17 +41,17 @@ class CommonChannel extends Channel
     public function getData()
     {
         $currentGames = [];
-        /** @var GameChannel $item */
-        foreach ($this->currentGamesList as $item) {
-            $metaData = $item->getMetaData();
+        /** @var GameChannel $game */
+        foreach ($this->currentGamesList as $game) {
+            $metaData = $game->getMetaData();
             $gameData = GamesProvider::getGameData($metaData['type']);
             $currentGames[] = [
-                'channelKey' => $item->getName(),
+                'channelKey' => $game->getName(),
                 'type' => $metaData['type'],
                 'name' => $metaData['name'],
                 'image' => $gameData['image'],
-                'gamersCurrent' => $item->getConnectionsCount(),
-                'gamersRequired' => $item->getNeedleGamersCount(),
+                'gamersCurrent' => $game->getConnectionsCount(),
+                'gamersRequired' => $game->getNeedleGamersCount(),
             ];
         }
 
@@ -62,7 +65,7 @@ class CommonChannel extends Channel
     /**
      * @param GameChannel $gameChannel
      */
-    public function addCurrentGame($gameChannel)
+    public function openWaitedGame($gameChannel)
     {
         $this->currentGamesList[$gameChannel->getName()] = $gameChannel;
     }
@@ -70,7 +73,7 @@ class CommonChannel extends Channel
     /**
      * @param GameChannel $gameChannel
      */
-    public function delCurrentGame($gameChannel)
+    public function closeWaitedGame($gameChannel)
     {
         if (array_key_exists($gameChannel->getName(), $this->currentGamesList)) {
             unset($this->currentGamesList[$gameChannel->getName()]);
@@ -78,21 +81,78 @@ class CommonChannel extends Channel
     }
 
     /**
-     * @param string $connectionId
-     * @return ModelInterface
+     * @param GameChannel $gameChannel
+     * @param ModelInterface $user
      */
-    public function getUser($connectionId)
+    public function onGameNewUser($gameChannel, $user)
     {
-        return $this->userList[$connectionId]['user'] ?? null;
+        $event = $this->createEvent('game-state-change', [
+            'channel' => $gameChannel->getName(),
+            'count' => $gameChannel->getConnectionsCount(),
+        ]);
+
+        $connection = $this->getConnectionForUser($user);
+        $event->setDataForConnection($connection->getId(), [
+            'follow' => true,
+        ]);
+        $this->sendEvent($event);
     }
 
     /**
-     * @param string $connectionId
+     * @param GameChannel $gameChannel
+     * @param ModelInterface $user
+     */
+    public function onGameLeaveUser($gameChannel, $user)
+    {
+        $event = $this->createEvent('game-state-change', [
+            'channel' => $gameChannel->getName(),
+            'count' => $gameChannel->getConnectionsCount(),
+        ]);
+
+        $connection = $this->getConnectionForUser($user);
+        if ($connection) {
+            $event->setDataForConnection($connection->getId(), [
+                'follow' => false,
+            ]);
+        }
+
+        $this->sendEvent($event);
+    }
+
+    /**
+     * @param ModelInterface $user
+     * @return Connection|null
+     */
+    public function getConnectionForUser($user)
+    {
+        if (!array_key_exists($user->id, $this->userConnetionMap)) {
+            return null;
+        }
+
+        return $this->userConnetionMap[$user->id];
+    }
+
+    /**
+     * @param Connection $connection
+     * @return ModelInterface|null
+     */
+    public function getUser($connection)
+    {
+        return $this->userList[$connection->getId()]['user'] ?? null;
+    }
+
+    /**
+     * @param ModelInterface $user
      * @return array
      */
-    public function getUserCookie($connectionId)
+    public function getUserCookie($user)
     {
-        return $this->userList[$connectionId]['cookie'] ?? null;
+        $connection = $this->getConnectionForUser($user);
+        if (!$connection) {
+            return [];
+        }
+
+        return $this->userList[$connection->getId()]['cookie'] ?? [];
     }
 
     /**
@@ -113,11 +173,10 @@ class CommonChannel extends Channel
             return false;
         }
 
-        $cookie = $this->parseCookie($authData['cookie'] ?? '');
-
+        $this->userConnetionMap[$user->id] = $connection;
         $this->userList[$connection->getId()] = [
             'user' => $user,
-            'cookie' => $cookie,
+            'cookie' => $this->parseCookie($authData['cookie'] ?? ''),
         ];
         return true;
     }
@@ -127,6 +186,9 @@ class CommonChannel extends Channel
      */
     public function onDisconnect(Connection $connection): void
     {
+        $user = $this->getUser($connection);
+
+        unset($this->userConnetionMap[$user->id]);
         unset($this->userList[$connection->getId()]);
 
         parent::onDisconnect($connection);

@@ -33,6 +33,10 @@ class CoopBehavior extends PropertyBehavior
             return null;
         }
 
+        $this->getGame()->log('logMsg.propOnFeed', [
+            'property' => $this->property->getName(),
+        ]);
+
         return [
             'feedReport' => $feedReport,
             'pareState' => [

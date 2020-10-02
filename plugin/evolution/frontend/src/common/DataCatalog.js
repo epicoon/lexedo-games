@@ -28,7 +28,7 @@ class DataCatalog #lx:namespace lexedo.games.Evolution {
 	}
 
 	getPropertyPictureMax(code) {
-		return this.properties[code].imgBase + '.jpg';
+		return this.properties[code].imgBase + '.png';
 	}
 
 	getPropertyPictureMin(code) {
@@ -46,19 +46,10 @@ class DataCatalog #lx:namespace lexedo.games.Evolution {
 	}
 
 	getActiveCreaturePicrute() {
-		return '_activeCreature.png';
+		return '_creatureActive.png';
 	}
 
 	getAttakedCreaturePicrute() {
-		return '_attakedCreature.png';
+		return '_creatureAttaked.png';
 	}
-
-	getPoisonedCreaturePicrute() {
-		return 'tools/venom.png';
-	}
-
-	getDeadCreaturePicrute() {
-		return 'tools/scull.png';
-	}
-
 }

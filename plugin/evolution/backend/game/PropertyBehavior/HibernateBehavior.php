@@ -15,7 +15,8 @@ class HibernateBehavior extends PropertyBehavior
      */
     public function hasActivity()
     {
-        return $this->getProperty()->isAvailable()
+        return !$this->getGame()->isLastTurn()
+            && $this->getProperty()->isAvailable()
             && $this->getCreature()->isUnderfed()
         ;
     }
@@ -25,7 +26,8 @@ class HibernateBehavior extends PropertyBehavior
      */
     public function hasPotentialActivity()
     {
-        return $this->getProperty()->isAvailable()
+        return !$this->getGame()->isLastTurn()
+            && $this->getProperty()->isAvailable()
             && $this->getCreature()->isUnderfed()
         ;
     }

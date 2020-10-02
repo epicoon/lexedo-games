@@ -11,6 +11,14 @@ use lexedo\games\evolution\backend\game\Creature;
 class MimicryBehavior extends PropertyBehavior
 {
     /**
+     * @return string
+     */
+    public function getLogKey()
+    {
+        return 'logMsg.useMimicry';
+    }
+
+    /**
      * @return array|false
      * @param array $data
      */

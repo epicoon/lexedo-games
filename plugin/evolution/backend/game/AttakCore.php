@@ -101,23 +101,27 @@ class AttakCore
     public function runAttak($carnival, $prey)
     {
         $this->hold = null;
+        
+        $this->game->log('logMsg.attak', [
+            'carnivalGamerName' => $carnival->getGamer()->getUser()->name,
+            'preyGamerName' => $prey->getGamer()->getUser()->name,
+        ]);
 
         $carnival->getGamer()->onCreatureAttak($carnival);
 
         $preyGamer = $prey->getGamer();
         $result = [
-            'log' => [],
             'preyGamer' => $preyGamer->getId(),
         ];
 
         if ($prey->hasProperty(PropertyBank::FAST)) {
             $success = Math::gamble(0.5);
             if ($success) {
-                $result['log'][] = 'logMsg.creatureRanAway';
+                $this->game->log('logMsg.creatureRanAway');
                 $result['result'] = Constants::ATTAK_RESULT_FAIL;
                 return $result;
             } else {
-                $result['log'][] = 'logMsg.creatureRanAwayFail';
+                $this->game->log('logMsg.creatureRanAwayFail');
             }
         }
         
@@ -133,6 +137,11 @@ class AttakCore
                 'carnival' => $carnival->getId(),
                 'prey' => $prey->getId(),
             ]);
+
+            $this->game->log('logMsg.waitingForDefens', [
+                'name' => $prey->getGamer()->getUser()->name
+            ]);
+
             return $result;
         }
 
@@ -153,6 +162,10 @@ class AttakCore
         ]);
 
         if ($poisoned) {
+            $this->game->log('logMsg.poisoned', [
+                'name' => $carnival->getGamer()->getUser()->name,
+            ]);
+            
             $carnival->poison();
             $result['poisoned'] = true;
         }

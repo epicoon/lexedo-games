@@ -154,7 +154,8 @@ class Property #lx:namespace lexedo.games.Evolution {
 	}
 
 	setHighlighted(val) {
-		this.statusBox.parent.toggleClassOnCondition(val, 'ev-highlight');
+		// this.statusBox.parent.toggleClassOnCondition(!val, 'ev-prop');
+		this.statusBox.parent.toggleClassOnCondition(val, 'ev-prop-highlight');
 	}
 
 	setFeedMode(bool) {

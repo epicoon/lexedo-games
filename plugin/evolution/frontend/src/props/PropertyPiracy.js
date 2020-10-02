@@ -26,8 +26,6 @@ class PropertyPiracy extends lexedo.games.Evolution.Property #lx:namespace lexed
 
 		targetProperty.loseFood();
 		this.getGame().applyFeedReport(data.feedReport);
-
-		this.getGame().log(#lx:i18n(logMsg.piracyUsed, {name: this.getGamer().getName()}));
 	}
 
 	/**

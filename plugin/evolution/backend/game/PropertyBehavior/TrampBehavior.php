@@ -19,6 +19,14 @@ class TrampBehavior extends PropertyBehavior
     }
 
     /**
+     * @return string
+     */
+    public function getLogKey()
+    {
+        return 'logMsg.useTramp';
+    }
+
+    /**
      * @return array|false
      * @param array $data
      */

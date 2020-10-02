@@ -2,6 +2,7 @@
 
 namespace lexedo\games\evolution\backend\game;
 
+use lx\ModelInterface;
 use lx\socket\Connection;
 
 /**
@@ -67,6 +68,14 @@ class Gamer
     public function getId()
     {
         return $this->connection->getId();
+    }
+
+    /**
+     * @return ModelInterface
+     */
+    public function getUser()
+    {
+        return $this->getGame()->getChannel()->getUser($this->connection);
     }
 
     /**

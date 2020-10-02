@@ -22,8 +22,6 @@ class PropertyMimicry extends lexedo.games.Evolution.Property #lx:namespace lexe
 	onActionProcess(data) {
 		this.getGame().mode.reset();
 
-		this.getGame().log(#lx:i18n(logMsg.mimicryUsed, {name: this.getGamer().getName()}));
-
 		this.getEnvironment().attakCore.processAttakResult(
 			this.getEnvironment().attakCore.getCarnival(),
 			data

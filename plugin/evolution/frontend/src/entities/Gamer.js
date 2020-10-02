@@ -207,6 +207,7 @@ function __bindHand(self) {
 		itemBox: lx.Box,
 		itemRender: function(box, model) {
 			box.width(box.height('px')*0.618+'px');
+			box.addClass('ev-cart');
 
 			box.__cart = model;
 			box.__cart.setBox(box);
@@ -291,6 +292,8 @@ function __setBinds(self) {
 				items: creature.getProperties(),
 				itemRender: function(cell, property) {
 					cell.picture(property.getPicture());
+					cell.addClass('ev-prop');
+
 					let color = property.getColor();
 					if (color) cell.border({
 						width: 5,

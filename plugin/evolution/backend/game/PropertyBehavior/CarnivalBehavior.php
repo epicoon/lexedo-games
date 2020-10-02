@@ -30,6 +30,14 @@ class CarnivalBehavior extends PropertyBehavior
     }
 
     /**
+     * @return string
+     */
+    public function getLogKey()
+    {
+        return false;
+    }
+
+    /**
      * @return array|false
      * @param array $data
      */

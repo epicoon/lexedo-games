@@ -29,11 +29,6 @@ class PropertyCarnival extends lexedo.games.Evolution.Property #lx:namespace lex
 
 		let preyGamer = this.getGame().getGamerById(data.preyGamer);
 
-		this.getGame().log(#lx:i18n(logMsg.carnivalUsed, {
-			carnivalGamerName: this.getGamer().getName(),
-			preyGamerName: preyGamer.getName()
-		}));
-
 		this.getGamer().canGetFood = false;
 		this.getEnvironment().attakCore.processAttakResult(this.getCreature(), data);
 	}

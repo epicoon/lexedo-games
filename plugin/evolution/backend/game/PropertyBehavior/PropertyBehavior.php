@@ -132,6 +132,14 @@ class PropertyBehavior
     }
 
     /**
+     * @return string
+     */
+    public function getLogKey()
+    {
+        return 'logMsg.useProp';
+    }
+
+    /**
      * @return array|false
      * @param array $data
      */

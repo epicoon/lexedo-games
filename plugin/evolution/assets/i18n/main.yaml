@@ -1,4 +1,24 @@
 en-EN:
+  prop.Big: big
+  prop.Fast: fast
+  prop.Interact: interaction
+  prop.Swim: swimming
+  prop.Hide: hidden
+  prop.Mimicry: mimicry
+  prop.Hole: burrow
+  prop.Acute: acute eyesight
+  prop.DropTail: dropping tail
+  prop.Scavenger: scavenger
+  prop.Parasite: parasite
+  prop.Piracy: piracy
+  prop.Symbiosis: symbiosis
+  prop.Coop: cooperation
+  prop.Hibernate: hibernation
+  prop.Tramp: tramp
+  prop.Venom: venomous
+  prop.Carnival: carnivorous
+  prop.Fat: fat tissue
+
   revenge: Revenge
   close: Close
   gamers: Gamers
@@ -32,16 +52,25 @@ en-EN:
   tost.CreatureInHole: Target creature is burrowing and already  Цель - норное существо и уже fed, so it can not be attaked
   tost.CreatureSymbiont: Target is defensed by symbiont
 
-  logMsg.trampUsed: Gamer ${name} has used property "trump" and destroed one of food from food storage
-  logMsg.piracyUsed: Gamer ${name} has used property "piracy"
-  logMsg.mimicryUsed: Gamer ${name} has used property "mimicry" and redirected attak to another creature
-  logMsg.hibernateUsed: Gamer ${name} has used property "hibernate"
-  logMsg.fatUsed: Gamer ${name} has used property "fat tissue"
-  logMsg.dropTailUsed: Gamer ${name} has used property "drop tail"
-  logMsg.carnivalUsed: Gamer ${carnivalGamerName} has attaked creature of gamer ${preyGamerName}
+  logMsg.begin: The game has began.
+  logMsg.growBegin: Growing phase has started.
+  logMsg.newCreature: Gamer ${name} has created a new creature.
+  logMsg.newProperty: Gamer ${name} has added a new property "^{property}" to a creature.
+  logMsg.feedBegin: "Feed phase has started. Food count for the phase: ${food}."
+  logMsg.feed: Gamer ${name} has fed his creture.
+  logMsg.propOnFeed: While feeding a creture it has worked a property "^{property}".
   logMsg.waitingForDefens: Attaked creature of gamer ${name} has defensive properties. Waiting for his decision.
   logMsg.creatureRanAway: Creature has run away. Carnival attak has failed.
   logMsg.creatureRanAwayFail: Creature tried to run away but failed.
+  logMsg.scavenger: A scavenger of gamer ${name} has received food after carnival attak.
+  logMsg.poisoned: The carnival of gamer ${name} has attaked a venomous creature, so it is poisoned now and will die after feed phase.
+  logMsg.useProp: Gamer ${name} has used property "^{property}".
+  logMsg.useMimicry: Gamer ${name} has used property "^{property}" and redirected attak to another creature.
+  logMsg.useTramp: Gamer ${name} has used property "^{property}" and destroed one of food from food storage.
+  logMsg.attak: Carnival of gamer ${carnivalGamerName} has attaked a creature of gamer ${preyGamerName}.
+  logMsg.feedEnd: Feed phase has ended. The extinction is coming.
+  logMsg.extinction: The gamer ${name} has lost ${deadCreatures} creatures, ${droppedCarts} carts were dropped.
+  logMsg.lastTurn: Last turn has started.
 
   error.CartNotFound: Cart not found
   error.WrongPropertyForCart: Cart hasn't this property
@@ -66,6 +95,26 @@ en-EN:
   error.NotYourTurn: It is not your turn
 
 ru-RU:
+  prop.Big: большое
+  prop.Fast: быстрое
+  prop.Interact: взаимодействие
+  prop.Swim: водное
+  prop.Hide: камуфляж
+  prop.Mimicry: мимикрия
+  prop.Hole: норное
+  prop.Acute: острое зрение
+  prop.DropTail: отбрасывание хвоста
+  prop.Scavenger: падальщик
+  prop.Parasite: паразит
+  prop.Piracy: пиратство
+  prop.Symbiosis: симбиоз
+  prop.Coop: кооперация
+  prop.Hibernate: спячка
+  prop.Tramp: топотун
+  prop.Venom: ядовитое
+  prop.Carnival: хищное
+  prop.Fat: жировой запас
+
   revenge: Реванш
   close: Закрыть
   gamers: Игроки
@@ -99,16 +148,25 @@ ru-RU:
   tost.CreatureInHole: Цель - норное существо и уже накормлено, не может быть атаковано
   tost.CreatureSymbiont: Цель защищена симбионтом
 
-  logMsg.trampUsed: Игрок ${name} воспользовался свойством "топотун" и уничтожил единицу еды из кормовой базы
-  logMsg.piracyUsed: Игрок ${name} воспользовался свойством "пиратство"
-  logMsg.mimicryUsed: Игрок ${name} при помощи мимикрии перенаправил атаку на другое существо
-  logMsg.hibernateUsed: Игрок ${name} воспользовался свойством "спячка"
-  logMsg.fatUsed: Игрок ${name} воспользовался свойством "жировой запас"
-  logMsg.dropTailUsed: Игрок ${name} воспользовался свойством "отбрасывание хвоста"
-  logMsg.carnivalUsed: Игрок ${carnivalGamerName} атаковал существо игрока ${preyGamerName}
+  logMsg.begin: Игра началась.
+  logMsg.growBegin: Начинается фаза развития.
+  logMsg.newCreature: Игрок ${name} создал новое существо
+  logMsg.newProperty: Игрок ${name} добавил существу новое свойство "^{property}"
+  logMsg.feedBegin: "Началась фаза питания. Количество еды: ${food}"
+  logMsg.feed: Игрок ${name} покормил своё существо.
+  logMsg.propOnFeed: При кормлении существа, сработало свойство "^{property}".
   logMsg.waitingForDefens: Атакованное существо игрока ${name} имеет защитные свойства. Нужно подождать, когда он их применит.
   logMsg.creatureRanAway: Существо убежало, атака хищника не удалась.
   logMsg.creatureRanAwayFail: Существо пыталось убежать, но не смогло.
+  logMsg.scavenger: Падальщик игрока ${name} получил пищу после атаки хищника.
+  logMsg.poisoned: Хищник игрока ${name} атаковал ядовитое существо и теперь отравлен. Хищник умрёт, когда завершится фаза питания.
+  logMsg.useProp: Игрок ${name} использовал свойство "^{property}".
+  logMsg.useMimicry: Игрок ${name} использовал свойство "^{property}" и перенаправил атаку на другое существо.
+  logMsg.useTramp: Игрок ${name} использовал свойство "^{property}" и уничтожил единицу еды из кормовой базы.
+  logMsg.attak: Хищник игрока ${carnivalGamerName} атаковал существо игрока ${preyGamerName}.
+  logMsg.feedEnd: Фаза питания завершена. Наступает вымирание.
+  logMsg.extinction: "Игрок ${name} потерял существ: ${deadCreatures}, сброшено карт: ${droppedCarts}."
+  logMsg.lastTurn: Начался последний ход.
 
   error.CartNotFound: Карта не найдена
   error.WrongPropertyForCart: Карта не имеет этого свойства
