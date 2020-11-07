@@ -10,5 +10,9 @@
     "lexedo.games.ChessOnline": {
         "name": "lexedo.games.ChessOnline",
         "path": "plugin\/chesslike\/frontend\/modules\/ChessOnline.js"
+    },
+    "lexedo.games.HiveLocal": {
+        "name": "lexedo.games.HiveLocal",
+        "path": "plugin\/hive\/frontend\/HiveLocal.js"
     }
 }
