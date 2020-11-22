@@ -12,8 +12,9 @@ jsBootstrap: frontend/_bootstrap.js
 images: @web/images/games
 css: assets/css
 
-#cacheType: smart
-cacheType: build
+cacheType: smart
+#cacheType: build
 
 respondents:
   Respondent: backend\Respondent
+св
