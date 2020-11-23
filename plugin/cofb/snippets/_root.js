@@ -33,7 +33,7 @@ decorateBox(new lx.Box({
 
 
 // Меню создания игры
-Snippet.addSnippet('newGameMenu', {geom:[1, 6, '360px', '300px']});
+Snippet.addSnippet('newGameMenu', {geom:[1, 6, '400px', '400px']});
 
 
 // Подсказка что делать в данный момент
