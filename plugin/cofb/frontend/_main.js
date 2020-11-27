@@ -73,7 +73,7 @@ Plugin->lblHint.text('Начните новую игру');
 
 
 // lx.on('keydown', function() {
-// 	if (lx.pressedKey == 13) Plugin->floatPoints.start(['rthrthrt ergegre ytyj']);
+// 	Plugin->floatPoints.start(['rthrthrt ergegre ytyj']);
 // });
 
 
