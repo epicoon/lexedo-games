@@ -40,11 +40,14 @@ class CommonChannel extends Channel
      */
     public function getData()
     {
+        /** @var GamesServer $app */
+        $app = lx::$app;
+
         $currentGames = [];
         /** @var GameChannel $game */
         foreach ($this->currentGamesList as $game) {
             $metaData = $game->getMetaData();
-            $gameData = GamesProvider::getGameData($metaData['type']);
+            $gameData = $app->getService('lexedo/games')->gamesProvider->getGameData($metaData['type']);
             $currentGames[] = [
                 'channelKey' => $game->getName(),
                 'type' => $metaData['type'],
@@ -56,7 +59,7 @@ class CommonChannel extends Channel
         }
 
         return [
-            'games' => GamesProvider::getFullData(),
+            'games' => $app->getService('lexedo/games')->gamesProvider->getFullData(),
             'messages' => $this->messageLog,
             'currentGames' => $currentGames,
         ];

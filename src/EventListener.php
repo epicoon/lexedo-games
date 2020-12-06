@@ -18,8 +18,11 @@ class EventListener extends ChannelEventListener
      */
     public function onNewGame($event)
     {
+        /** @var GamesServer $app */
+        $app = lx::$app;
+
         $eventData = $event->getData();
-        $gameData = GamesProvider::getGameData($eventData['type']);
+        $gameData = $app->getService('lexedo/games')->gamesProvider->getGameData($eventData['type']);
         if (!$gameData) {
             $event->replaceEvent('error', [
                 'message' => 'Wrong game type'
@@ -37,10 +40,8 @@ class EventListener extends ChannelEventListener
         }
 
         $channelKey = Math::randHash();
-        $channelClass = GamesProvider::getGameChannelClass($eventData['type']);
+        $channelClass = $app->getService('lexedo/games')->gamesProvider->getGameChannelClass($eventData['type']);
 
-        /** @var GamesServer $app */
-        $app = lx::$app;
         /** @var GameChannel $channel */
         $channel = $app->channels->create($channelKey, $channelClass, [
             'metaData' => [

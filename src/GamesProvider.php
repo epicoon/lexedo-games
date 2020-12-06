@@ -4,38 +4,50 @@ namespace lexedo\games;
 
 use lexedo\games\chesslike\backend\ChessChannel;
 use lexedo\games\evolution\backend\EvolutionChannel;
+use lx\FusionComponentInterface;
+use lx\FusionComponentTrait;
+use lx\ObjectTrait;
 use lx\Plugin;
 
 /**
  * Class GamesProvider
  * @package lexedo\games
  */
-class GamesProvider
+class GamesProvider implements FusionComponentInterface
 {
-    private static $games = [
-        'chess' => [
-            'channel' => ChessChannel::class,
-            'plugin' => 'lexedo/games:chesslike',
-            'image' => 'chess.png',
-            'minGamers' => 2,
-            'maxGamers' => 2,
-        ],
-        'evolution' => [
-            'channel' => EvolutionChannel::class,
-            'plugin' => 'lexedo/games:evolution',
-            'image' => 'evolution.png',
-            'minGamers' => 2,
-            'maxGamers' => 2,
-        ],
-    ];
+    use ObjectTrait;
+    use FusionComponentTrait;
 
     /**
      * @return array
      */
-    public static function getFullData()
+    protected function getGames()
+    {
+        return [
+            'chess' => [
+                'channel' => ChessChannel::class,
+                'plugin' => 'lexedo/games:chesslike',
+                'image' => 'chess.png',
+                'minGamers' => 2,
+                'maxGamers' => 2,
+            ],
+            'evolution' => [
+                'channel' => EvolutionChannel::class,
+                'plugin' => 'lexedo/games:evolution',
+                'image' => 'evolution.png',
+                'minGamers' => 2,
+                'maxGamers' => 2,
+            ],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getFullData()
     {
         $result = [];
-        foreach (self::$games as $name => $game) {
+        foreach ($this->getGames() as $name => $game) {
             $result[] = [
                 'name' => $name,
                 'image' => $game['image'],
@@ -50,13 +62,13 @@ class GamesProvider
      * @param $name
      * @return array|null
      */
-    public static function getGameData($name)
+    public function getGameData($name)
     {
-        if (!array_key_exists($name, self::$games)) {
+        if (!array_key_exists($name, $this->getGames())) {
             return null;
         }
 
-        $data = self::$games[$name];
+        $data = $this->getGames()[$name];
         return [
             'name' => $name,
             'image' => $data['image'],
@@ -69,26 +81,26 @@ class GamesProvider
      * @param string $name
      * @return string|null
      */
-    public static function getGameChannelClass($name)
+    public function getGameChannelClass($name)
     {
-        if (!array_key_exists($name, self::$games)) {
+        if (!array_key_exists($name, $this->getGames())) {
             return null;
         }
 
-        return self::$games[$name]['channel'] ?? null;
+        return $this->getGames()[$name]['channel'] ?? null;
     }
 
     /**
      * @param string $name
      * @return Plugin|null
      */
-    public static function getGamePlugin($name)
+    public function getGamePlugin($name)
     {
-        if (!array_key_exists($name, self::$games)) {
+        if (!array_key_exists($name, $this->getGames())) {
             return null;
         }
 
-        $pluginName = self::$games[$name]['plugin'] ?? null;
+        $pluginName = $this->getGames()[$name]['plugin'] ?? null;
         if (!$pluginName) {
             return null;
         }

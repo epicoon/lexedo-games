@@ -21,6 +21,9 @@ service:
   plugins: plugin
   models: model
 
+  components:
+    gamesProvider: lexedo\games\GamesProvider
+
   processes:
     games_server:
       class: lexedo\games\GamesServer
