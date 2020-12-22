@@ -26,6 +26,7 @@ class SocketEventListener extends lx.socket.EventListener {
 
 		if (!event.isFromMe() || !this._plugin.core.__inConnecting) return;
 
+		this._plugin.core.__inConnecting.protocol = this._plugin.core.connectData.protocol;
 		this._plugin.core.__inConnecting.port = this._plugin.core.connectData.port;
 		this._plugin.core.__inConnecting.channelKey = data.channelKey;
 		this._plugin.core.__inConnecting.token = data.token;
@@ -85,6 +86,7 @@ class SocketEventListener extends lx.socket.EventListener {
 		}
 
 		var game = arr[0];
+		this._plugin.core.__inConnecting.protocol = this._plugin.core.connectData.protocol;
 		this._plugin.core.__inConnecting.port = this._plugin.core.connectData.port;
 		this._plugin.core.__inConnecting.channelKey = data.channelKey;
 		this._plugin.core.__inConnecting.token = data.token;

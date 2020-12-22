@@ -26,7 +26,7 @@ class WebSocketClient extends lx.socket.WebSocketClient {
 		if (listener.onError)
 			superConfig.onError = listener.onError;
 
-		super(config.port, config.channel, superConfig);
+		super(config.protocol, config.port, config.channel, superConfig);
 
 		this._environment = env;
 	}

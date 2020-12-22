@@ -13,6 +13,7 @@ class Respondent extends \lx\Respondent
     public function getConnectData()
     {
         return [
+            'protocol' => 'ws',
             'port' => 8003,
             'channelName' => 'common',
         ];

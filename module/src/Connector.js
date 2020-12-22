@@ -44,6 +44,7 @@ class Connector {
 
 	connect() {
 		var socket = new WebSocketClient({
+			protocol: this._connectData.protocol,
 			port: this._connectData.port,
 			channel: this._connectData.channelKey,
 			env: this._environment,

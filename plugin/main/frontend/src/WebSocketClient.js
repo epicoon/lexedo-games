@@ -2,9 +2,10 @@
 
 class WebSocketClient extends lx.socket.WebSocketClient {
 	constructor(plugin) {
+		let protocol = plugin.core.connectData.protocol;
 		let port = plugin.core.connectData.port;
 		let channelName = plugin.core.connectData.channelName;
-		super(port, channelName, {
+		super(protocol, port, channelName, {
 			onChannelEvent: plugin.core.socketEventListener,
 			onConnected:   __handler_onConnected,
 			onMessage:     __handler_onMessage,
