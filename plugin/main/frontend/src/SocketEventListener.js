@@ -28,6 +28,7 @@ class SocketEventListener extends lx.socket.EventListener {
 
 		this._plugin.core.__inConnecting.protocol = this._plugin.core.connectData.protocol;
 		this._plugin.core.__inConnecting.port = this._plugin.core.connectData.port;
+		this._plugin.core.__inConnecting.url = this._plugin.core.connectData.url;
 		this._plugin.core.__inConnecting.channelKey = data.channelKey;
 		this._plugin.core.__inConnecting.token = data.token;
 		this._plugin.core.__inConnecting.userChannelData = {name: lx.User.name};
@@ -88,6 +89,7 @@ class SocketEventListener extends lx.socket.EventListener {
 		var game = arr[0];
 		this._plugin.core.__inConnecting.protocol = this._plugin.core.connectData.protocol;
 		this._plugin.core.__inConnecting.port = this._plugin.core.connectData.port;
+		this._plugin.core.__inConnecting.url = this._plugin.core.connectData.url;
 		this._plugin.core.__inConnecting.channelKey = data.channelKey;
 		this._plugin.core.__inConnecting.token = data.token;
 		this._plugin.core.__inConnecting.userChannelData = {name: lx.User.name};

@@ -46,6 +46,7 @@ class Connector {
 		var socket = new WebSocketClient({
 			protocol: this._connectData.protocol,
 			port: this._connectData.port,
+			url: this._connectData.url,
 			channel: this._connectData.channelKey,
 			env: this._environment,
 			connectionEventListener: this._gameConfig.connectionEventListener,
