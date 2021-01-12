@@ -12,7 +12,7 @@ class Creature
 
     private static $idCounter = 0;
 
-    /** @var integer */
+    /** @var int */
     private $id;
 
     /** @var Gamer */
@@ -21,7 +21,7 @@ class Creature
     /** @var Property[] */
     private $properties;
 
-    /** @var integer */
+    /** @var int */
     private $currentFood;
 
     /** @var bool */
@@ -102,7 +102,7 @@ class Creature
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return Property[]
      */
     public function getPropertiesByType($type)
@@ -117,7 +117,7 @@ class Creature
     }
 
     /**
-     * @param integer $id
+     * @param int $id
      * @return Property|null
      */
     public function getPropertyById($id)
@@ -126,7 +126,7 @@ class Creature
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return bool
      */
     public function canAttachProperty($type)
@@ -148,7 +148,7 @@ class Creature
 
     /**
      * @param Creature $creature
-     * @param integer $propertyType
+     * @param int $propertyType
      */
     public function hasRelation($creature, $propertyType)
     {
@@ -163,7 +163,7 @@ class Creature
     }
 
     /**
-     * @param integer $propertyType
+     * @param int $propertyType
      * @return Property
      */
     public function addProperty($propertyType)
@@ -291,14 +291,14 @@ class Creature
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getNeedFood() {
         return $this->getTotalNeedFood() - $this->getEatenFood();
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getTotalNeedFood()
     {
@@ -311,7 +311,7 @@ class Creature
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getEatenFood()
     {
@@ -336,7 +336,7 @@ class Creature
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getCurrentFat()
     {
@@ -351,7 +351,7 @@ class Creature
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getTotalFat()
     {
@@ -489,7 +489,7 @@ class Creature
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function calcScore()
     {

@@ -32,7 +32,7 @@ class Gamer
     /** @var Creature[] */
     private $creatures;
 
-    /** @var integer */
+    /** @var int */
     private $droppingCounter;
 
     /**
@@ -156,7 +156,7 @@ class Gamer
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getCartsCount()
     {
@@ -173,7 +173,7 @@ class Gamer
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getHandCartsCount()
     {
@@ -181,7 +181,7 @@ class Gamer
     }
 
     /**
-     * @param integer $count
+     * @param int $count
      */
     public function incDroppingCounter($count = 1)
     {
@@ -197,7 +197,7 @@ class Gamer
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getCreaturesCount()
     {
@@ -416,7 +416,7 @@ class Gamer
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function calcScore()
     {

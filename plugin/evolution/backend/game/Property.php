@@ -12,22 +12,22 @@ class Property
 {
     private static $idCounter = 0;
 
-    /** @var integer */
+    /** @var int */
     private $id;
 
     /** @var Creature */
     private $creature;
 
-    /** @var integer */
+    /** @var int */
     private $type;
 
-    /** @var integer */
+    /** @var int */
     private $currentFood;
 
     /** @var bool */
     private $isPaused;
 
-    /** @var integer */
+    /** @var int */
     private $isStopped;
 
     /** @var PropertyBehavior */
@@ -168,7 +168,7 @@ class Property
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return bool
      */
     public function is($type)
@@ -233,7 +233,7 @@ class Property
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getEatenFood()
     {
@@ -364,7 +364,7 @@ class Property
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function calcScore()
     {

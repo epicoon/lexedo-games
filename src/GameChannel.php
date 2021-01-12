@@ -65,7 +65,7 @@ abstract class GameChannel extends Channel
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getNeedleGamersCount()
     {

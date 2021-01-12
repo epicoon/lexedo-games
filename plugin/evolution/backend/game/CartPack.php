@@ -10,7 +10,7 @@ use lx\Math;
  */
 class CartPack
 {
-    /** @var integer */
+    /** @var int */
     private $index;
 
     /** @var array */
@@ -76,7 +76,7 @@ class CartPack
     }
 
     /**
-     * @param integer $count
+     * @param int $count
      * @return array
      */
     public function handOver($count)

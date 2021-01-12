@@ -40,7 +40,7 @@ class Game
     /** @var array */
     private $turnSequence;
 
-    /** @var integer */
+    /** @var int */
     private $activeGamerIndex;
 
     /** @var string */
@@ -49,7 +49,7 @@ class Game
     /** @var AttakCore */
     private $attakCore;
 
-    /** @var integer */
+    /** @var int */
     private $foodCount;
 
     /** @var bool */
@@ -252,7 +252,7 @@ class Game
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getGamersCount()
     {
@@ -326,7 +326,7 @@ class Game
     }
 
     /**
-     * @param integer $index
+     * @param int $index
      * @return Gamer
      */
     public function getGamerByIndex($index)

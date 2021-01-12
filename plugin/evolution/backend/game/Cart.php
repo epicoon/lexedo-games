@@ -10,7 +10,7 @@ class Cart
 {
     private static $idCounter = 0;
 
-    /** @var integer */
+    /** @var int */
     private $id;
 
     /** @var array */
@@ -35,7 +35,7 @@ class Cart
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return bool
      */
     public function hasProperty($type)

@@ -174,7 +174,7 @@ class PropertyBank
     ];
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return bool
      */
     public static function isPare($type)
@@ -183,7 +183,7 @@ class PropertyBank
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return bool
      */
     public static function isHungry($type)
@@ -192,7 +192,7 @@ class PropertyBank
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return bool
      */
     public static function isActiveDefense($type)
@@ -201,7 +201,7 @@ class PropertyBank
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return bool
      */
     public static function isFriendly($type)
@@ -210,7 +210,7 @@ class PropertyBank
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return bool
      */
     public static function isSingle($type)
@@ -219,7 +219,7 @@ class PropertyBank
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return bool
      */
     public static function isActive($type)
@@ -228,8 +228,8 @@ class PropertyBank
     }
 
     /**
-     * @param integer $type
-     * @return integer
+     * @param int $type
+     * @return int
      */
     public static function getNeedFood($type)
     {
@@ -237,7 +237,7 @@ class PropertyBank
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return bool|null
      */
     public static function isSymmetric($type)
@@ -255,7 +255,7 @@ class PropertyBank
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return string
      */
     public static function getName($type)
