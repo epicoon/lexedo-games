@@ -9,7 +9,7 @@ class Figure #lx:namespace tetris {
 
 	static get map() {
 		if (!this.__map) {
-			this.__map = new lx.Dict(#lx:load mapList);
+			this.__map = new lx.Dict(#lx:load(mapList));
 		}
 
 		return this.__map;

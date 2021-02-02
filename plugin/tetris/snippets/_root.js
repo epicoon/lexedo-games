@@ -13,7 +13,7 @@ let rows = 20;
 
 let tetrisPart = new lx.Box({ geom: [0, 0, 50, 100] });
 let leadersPart = new lx.ActiveBox({ geom: [55, 20, 30, 50], header:'Leaders' });
-leadersPart.border();
+// leadersPart.border();
 leadersPart.setSnippet('leaders');
 
 let tetris = new lx.Box({key:'tetris', parent:tetrisPart, geom:true});
