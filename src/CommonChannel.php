@@ -25,10 +25,7 @@ class CommonChannel extends Channel
     /** @var array  */
     private $currentGamesList = [];
 
-    /**
-     * @return array
-     */
-    public static function getConfigProtocol()
+    public static function getConfigProtocol(): array
     {
         return array_merge(parent::getConfigProtocol(), [
             'eventListener' => EventListener::class,
