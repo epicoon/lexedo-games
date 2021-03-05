@@ -424,7 +424,7 @@ class Game
         $feedReport = $creature->eat(self::FOOD_TYPE_RED);
 
         $this->log('logMsg.feed', [
-            'name' => $creature->getGamer()->getUser()->name,
+            'name' => $creature->getGamer()->getUser()->login,
         ]);
 
         return $feedReport;
@@ -454,7 +454,7 @@ class Game
             $gamerReport = $gamer->runExtinction();
 
             $this->log('logMsg.extinction', [
-                'name' => $gamer->getUser()->name,
+                'name' => $gamer->getUser()->login,
                 'deadCreatures' => count($gamerReport['creatures']),
                 'droppedCarts' => $gamerReport['dropping'],
             ]);

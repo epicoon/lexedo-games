@@ -103,8 +103,8 @@ class AttakCore
         $this->hold = null;
         
         $this->game->log('logMsg.attak', [
-            'carnivalGamerName' => $carnival->getGamer()->getUser()->name,
-            'preyGamerName' => $prey->getGamer()->getUser()->name,
+            'carnivalGamerName' => $carnival->getGamer()->getUser()->login,
+            'preyGamerName' => $prey->getGamer()->getUser()->login,
         ]);
 
         $carnival->getGamer()->onCreatureAttak($carnival);
@@ -139,7 +139,7 @@ class AttakCore
             ]);
 
             $this->game->log('logMsg.waitingForDefens', [
-                'name' => $prey->getGamer()->getUser()->name
+                'name' => $prey->getGamer()->getUser()->login
             ]);
 
             return $result;
@@ -163,7 +163,7 @@ class AttakCore
 
         if ($poisoned) {
             $this->game->log('logMsg.poisoned', [
-                'name' => $carnival->getGamer()->getUser()->name,
+                'name' => $carnival->getGamer()->getUser()->login,
             ]);
             
             $carnival->poison();

@@ -31,7 +31,7 @@ class SocketEventListener extends lx.socket.EventListener {
 		this._plugin.core.__inConnecting.url = this._plugin.core.connectData.url;
 		this._plugin.core.__inConnecting.channelKey = data.channelKey;
 		this._plugin.core.__inConnecting.token = data.token;
-		this._plugin.core.__inConnecting.userChannelData = {name: lx.User.name};
+		this._plugin.core.__inConnecting.userChannelData = {login: lx.User.login};
 		^Respondent.loadGamePlugin(data.gameData.name).then(res=>{
 			var box = new lx.ActiveBox({
 				header: data.gameName,
@@ -92,7 +92,7 @@ class SocketEventListener extends lx.socket.EventListener {
 		this._plugin.core.__inConnecting.url = this._plugin.core.connectData.url;
 		this._plugin.core.__inConnecting.channelKey = data.channelKey;
 		this._plugin.core.__inConnecting.token = data.token;
-		this._plugin.core.__inConnecting.userChannelData = {name: lx.User.name};
+		this._plugin.core.__inConnecting.userChannelData = {login: lx.User.login};
 		^Respondent.loadGamePlugin(game.type).then(res=>{
 			var box = new lx.ActiveBox({
 				header: game.name,

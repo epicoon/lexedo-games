@@ -62,7 +62,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             'creatureId' => $creature->getId(),
         ]);
         
-        $this->getGame()->log('logMsg.newCreature', ['name' => $gamer->getUser()->name]);
+        $this->getGame()->log('logMsg.newCreature', ['name' => $gamer->getUser()->login]);
 
         $this->onGrowPhaseAction($event, $gamer);
     }
@@ -164,7 +164,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         ]);
 
         $this->getGame()->log('logMsg.newProperty', [
-            'name' => $gamer->getUser()->name,
+            'name' => $gamer->getUser()->login,
             'property' => $properties[0]->getName(),
         ]);
 

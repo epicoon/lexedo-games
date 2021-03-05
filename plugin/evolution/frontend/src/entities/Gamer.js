@@ -14,7 +14,7 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 
 		this._game = game;
 		this._id = channelMate.getId();
-		this._name = channelMate.name;
+		this._name = channelMate.login;
 		this._isLocal = channelMate.isLocal();
 		this._colorIndex = 0;
 

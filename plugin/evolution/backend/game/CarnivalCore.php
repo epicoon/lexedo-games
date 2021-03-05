@@ -30,7 +30,7 @@ class CarnivalCore
             $foodReport = $scavenger->eat(Game::FOOD_TYPE_BLUE);
 
             $this->game->log('', [
-                'name' => $scavenger->getGamer()->getUser()->name,
+                'name' => $scavenger->getGamer()->getUser()->login,
             ]);
 
             return [

@@ -4,6 +4,7 @@ namespace lexedo\games;
 
 use lx;
 use lx\ModelInterface;
+use lx\AuthenticationInterface;
 use lx\socket\Channel\Channel;
 use lx\socket\Connection;
 
@@ -125,11 +126,11 @@ class CommonChannel extends Channel
      */
     public function getConnectionForUser($user)
     {
-        if (!array_key_exists($user->id, $this->userConnetionMap)) {
+        if (!array_key_exists($user->getId(), $this->userConnetionMap)) {
             return null;
         }
 
-        return $this->userConnetionMap[$user->id];
+        return $this->userConnetionMap[$user->getId()];
     }
 
     /**
@@ -163,21 +164,30 @@ class CommonChannel extends Channel
     public function checkAuthData($connection, $authData)
     {
         if ($this->requirePassword() && !$this->checkPassword($authData['password'] ?? null)) {
-
+            return false;
+        }
+        
+        /** @var AuthenticationInterface $gate */
+        $gate = lx::$app->authenticationGate;
+        if (!$gate) {
             return false;
         }
 
-        $user = lx::$app->authenticationGate->getUserModelByAccessToken($authData['auth']);
+        $user = $gate->authenticateUser(['accessToken' => $authData['auth']]);
         if (!$user) {
-
+            return false;
+        }
+        $user = $user->getModel();
+        if (!$user) {
             return false;
         }
 
-        $this->userConnetionMap[$user->id] = $connection;
+        $this->userConnetionMap[$user->getId()] = $connection;
         $this->userList[$connection->getId()] = [
             'user' => $user,
             'cookie' => $this->parseCookie($authData['cookie'] ?? ''),
         ];
+
         return true;
     }
 
@@ -188,7 +198,7 @@ class CommonChannel extends Channel
     {
         $user = $this->getUser($connection);
 
-        unset($this->userConnetionMap[$user->id]);
+        unset($this->userConnetionMap[$user->getId()]);
         unset($this->userList[$connection->getId()]);
 
         parent::onDisconnect($connection);

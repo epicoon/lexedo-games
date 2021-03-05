@@ -36,8 +36,8 @@ Plugin.core.lists.currentGamesList = currentGamesList;
 	Plugin.core.connectData = res;
 	Plugin.core.socketEventListener = new Plugin.core.classes.SocketEventListener(Plugin);
 	Plugin.core.socket = new Plugin.core.classes.WebSocketClient(Plugin);
-
-	Plugin.core.socket.connect({name: lx.User.name}, {
+	
+	Plugin.core.socket.connect({login: lx.User.login}, {
 		auth: lx.Storage.get('lxauthtoken'),
 		cookie: document.cookie
 	});

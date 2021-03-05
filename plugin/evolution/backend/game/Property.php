@@ -354,7 +354,7 @@ class Property
             $key = $this->behavior->getLogKey();
             if ($key) {
                 $this->getGame()->log($key, [
-                    'name' => $this->getGamer()->getUser()->name,
+                    'name' => $this->getGamer()->getUser()->login,
                     'property' => $this->getName(),
                 ]);
             }
