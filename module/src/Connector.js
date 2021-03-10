@@ -4,9 +4,9 @@ class Connector {
 		this._environment = env;
 		this._gameConfig = gameConfig;
 
-		this._isOnlineMode = !!(this._plugin.parent && this._plugin.parent.core.__inConnecting);
+		this._isOnlineMode = !!(this._plugin.attributes && this._plugin.attributes.connectData);
 		this._connectData = (this._isOnlineMode)
-			? this._plugin.parent.core.__inConnecting
+			? this._plugin.attributes.connectData
 			: {};
 
 		this.socket = null;

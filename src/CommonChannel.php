@@ -197,8 +197,10 @@ class CommonChannel extends Channel
     public function onDisconnect(Connection $connection): void
     {
         $user = $this->getUser($connection);
+        if ($user) {
+            unset($this->userConnetionMap[$user->getId()]);
+        }
 
-        unset($this->userConnetionMap[$user->getId()]);
         unset($this->userList[$connection->getId()]);
 
         parent::onDisconnect($connection);

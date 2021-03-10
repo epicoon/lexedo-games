@@ -80,13 +80,11 @@ abstract class GameChannel extends Channel
     public function checkAuthData($connection, $authData)
     {
         if ($this->requirePassword() && !$this->checkPassword($authData['password'] ?? null)) {
-
             return false;
         }
 
         $token = $authData['token'] ?? null;
         if (!$token || !array_key_exists($token, $this->usersWaitingList)) {
-
             return false;
         }
 

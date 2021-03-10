@@ -39,11 +39,15 @@ class EventListener extends ChannelEventListener
             return;
         }
 
-        $channelKey = Math::randHash();
         $channelClass = $app->getService('lexedo/games')->gamesProvider->getGameChannelClass($eventData['type']);
+        $channelKey = Math::randHash();
+        while ($app->channels->has($channelKey)) {
+            $channelKey = Math::randHash();
+        }
 
         /** @var GameChannel $channel */
         $channel = $app->channels->create($channelKey, $channelClass, [
+            'reconnectionPeriod' => $app->getConfig('reconnectionPeriod') ?: 0,
             'metaData' => [
                 'type' => $eventData['type'],
                 'name' => $eventData['name'],

@@ -26,18 +26,21 @@ class SocketEventListener extends lx.socket.EventListener {
 
 		if (!event.isFromMe() || !this._plugin.core.__inConnecting) return;
 
-		this._plugin.core.__inConnecting.protocol = this._plugin.core.connectData.protocol;
-		this._plugin.core.__inConnecting.port = this._plugin.core.connectData.port;
-		this._plugin.core.__inConnecting.url = this._plugin.core.connectData.url;
-		this._plugin.core.__inConnecting.channelKey = data.channelKey;
-		this._plugin.core.__inConnecting.token = data.token;
-		this._plugin.core.__inConnecting.userChannelData = {login: lx.User.login};
+		// password
+		var connectData = this._plugin.core.__inConnecting;
+		delete this._plugin.core.__inConnecting;
+		connectData.protocol = this._plugin.core.connectData.protocol;
+		connectData.port = this._plugin.core.connectData.port;
+		connectData.url = this._plugin.core.connectData.url;
+		connectData.channelKey = data.channelKey;
+		connectData.token = data.token;
+		connectData.userChannelData = {login: lx.User.login};
 		^Respondent.loadGamePlugin(data.gameData.name).then(res=>{
 			var box = new lx.ActiveBox({
 				header: data.gameName,
 				geom: true //[20, 15, 60, 60]
 			});
-			box.setPlugin(res);
+			box.setPlugin(res, {connectData});
 			game.box = box;
 		}).catch(error=>{
 			lx.Tost.error(error.error_details[0]);
@@ -87,18 +90,21 @@ class SocketEventListener extends lx.socket.EventListener {
 		}
 
 		var game = arr[0];
-		this._plugin.core.__inConnecting.protocol = this._plugin.core.connectData.protocol;
-		this._plugin.core.__inConnecting.port = this._plugin.core.connectData.port;
-		this._plugin.core.__inConnecting.url = this._plugin.core.connectData.url;
-		this._plugin.core.__inConnecting.channelKey = data.channelKey;
-		this._plugin.core.__inConnecting.token = data.token;
-		this._plugin.core.__inConnecting.userChannelData = {login: lx.User.login};
+		// password
+		var connectData = this._plugin.core.__inConnecting;
+		delete this._plugin.core.__inConnecting;
+		connectData.protocol = this._plugin.core.connectData.protocol;
+		connectData.port = this._plugin.core.connectData.port;
+		connectData.url = this._plugin.core.connectData.url;
+		connectData.channelKey = data.channelKey;
+		connectData.token = data.token;
+		connectData.userChannelData = {login: lx.User.login};
 		^Respondent.loadGamePlugin(game.type).then(res=>{
 			var box = new lx.ActiveBox({
 				header: game.name,
 				geom: true //[20, 15, 60, 60]
 			});
-			box.setPlugin(res);
+			box.setPlugin(res, {connectData});
 			game.box = box;
 		}).catch(error=>{
 			lx.Tost.error(error.error_details[0]);
