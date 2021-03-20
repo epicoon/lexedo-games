@@ -2,6 +2,7 @@
 
 namespace lexedo\games\evolution\backend\game;
 
+use lexedo\games\AbstractGame;
 use lx;
 use lexedo\games\evolution\backend\I18nHelper;
 use lexedo\games\evolution\backend\EvolutionChannel;
@@ -12,9 +13,23 @@ use lx\socket\Channel\ChannelEvent;
 
 /**
  * Class Game
+ *
+ * @property EvolutionChannel $channel
+ * @property array<Gamer> $gamers
+ * @property Plugin $plugin;
+ *
+ * @method EvolutionChannel getChannel()
+ * @method Plugin getPlugin()
+ * @method Gamer[] getGamers()
+ * @method Gamer|null getGamerById(string $id)
+ * @method registerGamer(Gamer $gamer)
  */
-class Game
+class Game extends AbstractGame
 {
+    const RECONNECTION_STATUS_PENDING = 'pending';
+    const RECONNECTION_STATUS_ACTIVE = 'active';
+    const RECONNECTION_STATUS_REVENGE = 'revenge';
+
     const PHASE_GROW = 'grow';
     const PHASE_FEED = 'feed';
 
@@ -22,20 +37,11 @@ class Game
     const FOOD_TYPE_BLUE = 'blue_food';
     const FOOD_TYPE_FAT = 'fat_food';
 
-    /** @var EvolutionChannel */
-    private $channel;
-
     /** @var array */
     private $log;
 
-    /** @var bool */
-    private $isActive;
-
     /** @var CartPack */
     private $cartPack;
-
-    /** @var Gamer[] */
-    private $gamers;
 
     /** @var array */
     private $turnSequence;
@@ -55,51 +61,22 @@ class Game
     /** @var bool */
     private $isLastTurn;
 
-    /** @var bool */
-    private $isWaitingForRevenge;
-
-    /** @var array */
-    private $revengeApprovements;
-
-    /** @var Plugin */
-    private $plugin;
-
     /**
      * Game constructor.
      * @param EvolutionChannel $channel
      */
     public function __construct($channel)
     {
-        $this->channel = $channel;
+        parent::__construct($channel);
 
         $this->log = [];
-        $this->isActive = false;
-        $this->gamers = [];
         $this->turnSequence = [];
         $this->attakCore = new AttakCore($this);
 
         $this->foodCount = 0;
         $this->isLastTurn = false;
-        $this->isWaitingForRevenge = false;
-        $this->revengeApprovements = [];
 
         $this->plugin = lx::$app->getPlugin('lexedo/games:evolution');
-    }
-
-    /**
-     * @return EvolutionChannel
-     */
-    public function getChannel()
-    {
-        return $this->channel;
-    }
-
-    /**
-     * @return Plugin
-     */
-    public function getPlugin()
-    {
-        return $this->plugin;
     }
 
     /**
@@ -136,14 +113,6 @@ class Game
     /**
      * @return bool
      */
-    public function isActive()
-    {
-        return $this->isActive;
-    }
-
-    /**
-     * @return bool
-     */
     public function isLastTurn()
     {
         return $this->isLastTurn;
@@ -165,6 +134,41 @@ class Game
     {
         $carnivalCore = new CarnivalCore($this);
         return $carnivalCore->onAttak($carnival);
+    }
+
+    public function fillEventBeginGame(ChannelEvent $event)
+    {
+        $this->fillNewPhaseEvent($event);
+        $this->prepareLogEvent('logMsg.begin', [], $event);
+    }
+
+    public function fillEventGameDataForGamer(ChannelEvent $event, string $gamreId)
+    {
+        if ($this->isPending()) {
+            $event->addData(['type' => self::RECONNECTION_STATUS_PENDING]);
+            return;
+        }
+
+        if ($this->isWaitingForRevenge) {
+            $event->addData([
+                'type' => self::RECONNECTION_STATUS_REVENGE,
+                'approvesCount' => count($this->revengeApprovements),
+                'gamersCount' => $this->getGamersCount(),
+            ]);
+            return;
+        }
+
+        $data = ['type' => self::RECONNECTION_STATUS_ACTIVE];
+
+        //TODO active
+        // карты игрока
+        // стадия, данные стадии
+        // активный игрок, порядок ходов
+        // существа, свойства и их статусы
+        // активированное и зависшее свойство
+        // лог, чат?
+
+        $event->addData($data);
     }
 
     /**
@@ -252,14 +256,6 @@ class Game
     }
 
     /**
-     * @return int
-     */
-    public function getGamersCount()
-    {
-        return count($this->gamers);
-    }
-
-    /**
      * @return array
      */
     public function getTurnSequence()
@@ -292,28 +288,11 @@ class Game
     }
 
     /**
-     * @return Gamer[]
-     */
-    public function getGamers()
-    {
-        return $this->gamers;
-    }
-
-    /**
      * @return Gamer
      */
     public function getActiveGamer()
     {
         return $this->getGamerByIndex($this->activeGamerIndex);
-    }
-
-    /**
-     * @param string $id
-     * @return Gamer|null
-     */
-    public function getGamerById($id)
-    {
-        return $this->gamers[$id] ?? null;
     }
 
     /**
@@ -521,40 +500,6 @@ class Game
         return $result;
     }
 
-    /**
-     * @param string $gamerId
-     * @return array
-     */
-    public function approveRevenge($gamerId)
-    {
-        if (!$this->isWaitingForRevenge) {
-            return [];
-        }
-        
-        $this->revengeApprovements[] = $gamerId;
-        if (count($this->revengeApprovements) != $this->getGamersCount()) {
-            return [
-                'start' => false,
-                'approvesCount' => count($this->revengeApprovements),
-                'gamersCount' => $this->getGamersCount(),
-            ];
-        } else {
-            return [
-                'start' => true,
-            ];
-        }
-    }
-
-    /**
-     * @param $gamerId
-     */
-    public function onGamerLeave($gamerId)
-    {
-        unset($this->gamers[$gamerId]);
-        $this->getChannel()->trigger('gamer-leave', ['gamer' => $gamerId]);
-    }
-
-
     /*******************************************************************************************************************
      * PRIVATE
      ******************************************************************************************************************/
@@ -574,7 +519,7 @@ class Game
             $connections = $this->getChannel()->getConnections();
             foreach ($connections as $connection) {
                 $gamer = new Gamer($this, $connection);
-                $this->gamers[$gamer->getId()] = $gamer;
+                $this->registerGamer($gamer);
             }
         } else {
             $this->turnSequence = [];

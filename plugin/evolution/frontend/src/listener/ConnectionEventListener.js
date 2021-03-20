@@ -13,6 +13,7 @@ class ConnectionEventListener extends lexedo.games.ConnectionEventListener #lx:n
 		this.getEnvironment().game.registerGamer(channelMate);
 	}
 
+	//onClientDisconnected
 	//onClientLeave
 
 }

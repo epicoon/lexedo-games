@@ -161,7 +161,7 @@ class CommonChannel extends Channel
      * @param mixed $authData
      * @return bool;
      */
-    public function checkAuthData($connection, $authData)
+    public function checkOnConnect($connection, $authData)
     {
         if ($this->requirePassword() && !$this->checkPassword($authData['password'] ?? null)) {
             return false;

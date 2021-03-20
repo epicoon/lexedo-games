@@ -1,5 +1,3 @@
-#lx:private;
-
 class WebSocketClient extends lx.socket.WebSocketClient {
 	constructor(plugin) {
 		super({
@@ -9,12 +7,13 @@ class WebSocketClient extends lx.socket.WebSocketClient {
 			channel: plugin.core.connectData.channelName,
 			handlers: {
 				onChannelEvent: plugin.core.socketEventListener,
-				onConnected:   __handler_onConnected,
-				onMessage:     __handler_onMessage,
-				onClientJoin:  __handler_onClientJoin,
-				onClientLeave: __handler_onClientLeave,
-				onClose:       __handler_onClose,
-				onError:       __handler_onError
+				onConnected:   __WebSocketHandlers.onConnected,
+				onMessage:     __WebSocketHandlers.onMessage,
+				onClientJoin:  __WebSocketHandlers.onClientJoin,
+				onClientLeave: __WebSocketHandlers.onClientLeave,
+				onClientDisconnected: __WebSocketHandlers.onClientDisconnected,
+				onClose:       __WebSocketHandlers.onClose,
+				onError:       __WebSocketHandlers.onError
 			}
 		});
 
@@ -23,41 +22,46 @@ class WebSocketClient extends lx.socket.WebSocketClient {
 	}
 }
 
-Plugin.core.classes.WebSocketClient = WebSocketClient;
+const __WebSocketHandlers = {
+	onConnected: function(mates, data) {
+	    console.log('ON CLIENT CONNECTED');
+		console.log(mates);
+		console.log(data);
 
-/***********************************************************************************************************************
- * PRIVATE
- **********************************************************************************************************************/
-function __handler_onConnected(mates, data) {
-    console.log('ON CONNECTED');
-	console.log(mates);
-	console.log(data);
+		Plugin.core.lists.gamesList.reset(data.games);
+		Plugin.core.lists.currentGamesList.reset(data.currentGames);
+	},
 
-	Plugin.core.lists.gamesList.reset(data.games);
-	Plugin.core.lists.currentGamesList.reset(data.currentGames);
-}
+	onMessage: function(msg) {
+	    console.log('ON MESSAGE');
+	    console.log(msg);
+	},
 
-function __handler_onMessage(msg) {
-    console.log('ON MESSAGE');
-    console.log(msg);
-}
+	onClientJoin: function(clientData) {
+		console.log('ON CLIENT JOIN');
+		console.log(clientData);
 
-function __handler_onClientJoin(clientData) {
-	console.log('ON CLIENT JOIN');
-	console.log(clientData);
-}
+		if (clientData.isLocal())
+			this._core.checkReconnections();
+	},
 
-function __handler_onClientLeave(clientData) {
-	console.log('ON CLIENT LEAVE');
-	console.log(clientData);
-}
+	onClientDisconnected: function (clientData) {
+		console.log('ON CLIENT DISCONNECTED');
+		console.log(clientData);
+	},
 
-function __handler_onClose(msg) {
-	console.log('ON CLOSE');
-	console.log(msg);
-}
+	onClientLeave: function(clientData) {
+		console.log('ON CLIENT LEAVE');
+		console.log(clientData);
+	},
 
-function __handler_onError(msg) {
-	console.log('ON ERROR');
-	console.log(msg);
-}
+	onClose: function(msg) {
+		console.log('ON CLOSE');
+		console.log(msg);
+	},
+
+	onError: function(msg) {
+		console.log('ON ERROR');
+		console.log(msg);
+	}
+};

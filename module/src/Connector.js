@@ -56,9 +56,9 @@ class Connector {
 		this.socket = socket;
 	}
 
-	disconnect() {
+	leave() {
 		if (this.socket)
-			this.socket.disconnect();
+			this.socket.leave();
 	}
 
 	trigger(eventName, data, receivers = null, privateMode = false) {

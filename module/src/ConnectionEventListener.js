@@ -29,6 +29,20 @@ class ConnectionEventListener #lx:namespace lexedo.games {
 		}
 	}
 
+	onClientDisconnected(channelMate) {
+		if (this._environment.mode == 'dev') {
+			console.log(__title(this, 'ON CLIENT DISCONNECTED'));
+			console.log(channelMate);
+		}
+	}
+
+	onClientReconnected(channelMate) {
+		if (this._environment.mode == 'dev') {
+			console.log(__title(this, 'ON CLIENT RECONNECTED'));
+			console.log(channelMate);
+		}
+	}
+
 	onClientLeave(channelMate) {
 		if (this._environment.mode == 'dev') {
 		    console.log(__title(this, 'ON CLIENT LEAVE'));

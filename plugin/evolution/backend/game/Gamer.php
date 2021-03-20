@@ -2,21 +2,20 @@
 
 namespace lexedo\games\evolution\backend\game;
 
+use lexedo\games\AbstractGamer;
 use lx\ModelInterface;
 use lx\socket\Connection;
 
 /**
  * Class Gamer
  * @package lexedo\games\evolution\backend\game
+ *
+ * @property Game $game
+ *
+ * @method Game getGame()
  */
-class Gamer
+class Gamer extends AbstractGamer
 {
-    /** @var Game */
-    private $game;
-
-    /** @var Connection */
-    private $connection;
-
     /** @var bool */
     private $isPassed;
 
@@ -42,8 +41,7 @@ class Gamer
      */
     public function __construct($game, $connection)
     {
-        $this->game = $game;
-        $this->connection = $connection;
+        parent::__construct($game, $connection);
         $this->isPassed = false;
 
         $this->canGetFood = false;
@@ -60,30 +58,6 @@ class Gamer
         $this->hand = [];
         $this->creatures = [];
         $this->droppingCounter = 0;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->connection->getId();
-    }
-
-    /**
-     * @return ModelInterface
-     */
-    public function getUser()
-    {
-        return $this->getGame()->getChannel()->getUser($this->connection);
-    }
-
-    /**
-     * @return Game
-     */
-    public function getGame()
-    {
-        return $this->game;
     }
 
     /**

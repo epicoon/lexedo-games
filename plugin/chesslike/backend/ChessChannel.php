@@ -60,10 +60,7 @@ class ChessChannel extends GameChannel
             : 'white';
     }
 
-    /**
-     * @param ChannelEvent $event
-     */
-    public function onEvent($event): void
+    public function onEvent(ChannelEvent $event): void
     {
         switch ($event->getName()) {
             case 'move-piece':

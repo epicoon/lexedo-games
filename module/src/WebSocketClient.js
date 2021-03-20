@@ -21,6 +21,10 @@ class WebSocketClient extends lx.socket.WebSocketClient {
 			superConfig.onClientJoin = listener.onClientJoin;
 		if (listener.onClientLeave)
 			superConfig.onClientLeave = listener.onClientLeave;
+		if (listener.onClientDisconnected)
+			superConfig.onClientDisconnected = listener.onClientDisconnected;
+		if (listener.onClientReconnected)
+			superConfig.onClientReconnected = listener.onClientReconnected;
 		if (listener.onClose)
 			superConfig.onClose = listener.onClose;
 		if (listener.onError)

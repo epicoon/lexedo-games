@@ -6,36 +6,13 @@
 #lx:use lx.Image;
 #lx:use lx.socket.WebSocketClient;
 
-Plugin.core = {
-	classes: {},
-	lists: {}
-};
 #lx:require src/;
 
-#lx:model-collection gamesList = {
-	name,
-	image,
-	minGamers,
-	maxGamers
-};
-Plugin.core.lists.gamesList = gamesList;
-
-#lx:model-collection currentGamesList = {
-	channelKey,
-	type,
-	name,
-	image,
-	gamersCurrent,
-	gamersRequired,
-	follow: {default: false},
-	isOwned: {default: false}
-};
-Plugin.core.lists.currentGamesList = currentGamesList;
-
+Plugin.core = new Core(Plugin);
 ^Respondent.getConnectData().then(res=>{
 	Plugin.core.connectData = res;
-	Plugin.core.socketEventListener = new Plugin.core.classes.SocketEventListener(Plugin);
-	Plugin.core.socket = new Plugin.core.classes.WebSocketClient(Plugin);
+	Plugin.core.socketEventListener = new SocketEventListener(Plugin);
+	Plugin.core.socket = new WebSocketClient(Plugin);
 	
 	Plugin.core.socket.connect({login: lx.User.login}, {
 		auth: lx.Storage.get('lxauthtoken'),
@@ -48,7 +25,7 @@ Plugin.core.lists.currentGamesList = currentGamesList;
 
 const gamesBox = Snippet->>gamesBox;
 gamesBox.matrix({
-	items: gamesList,
+	items: Plugin.core.lists.gamesList,
 	itemBox: lx.Box,
 	itemRender: function(box, model) {
 		var img = box.add(lx.Image, {geom: true, filename: model.image});
@@ -62,7 +39,7 @@ gamesBox.matrix({
 
 const currentGamesBox = Snippet->>currentGamesBox;
 currentGamesBox.matrix({
-	items: currentGamesList,
+	items: Plugin.core.lists.currentGamesList,
 	itemBox: lx.Box,
 	itemRender: function(box, model) {
 		box.grid({
@@ -81,7 +58,7 @@ currentGamesBox.matrix({
 		box.add(lx.Box, {text:'/'}).align(lx.CENTER, lx.MIDDLE);
 		box.add(lx.Box, {field:'gamersRequired'}).align(lx.CENTER, lx.MIDDLE);
 		box.click(function() {
-			switchRelationToGame(currentGamesList.at(this.index));
+			switchRelationToGame(Plugin.core.lists.currentGamesList.at(this.index));
 		});
 		box.setField('follow', function(val) {
 			this.fill(val ? 'lightgreen' : '');

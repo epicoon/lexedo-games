@@ -10,12 +10,11 @@ use lexedo\games\GameChannel;
 /**
  * Class EvolutionChannel
  * @package lexedo\games\evolution\backend
+ *
+ * @method Game getGame()
  */
 class EvolutionChannel extends GameChannel
 {
-    /** @var Game */
-    private $game;
-
     public static function getConfigProtocol(): array
     {
         return array_merge(parent::getConfigProtocol(), [
@@ -29,14 +28,6 @@ class EvolutionChannel extends GameChannel
     }
 
     /**
-     * @return Game
-     */
-    public function getGame()
-    {
-        return $this->game;
-    }
-
-    /**
      * @return array
      */
     public function getData()
@@ -46,18 +37,10 @@ class EvolutionChannel extends GameChannel
         ];
     }
 
-    protected function beginGame()
-    {
-        $event = $this->createEvent('game-begin');
-        $this->game->fillNewPhaseEvent($event);
-        $this->game->prepareLogEvent('logMsg.begin', [], $event);
-        $this->sendEvent($event);
-    }
-
     /**
      * @param string $gamerId
      */
-    protected function onGamerDisconnect($gamerId)
+    protected function onGamerDisconnected($gamerId)
     {
         $this->game->onGamerLeave($gamerId);
     }

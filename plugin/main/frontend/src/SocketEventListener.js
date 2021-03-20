@@ -1,5 +1,3 @@
-#lx:private;
-
 class SocketEventListener extends lx.socket.EventListener {
 	constructor(plugin) {
 		super();
@@ -35,16 +33,7 @@ class SocketEventListener extends lx.socket.EventListener {
 		connectData.channelKey = data.channelKey;
 		connectData.token = data.token;
 		connectData.userChannelData = {login: lx.User.login};
-		^Respondent.loadGamePlugin(data.gameData.name).then(res=>{
-			var box = new lx.ActiveBox({
-				header: data.gameName,
-				geom: true //[20, 15, 60, 60]
-			});
-			box.setPlugin(res, {connectData});
-			game.box = box;
-		}).catch(error=>{
-			lx.Tost.error(error.error_details[0]);
-		});
+		this._core.loadGamePlugin(game, connectData);
 	}
 
 	onGameStuffed(event) {
@@ -99,17 +88,6 @@ class SocketEventListener extends lx.socket.EventListener {
 		connectData.channelKey = data.channelKey;
 		connectData.token = data.token;
 		connectData.userChannelData = {login: lx.User.login};
-		^Respondent.loadGamePlugin(game.type).then(res=>{
-			var box = new lx.ActiveBox({
-				header: game.name,
-				geom: true //[20, 15, 60, 60]
-			});
-			box.setPlugin(res, {connectData});
-			game.box = box;
-		}).catch(error=>{
-			lx.Tost.error(error.error_details[0]);
-		});
+		this._core.loadGamePlugin(game, connectData);
 	}
 }
-
-Plugin.core.classes.SocketEventListener = SocketEventListener;

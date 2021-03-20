@@ -29,7 +29,7 @@ class Environment #lx:namespace lexedo.games {
 	}
 
 	destruct() {
-		this._connector.disconnect();
+		this._connector.leave();
 	}
 
 	triggerChannelEvent(eventName, data = {}, receivers = null, privateMode = false) {
