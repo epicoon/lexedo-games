@@ -134,6 +134,8 @@ abstract class GameChannel extends Channel
     {
         parent::onReconnect($connection);
 
+        $this->timerOff();
+
         if ($this->getGame()->isPending()) {
             $this->app->getCommonChannel()->onGameNewUser($this, $this->getUser($connection));
         }

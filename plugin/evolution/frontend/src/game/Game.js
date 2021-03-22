@@ -3,6 +3,11 @@
 #lx:macros ev {lexedo.games.Evolution};
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
+/**
+ * @method getPlugin()
+ * @method getEnvironment()
+ * @method isPending()
+ */
 class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 	init() {
 		this.gamers = {};
@@ -19,10 +24,6 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		this.getEnvironment().attakCore = new #ev.AttakCore(this);
 
 		__setGui(this);
-
-		// this.getPlugin()
-		// this.getEnvironment()
-		// this.isPending()
 	}
 
 	log(text) {
@@ -74,9 +75,7 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 	}
 
 	resetPhase(data) {
-		this.turnSequence = data.turnSequence;
-		this.gamersBySequence.clear();
-		this.turnSequence.each(id=>this.gamersBySequence.add(this.getGamerById(id)));
+		this.setTurnSequence(data.turnSequence);
 		this.phase.gamer = this.gamersBySequence.at(0);
 		this.phase.set(data.activePhase);
 		this.phase.setData(data);
@@ -87,6 +86,12 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 			g.setCreaturesFeedMode(this.phase.isFeed());
 		});
 		this.gamersBySequence.at(0).setActive(true);
+	}
+
+	setTurnSequence(turnSequence) {
+		this.turnSequence = turnSequence;
+		this.gamersBySequence.clear();
+		this.turnSequence.each(id=>this.gamersBySequence.add(this.getGamerById(id)));
 	}
 
 	phaseIs(type) {
