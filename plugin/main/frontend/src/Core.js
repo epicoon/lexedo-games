@@ -113,7 +113,7 @@ class Core {
 			});
 		} else {
 			//TODO password
-			this.plugin->confirmPopup.open(#lx:i18n(ToJoin), ()=>{
+			this.plugin->>confirmPopup.open(#lx:i18n(ToJoin), ()=>{
 				
 				this.__inConnecting = {};
 
