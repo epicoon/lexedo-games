@@ -211,7 +211,6 @@ floatPoints.x0 = 0;
 floatPoints.y0 = 0;
 
 floatPoints.animator = new lx.Timer([700, 300]);
-floatPoints.animator.counterOn = false;
 floatPoints.animator.setAction([
 	function() {
 		var ctx = floatPoints,

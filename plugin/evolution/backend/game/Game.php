@@ -145,12 +145,12 @@ class Game extends AbstractGame
     public function fillEventGameDataForGamer(ChannelEvent $event, string $gamreId)
     {
         if ($this->isPending()) {
-            $event->addData(['type' => self::RECONNECTION_STATUS_PENDING]);
+            $event->setDataForConnection($gamreId, ['type' => self::RECONNECTION_STATUS_PENDING]);
             return;
         }
 
         if ($this->isWaitingForRevenge) {
-            $event->addData([
+            $event->setDataForConnection($gamreId, [
                 'type' => self::RECONNECTION_STATUS_REVENGE,
                 'approvesCount' => count($this->revengeApprovements),
                 'gamersCount' => $this->getGamersCount(),
@@ -168,7 +168,7 @@ class Game extends AbstractGame
         // активированное и зависшее свойство
         // лог, чат?
 
-        $event->addData($data);
+        $event->setDataForConnection($gamreId, $data);
     }
 
     /**

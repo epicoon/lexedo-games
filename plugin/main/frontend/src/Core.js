@@ -125,8 +125,6 @@ class Core {
 	}
 
 	#initGui() {
-		console.log(123);
-
 		var core = this;
 
 		this.plugin->>gamesBox.matrix({

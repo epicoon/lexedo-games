@@ -58,7 +58,7 @@ class Connector {
 
 	leave() {
 		if (this.socket)
-			this.socket.leave();
+			this.socket.close();
 	}
 
 	trigger(eventName, data, receivers = null, privateMode = false) {
