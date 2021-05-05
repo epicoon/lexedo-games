@@ -52,7 +52,7 @@ class GamesServer extends SocketServer
         return $this->i18nReestr[$name];
     }
 
-    protected function beforeProcess()
+    protected function beforeProcess(): void
     {
         $this->channels->create('common', CommonChannel::class);
     }
