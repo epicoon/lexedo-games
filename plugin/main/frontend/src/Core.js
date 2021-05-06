@@ -24,7 +24,7 @@ class Core {
 			currentGamesList
 		};
 
-		this.#initGui();
+		this.__initGui();
 	}
 
 	run() {
@@ -84,7 +84,7 @@ class Core {
 		});
 	}
 
-	#createGame(gameData) {
+	__createGame(gameData) {
 		var params = [#lx:i18n(NewGameName), #lx:i18n(Password)];
 		if (gameData.minGamers != gameData.maxGamers)
 			params.push('Number of gamers ('+gameData.minGamers+'-'+gameData.maxGamers+')');
@@ -106,7 +106,7 @@ class Core {
 	}
 
 
-	#switchRelationToGame(game) {
+	__switchRelationToGame(game) {
 		if (game.follow) {
 			this.plugin->>confirmPopup.open(#lx:i18n(ToLeave), ()=>{
 				game.box.del();
@@ -124,7 +124,7 @@ class Core {
 		}
 	}
 
-	#initGui() {
+	__initGui() {
 		var core = this;
 
 		this.plugin->>gamesBox.matrix({
@@ -136,7 +136,7 @@ class Core {
 				box.on('resize', ()=>img.adapt());
 				box.align(lx.CENTER, lx.MIDDLE);
 				box.addClass('lx-Button');
-				box.click(()=>core.#createGame(model));
+				box.click(()=>core.__createGame(model));
 			}
 		});
 
@@ -160,7 +160,7 @@ class Core {
 				box.add(lx.Box, {text:'/'}).align(lx.CENTER, lx.MIDDLE);
 				box.add(lx.Box, {field:'gamersRequired'}).align(lx.CENTER, lx.MIDDLE);
 				box.click(function() {
-					core.#switchRelationToGame(core.lists.currentGamesList.at(this.index));
+					core.__switchRelationToGame(core.lists.currentGamesList.at(this.index));
 				});
 				box.setField('follow', function(val) {
 					this.fill(val ? 'lightgreen' : '');

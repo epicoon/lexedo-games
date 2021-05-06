@@ -27,10 +27,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         return $this->getChannel()->getGame();
     }
 
-    /**
-     * @return array
-     */
-    public function getAvailableEventNames()
+    public function getAvailableEventNames(): array
     {
         return ['chat-message'];
     }

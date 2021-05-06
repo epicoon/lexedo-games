@@ -33,10 +33,7 @@ class CommonChannel extends Channel
         ]);
     }
 
-    /**
-     * @return array
-     */
-    public function getData()
+    public function getData(): array
     {
         /** @var GamesServer $app */
         $app = lx::$app;
@@ -156,12 +153,7 @@ class CommonChannel extends Channel
         return $this->userList[$connection->getId()]['cookie'] ?? [];
     }
 
-    /**
-     * @param Connection $connection
-     * @param mixed $authData
-     * @return bool;
-     */
-    public function checkOnConnect($connection, $authData)
+    public function checkOnConnect(Connection $connection, array $authData): bool
     {
         if ($this->requirePassword() && !$this->checkPassword($authData['password'] ?? null)) {
             return false;

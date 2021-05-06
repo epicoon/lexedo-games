@@ -59,7 +59,6 @@ class I18nHelper
                 } else {
                     $tLog = self::t($log, $lang);
                 }
-                $data['log'] = $tLog;
                 $event->addDataForConnection($reciever->getId(), 'log', $tLog);
             }
         }

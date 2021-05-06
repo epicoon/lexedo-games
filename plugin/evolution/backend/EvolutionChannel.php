@@ -22,25 +22,19 @@ class EvolutionChannel extends GameChannel
         ]);
     }
 
-    public function init()
+    public function init(): void
     {
         $this->game = new Game($this);
     }
 
-    /**
-     * @return array
-     */
-    public function getData()
+    public function getData(): array
     {
         return [
             'properties' => PropertyBank::$data,
         ];
     }
 
-    /**
-     * @param string $gamerId
-     */
-    protected function onGamerDisconnected($gamerId)
+    protected function onGamerDisconnected(string $gamerId)
     {
         $this->game->onGamerLeave($gamerId);
     }

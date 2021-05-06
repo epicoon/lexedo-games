@@ -74,12 +74,7 @@ abstract class GameChannel extends Channel
         return $this->metaData['gamersCount'];
     }
 
-    /**
-     * @param Connection $connection
-     * @param mixed $authData
-     * @return bool;
-     */
-    public function checkOnConnect($connection, $authData)
+    public function checkOnConnect(Connection $connection, array $authData): bool
     {
         if ($this->requirePassword() && !$this->checkPassword($authData['password'] ?? null)) {
             return false;
@@ -95,7 +90,7 @@ abstract class GameChannel extends Channel
         return true;
     }
 
-    public function checkOnReconnect($connection, $oldConnectionId, $authData)
+    public function checkOnReconnect(Connection $connection, string $oldConnectionId, array $authData): bool
     {
         if (!array_key_exists($oldConnectionId, $this->disconnectedUsers)) {
             return false;
@@ -154,7 +149,7 @@ abstract class GameChannel extends Channel
         }
 
         $this->app->getCommonChannel()->onGameLeaveUser($this, $this->getUser($connection));
-        $this->onGamerDisconnect($connection->getId());
+        $this->onGamerDisconnected($connection->getId());
 
         $this->disconnectedUsers[$connection->getId()] = $this->userList[$connection->getId()];
         unset($this->userList[$connection->getId()]);
@@ -172,7 +167,7 @@ abstract class GameChannel extends Channel
             $this->drop();
         } else {
             $this->app->getCommonChannel()->onGameLeaveUser($this, $this->getUser($connection));
-            $this->onGamerDisconnect($connection->getId());
+            $this->onGamerDisconnected($connection->getId());
             unset($this->userList[$connection->getId()]);
         }
     }
@@ -188,10 +183,7 @@ abstract class GameChannel extends Channel
         }
     }
 
-    /**
-     * @param string $gamerId
-     */
-    protected function onGamerDisconnected($gamerId)
+    protected function onGamerDisconnected(string $gamerId)
     {
         // pass
     }
