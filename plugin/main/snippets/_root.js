@@ -22,7 +22,7 @@ var mainBox = new lx.Box({
 mainBox.border();
 
 mainBox.begin();
-	
+
 	var commonChatWindow = new lx.ActiveBox({
 		header: #lx:i18n(Common_chat),
 		geom: [0, 0, 25, 100]
@@ -56,5 +56,3 @@ currentGamesBox.stream({
 
 Snippet.addSnippet({plugin:'lx/tools:snippets', snippet:'confirmPopup'});
 Snippet.addSnippet({plugin:'lx/tools:snippets', snippet:'inputPopup'});
-
-

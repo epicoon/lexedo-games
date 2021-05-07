@@ -7,23 +7,16 @@ use lx\ResponseInterface;
 
 class Respondent extends \lx\Respondent
 {
-    /**
-     * @return array
-     */
-    public function getConnectData()
+    public function getConnectData(): ResponseInterface
     {
-        return [
+        return $this->prepareResponse([
             'protocol' => 'ws',
             'port' => 8003,
             'channelName' => 'common',
-        ];
+        ]);
     }
 
-    /**
-     * @param $gameType
-     * @return ResponseInterface
-     */
-    public function loadGamePlugin($gameType)
+    public function loadGamePlugin(string $gameType): ResponseInterface
     {
         $plugin = $this->app->getService('lexedo/games')->gamesProvider->getGamePlugin($gameType);
         if (!$plugin) {

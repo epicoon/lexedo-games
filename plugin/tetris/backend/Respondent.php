@@ -2,6 +2,7 @@
 
 namespace lexedo\games\tetris\backend;
 
+//TODO устарел - править ОРМ и возвращаемые типы
 class Respondent extends \lx\Respondent {
 	public function getLeaders() {
 		$leaders = $this->getModelManager('TetrisLeader')->loadModels([

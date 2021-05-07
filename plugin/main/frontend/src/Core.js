@@ -29,7 +29,7 @@ class Core {
 
 	run() {
 		^Respondent.getConnectData().then(res=>{
-			this.connectData = res;
+			this.connectData = res.data;
 			this.socketEventListener = new SocketEventListener(this.plugin);
 			this.socket = new WebSocketClient(this.plugin);
 			
@@ -72,7 +72,7 @@ class Core {
 				header: game.name,
 				geom: true //[20, 15, 60, 60]
 			});
-			box.setPlugin(res, {connectData});
+			box.setPlugin(res.data, {connectData});
 			game.box = box;
 
 			var map = lx.Storage.get('lexedogames') || {};
