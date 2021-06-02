@@ -3,7 +3,6 @@
 namespace lexedo\games\evolution\backend\game;
 
 use lexedo\games\AbstractGamer;
-use lx\ModelInterface;
 use lx\socket\Connection;
 
 /**
