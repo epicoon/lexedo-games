@@ -19,6 +19,10 @@ class Game #lx:namespace lexedo.games {
 		// abstract
 	}
 
+	onGamerReconnected(data) {
+		// abstract
+	}
+
 	getPlugin() {
 		return this._plugin;
 	}

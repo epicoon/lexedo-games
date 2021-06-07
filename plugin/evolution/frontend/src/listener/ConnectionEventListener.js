@@ -13,6 +13,11 @@ class ConnectionEventListener extends lexedo.games.ConnectionEventListener #lx:n
 		this.getEnvironment().game.registerGamer(channelMate);
 	}
 
+	onClientReconnected(channelMate, oldId) {
+		console.log('!!!!!!!!!!!!!!!onClientReconnected');
+		console.log(channelMate.isLocal());
+		console.log(oldId);
+	}
 	//onClientDisconnected
 	//onClientLeave
 

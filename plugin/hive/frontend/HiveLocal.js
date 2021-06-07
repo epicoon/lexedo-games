@@ -33,15 +33,15 @@ class Game #lx:namespace lexedo.games.Hive {
 function __test(self) {
 	var map = self.world.getMap();
 
-	var chip = new #hive.Chip(self);
+	var chip = new #hive.ChipMesh(self.world);
 	chip.locateInMap(0, 0);
 	map.addChipRelatedTyles(chip);
 
-	var chip = new #hive.Chip(self);
+	var chip = new #hive.ChipMesh(self.world);
 	chip.locateInMap(1, 0);
 	map.addChipRelatedTyles(chip);
 
-	var chip = new #hive.Chip(self);
+	var chip = new #hive.ChipMesh(self.world);
 	chip.locateInMap(-1, 0);
 	map.addChipRelatedTyles(chip);
 

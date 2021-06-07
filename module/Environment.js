@@ -59,6 +59,10 @@ class Environment #lx:namespace lexedo.games {
 		this.game.onBegin(data);
 	}
 
+	onGamerReconnected(data) {
+		this.game.onGamerReconnected(data);
+	}
+
 	lockScreen() {
 		if (this.useScreenLock) {
 			this.screenLock = new lx.Box({geom: true});

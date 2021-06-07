@@ -92,6 +92,8 @@ abstract class GameChannel extends Channel
 
     public function checkOnReconnect(Connection $connection, string $oldConnectionId, array $authData): bool
     {
+        parent::checkOnReconnect($connection, $oldConnectionId, $authData);
+
         if (!array_key_exists($oldConnectionId, $this->disconnectedUsers)) {
             return false;
         }
@@ -136,6 +138,7 @@ abstract class GameChannel extends Channel
         }
 
         $event = $this->createEvent('gamer-reconnected');
+        $event->addData(['oldConnectionId' => $connection->getOldId()]);
         $this->getGame()->fillEventGameDataForGamer($event, $connection->getId());
         $this->sendEvent($event);
     }

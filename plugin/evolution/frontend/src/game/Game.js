@@ -63,6 +63,11 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		this.resetPhase(data);
 	}
 
+	onGamerReconnected(data) {
+		console.log('onGamerReconnected!!!!!!!');
+		console.log(data);
+	}
+
 	reset() {
 		this.turnSequence = [];
 		this.gamersBySequence.clear();

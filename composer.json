@@ -16,7 +16,8 @@
         "lx/model":"dev-master",
         "lx/process":"dev-master",
         "lx/socket":"dev-master",
-        "lx/tools":"dev-master"
+        "lx/tools":"dev-master",
+        "lx/template":"dev-master"
     },
     "repositories":[
         {
@@ -42,6 +43,10 @@
         {
             "type":"git",
             "url":"https://github.com/epicoon/lx-tools"
+        },
+        {
+            "type":"vcs",
+            "url":"https://github.com/epicoon/lx-template.git"
         }
     ]
 }
