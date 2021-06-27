@@ -14,7 +14,7 @@ class Respondent extends \lx\Respondent {
 	public function getMapData() {
 		if (self::$mapData === null) {
 			$path = $this->getPlugin()->getFilePath('data/map.yaml');
-			$file = new \lx\YamlFile($path);
+			$file = new \lx\DataFile($path);
 			self::$mapData = $file->get();
 		}
 
@@ -68,14 +68,14 @@ class Respondent extends \lx\Respondent {
 	private function recieveMapSequence() {
 		if (self::$mapSequence === null) {
 			$path = $this->getPlugin()->getFilePath('data/mapSequence.yaml');
-			$file = new \lx\YamlFile($path);
+			$file = new \lx\DataFile($path);
 			self::$mapSequence = $file->get();
 		}
 	}
 
 	private function recieveObjectsData() {
 		$path = $this->getPlugin()->getFilePath('data/data.yaml');
-		$file = new \lx\YamlFile($path);
+		$file = new \lx\DataFile($path);
 		$data = $file->get();
 
 		$getData = function($key) use ($data) {
