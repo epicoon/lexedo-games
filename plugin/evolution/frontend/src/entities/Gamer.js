@@ -211,7 +211,7 @@ function __bindHand(self) {
 
 			box.__cart = model;
 			box.__cart.setBox(box);
-			box.onDestruct(function() {
+			box.on('beforeDestruct', function() {
 				this.__cart.setBox(null);
 				delete this.__cart;
 			});

@@ -15,7 +15,6 @@ use lx\Plugin;
  */
 class GamesProvider implements FusionComponentInterface
 {
-    use ObjectTrait;
     use FusionComponentTrait;
 
     /**
