@@ -50,7 +50,7 @@ class I18nHelper
 
             if ($message) {
                 $tMessage = self::t($message, $lang);
-                $event->addDataForConnection($reciever->getId(), 'message', $tMessage);
+                $event->addDataForConnection($reciever, 'message', $tMessage);
             }
 
             if ($log) {
@@ -59,7 +59,7 @@ class I18nHelper
                 } else {
                     $tLog = self::t($log, $lang);
                 }
-                $event->addDataForConnection($reciever->getId(), 'log', $tLog);
+                $event->addDataForConnection($reciever, 'log', $tLog);
             }
         }
     }

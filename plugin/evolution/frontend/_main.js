@@ -22,14 +22,3 @@ Plugin.environment = new lexedo.games.Environment(Plugin, {
 		connectionEventListener: 'lexedo.games.Evolution.ConnectionEventListener'
 	}
 });
-
-var e = new lx.Box({
-	geom: [10, 10, 10, 10]
-});
-e.fill('red');
-e.click(function() {
-
-	Plugin.environment._connector.socket.break();
-	// Plugin.environment._connector.socket.close();
-
-});

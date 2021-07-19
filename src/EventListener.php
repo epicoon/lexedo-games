@@ -7,16 +7,9 @@ use lx\Math;
 use lx\socket\Channel\ChannelEvent;
 use lx\socket\Channel\ChannelEventListener;
 
-/**
- * Class EventListener
- * @package lexedo\games
- */
 class EventListener extends ChannelEventListener
 {
-    /**
-     * @param ChannelEvent $event
-     */
-    public function onNewGame($event)
+    public function onNewGame(ChannelEvent $event): void
     {
         /** @var GamesServer $app */
         $app = lx::$app;
@@ -76,10 +69,7 @@ class EventListener extends ChannelEventListener
         $subEvent->setDataForConnection($event->getInitiator(), ['token' => $token]);
     }
 
-    /**
-     * @param ChannelEvent $event
-     */
-    public function onAskForJoin($event)
+    public function onAskForJoin(ChannelEvent $event): void
     {
         $eventData = $event->getData();
 

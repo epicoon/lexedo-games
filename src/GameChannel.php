@@ -123,7 +123,7 @@ abstract class GameChannel extends Channel
             $this->getGame()->fillEventBeginGame($event);
             $this->sendEvent($event);
         } else {
-            $this->app->getCommonChannel()->onGameNewUser($this, $this->getUser($connection));
+            $this->app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
         }
     }
 
@@ -134,12 +134,12 @@ abstract class GameChannel extends Channel
         $this->timerOff();
 
         if ($this->getGame()->isPending()) {
-            $this->app->getCommonChannel()->onGameNewUser($this, $this->getUser($connection));
+            $this->app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
         }
 
         $event = $this->createEvent('gamer-reconnected');
         $event->addData(['oldConnectionId' => $connection->getOldId()]);
-        $this->getGame()->fillEventGameDataForGamer($event, $connection->getId());
+        $this->getGame()->fillEventGameDataForGamer($event, $connection);
         $this->sendEvent($event);
     }
 
@@ -151,7 +151,7 @@ abstract class GameChannel extends Channel
             $this->timerOn();
         }
 
-        $this->app->getCommonChannel()->onGameLeaveUser($this, $this->getUser($connection));
+        $this->app->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
         $this->onGamerDisconnected($connection->getId());
 
         $this->disconnectedUsers[$connection->getId()] = $this->userList[$connection->getId()];
@@ -169,7 +169,7 @@ abstract class GameChannel extends Channel
             $this->app->getCommonChannel()->closeWaitedGame($this);
             $this->drop();
         } else {
-            $this->app->getCommonChannel()->onGameLeaveUser($this, $this->getUser($connection));
+            $this->app->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
             $this->onGamerDisconnected($connection->getId());
             unset($this->userList[$connection->getId()]);
         }

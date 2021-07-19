@@ -8,9 +8,6 @@ use lexedo\games\evolution\backend\game\PropertyBank;
 use lexedo\games\GameChannel;
 
 /**
- * Class EvolutionChannel
- * @package lexedo\games\evolution\backend
- *
  * @method Game getGame()
  */
 class EvolutionChannel extends GameChannel

@@ -5,21 +5,12 @@ namespace lexedo\games;
 use lx\ModelInterface;
 use lx\socket\Connection;
 
-/**
- * Class AbstractGamer
- * @package lexedo\games
- */
 abstract class AbstractGamer
 {
     protected AbstractGame $game;
     protected Connection $connection;
 
-    /**
-     * Gamer constructor.
-     * @param AbstractGame $game
-     * @param Connection $connection
-     */
-    public function __construct($game, $connection)
+    public function __construct(AbstractGame $game, Connection $connection)
     {
         $this->game = $game;
         $this->connection = $connection;
@@ -38,5 +29,10 @@ abstract class AbstractGamer
     public function getUser(): ModelInterface
     {
         return $this->getGame()->getChannel()->getUser($this->connection);
+    }
+    
+    public function getConnection(): Connection
+    {
+        return $this->connection;
     }
 }

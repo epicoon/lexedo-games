@@ -34,7 +34,7 @@ class ChessChannel extends GameChannel
                 $color = $arr[0];
             }
 
-            $event->setDataForConnection($id, ['color' => $color]);
+            $event->setDataForConnection($connection, ['color' => $color]);
         }
 
         $this->sendEvent($event);

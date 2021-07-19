@@ -10,10 +10,9 @@ use lexedo\games\evolution\Plugin;
 use lx\Math;
 use Exception;
 use lx\socket\Channel\ChannelEvent;
+use lx\socket\Connection;
 
 /**
- * Class Game
- *
  * @property EvolutionChannel $channel
  * @property array<Gamer> $gamers
  * @property Plugin $plugin;
@@ -37,41 +36,23 @@ class Game extends AbstractGame
     const FOOD_TYPE_BLUE = 'blue_food';
     const FOOD_TYPE_FAT = 'fat_food';
 
-    /** @var array */
-    private $log;
+    private array $log;
+    private ?CartPack $cartPack;
+    private array $turnSequence;
+    private int $activeGamerIndex;
+    private string $activePhase;
+    private AttakCore $attakCore;
+    private int $foodCount;
+    private bool $isLastTurn;
 
-    /** @var CartPack */
-    private $cartPack;
-
-    /** @var array */
-    private $turnSequence;
-
-    /** @var int */
-    private $activeGamerIndex;
-
-    /** @var string */
-    private $activePhase;
-
-    /** @var AttakCore */
-    private $attakCore;
-
-    /** @var int */
-    private $foodCount;
-
-    /** @var bool */
-    private $isLastTurn;
-
-    /**
-     * Game constructor.
-     * @param EvolutionChannel $channel
-     */
-    public function __construct($channel)
+    public function __construct(EvolutionChannel $channel)
     {
         parent::__construct($channel);
 
         $this->log = [];
         $this->turnSequence = [];
         $this->attakCore = new AttakCore($this);
+        $this->cartPack = null;
 
         $this->foodCount = 0;
         $this->isLastTurn = false;
@@ -79,23 +60,17 @@ class Game extends AbstractGame
         $this->plugin = lx::$app->getPlugin('lexedo/games:evolution');
     }
 
-    /**
-     * @param string $msg
-     * @param array $params
-     */
-    public function log($msgKey, $params = [])
+    public function log(string $msgKey, array $params = []): void
     {
         $event = $this->prepareLogEvent($msgKey, $params);
         $this->getChannel()->sendEvent($event);
     }
 
-    /**
-     * @param string $msgKey
-     * @param array $params
-     * @param ChannelEvent|null $parentEvent
-     * @return ChannelEvent
-     */
-    public function prepareLogEvent($msgKey, $params = [], $parentEvent = null)
+    public function prepareLogEvent(
+        string $msgKey,
+        array $params = [],
+        ?ChannelEvent $parentEvent = null
+    ): ChannelEvent
     {
         $this->log[] = [
             'key' => $msgKey,
@@ -110,47 +85,37 @@ class Game extends AbstractGame
         return $event;
     }
 
-    /**
-     * @return bool
-     */
-    public function isLastTurn()
+    public function isLastTurn(): bool
     {
         return $this->isLastTurn;
     }
 
-    /**
-     * @return AttakCore
-     */
-    public function getAttakCore()
+    public function getAttakCore(): AttakCore
     {
         return $this->attakCore;
     }
 
-    /**
-     * @param Creature $carnival
-     * @return array|null
-     */
-    public function onCreatureSuccessfullAttak($carnival)
+    public function onCreatureSuccessfullAttak(Creature $carnival): ?array
     {
         $carnivalCore = new CarnivalCore($this);
         return $carnivalCore->onAttak($carnival);
     }
 
-    public function fillEventBeginGame(ChannelEvent $event)
+    public function fillEventBeginGame(ChannelEvent $event): void
     {
         $this->fillNewPhaseEvent($event);
         $this->prepareLogEvent('logMsg.begin', [], $event);
     }
 
-    public function fillEventGameDataForGamer(ChannelEvent $event, string $gamreId)
+    public function fillEventGameDataForGamer(ChannelEvent $event, Connection $gamerConnection): void
     {
         if ($this->isPending()) {
-            $event->setDataForConnection($gamreId, ['type' => self::RECONNECTION_STATUS_PENDING]);
+            $event->setDataForConnection($gamerConnection, ['type' => self::RECONNECTION_STATUS_PENDING]);
             return;
         }
 
         if ($this->isWaitingForRevenge) {
-            $event->setDataForConnection($gamreId, [
+            $event->setDataForConnection($gamerConnection, [
                 'type' => self::RECONNECTION_STATUS_REVENGE,
                 'approvesCount' => count($this->revengeApprovements),
                 'gamersCount' => $this->getGamersCount(),
@@ -168,13 +133,10 @@ class Game extends AbstractGame
         // активированное и зависшее свойство
         // лог, чат?
 
-        $event->setDataForConnection($gamreId, $data);
+        $event->setDataForConnection($gamerConnection, $data);
     }
 
-    /**
-     * @param ChannelEvent $event
-     */
-    public function fillNewPhaseEvent($event, $phase = self::PHASE_GROW)
+    public function fillNewPhaseEvent(ChannelEvent $event, string $phase = self::PHASE_GROW): void
     {
         if ($this->isActive && $this->isLastTurn && $phase == self::PHASE_GROW) {
             $this->isActive = false;
@@ -225,7 +187,7 @@ class Game extends AbstractGame
                     $cartsData[] = $cart->toArray();
                 }
 
-                $event->setDataForConnection($id, [
+                $event->setDataForConnection($gamer->getConnection(), [
                     'carts' => $cartsData,
                 ]);
             }
@@ -242,7 +204,7 @@ class Game extends AbstractGame
         }
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         $this->prepareCartPack();
         $this->prepareGamers();
@@ -255,65 +217,42 @@ class Game extends AbstractGame
         $this->isActive = true;
     }
 
-    /**
-     * @return array
-     */
-    public function getTurnSequence()
+    public function getTurnSequence(): array
     {
         return $this->turnSequence;
     }
 
-    /**
-     * @return string
-     */
-    public function getActivePhase()
+    public function getActivePhase(): string
     {
         return $this->activePhase;
     }
 
-    /**
-     * @return bool
-     */
-    public function isPhaseGrow()
+    public function isPhaseGrow(): bool
     {
         return $this->activePhase == self::PHASE_GROW;
     }
 
-    /**
-     * @return bool
-     */
-    public function isPhaseFeed()
+    public function isPhaseFeed(): bool
     {
         return $this->activePhase == self::PHASE_FEED;
     }
 
-    /**
-     * @return Gamer
-     */
-    public function getActiveGamer()
+    public function getActiveGamer(): Gamer
     {
         return $this->getGamerByIndex($this->activeGamerIndex);
     }
 
-    /**
-     * @param Gamer $gamer
-     * @return int
-     */
-    public function getGamerIndex($gamer)
+    public function getGamerIndex(Gamer $gamer): int
     {
         return array_search($gamer->getId(), $this->turnSequence);
     }
 
-    /**
-     * @param int $index
-     * @return Gamer
-     */
-    public function getGamerByIndex($index)
+    public function getGamerByIndex(int $index): Gamer
     {
         return $this->gamers[$this->turnSequence[$index]];
     }
 
-    public function nextActiveGamer()
+    public function nextActiveGamer(): void
     {
         $current = $this->activeGamerIndex;
 
@@ -330,10 +269,7 @@ class Game extends AbstractGame
         }
     }
 
-    /**
-     * @return bool
-     */
-    public function checkGrowPhaseFinished()
+    public function checkGrowPhaseFinished(): bool
     {
         foreach ($this->gamers as $gamer) {
             if (!$gamer->isPassed()) {
@@ -344,10 +280,7 @@ class Game extends AbstractGame
         return true;
     }
 
-    /**
-     * @return bool
-     */
-    public function checkFeedPhaseFinished()
+    public function checkFeedPhaseFinished(): bool
     {
         foreach ($this->gamers as $gamer) {
             if ($this->gamerAllowedToEat($gamer) || $gamer->hasPotentialActivities()) {
@@ -358,11 +291,7 @@ class Game extends AbstractGame
         return true;
     }
 
-    /**
-     * @param Gamer $gamer
-     * @return bool
-     */
-    public function gamerAllowedToEat($gamer)
+    public function gamerAllowedToEat(Gamer $gamer): bool
     {
         if ($this->getFoodCount() == 0) {
             return false;
@@ -371,29 +300,19 @@ class Game extends AbstractGame
         return $gamer->hasHungryCreature();
     }
 
-    /**
-     * @return int
-     */
-    public function getFoodCount()
+    public function getFoodCount(): int
     {
         return $this->foodCount;
     }
 
-    /**
-     * @return void
-     */
-    public function wasteFood()
+    public function wasteFood(): void
     {
         if ($this->foodCount > 0) {
             $this->foodCount--;
         }
     }
 
-    /**
-     * @param Creature $creature
-     * @return array|null
-     */
-    public function feedCreature($creature)
+    public function feedCreature(Creature $creature): ?array
     {
         if ($this->getFoodCount() == 0) {
             return [];
@@ -409,10 +328,7 @@ class Game extends AbstractGame
         return $feedReport;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasHungryCreature()
+    public function hasHungryCreature(): bool
     {
         foreach ($this->gamers as $gamer) {
             if ($gamer->hasHungryCreature()) {
@@ -423,10 +339,7 @@ class Game extends AbstractGame
         return false;
     }
 
-    /**
-     * @return array
-     */
-    public function runExtinction()
+    public function runExtinction(): array
     {
         $report = [];
         foreach ($this->gamers as $gamer) {
@@ -444,10 +357,7 @@ class Game extends AbstractGame
         return $report;
     }
 
-    /**
-     * @return array
-     */
-    public function restorePropertiesState()
+    public function restorePropertiesState(): array
     {
         $result = [];
         foreach ($this->gamers as $gamer) {
@@ -459,10 +369,7 @@ class Game extends AbstractGame
         return $result;
     }
 
-    /**
-     * @return array
-     */
-    public function calcScore()
+    public function calcScore(): array
     {
         $list = [];
         foreach ($this->gamers as $gamer) {
@@ -500,11 +407,11 @@ class Game extends AbstractGame
         return $result;
     }
 
-    /*******************************************************************************************************************
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * PRIVATE
-     ******************************************************************************************************************/
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    private function prepareCartPack()
+    private function prepareCartPack(): void
     {
         if (is_null($this->cartPack)) {
             $this->cartPack = new CartPack();
@@ -513,7 +420,7 @@ class Game extends AbstractGame
         $this->cartPack->reset();
     }
 
-    private function prepareGamers()
+    private function prepareGamers(): void
     {
         if (empty($this->gamers)) {
             $connections = $this->getChannel()->getConnections();
@@ -532,10 +439,9 @@ class Game extends AbstractGame
     }
 
     /**
-     * @param bool $shift
      * @throws Exception
      */
-    private function updateGamersSequence($shift = false)
+    private function updateGamersSequence(bool $shift = false): void
     {
         if (empty($this->turnSequence)) {
             $this->turnSequence = Math::shuffleArray(array_keys($this->gamers));
@@ -550,10 +456,7 @@ class Game extends AbstractGame
         }
     }
 
-    /**
-     * @return array
-     */
-    private function distributeCarts()
+    private function distributeCarts(): array
     {
         $counters = [];
         $carts = [];
@@ -589,7 +492,7 @@ class Game extends AbstractGame
         return $carts;
     }
 
-    private function incActiveGamerIndex()
+    private function incActiveGamerIndex(): void
     {
         $this->activeGamerIndex++;
         if ($this->activeGamerIndex == count($this->gamers)) {

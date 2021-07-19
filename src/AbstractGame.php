@@ -4,11 +4,8 @@ namespace lexedo\games;
 
 use lx\Plugin;
 use lx\socket\Channel\ChannelEvent;
+use lx\socket\Connection;
 
-/**
- * Class AbstractGame
- * @package lexedo\games
- */
 abstract class AbstractGame
 {
     protected GameChannel $channel;
@@ -30,8 +27,8 @@ abstract class AbstractGame
         $this->revengeApprovements = [];
     }
 
-    abstract public function fillEventBeginGame(ChannelEvent $event);
-    abstract public function fillEventGameDataForGamer(ChannelEvent $event, string $gamreId);
+    abstract public function fillEventBeginGame(ChannelEvent $event): void;
+    abstract public function fillEventGameDataForGamer(ChannelEvent $event, Connection $gamerConnection): void;
 
     public function getChannel(): GameChannel
     {

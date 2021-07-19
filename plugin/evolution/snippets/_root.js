@@ -133,3 +133,20 @@ var resultBox = new lx.ActiveBox({
 });
 resultBox.setSnippet('resultBox');
 resultBox.hide();
+
+
+//======================================================================================================================
+// Отладочный плагин
+#lx:mode-case: dev
+	#lx:use lx.EggMenu;
+	var devMenu = new lx.EggMenu({
+		key: 'devMenu',
+		coords: [2, 2],
+		menuWidget: lx.ActiveBox,
+		menuConfig: {size: ['400px', '250px']}
+	});
+	devMenu.setPlugin('lexedo/games:evolution_Dev');
+	Snippet.onLoad(()=>{
+		Plugin->>devMenu.getInnerPlugin().environment = Plugin.environment;
+	});
+#lx:mode-end;
