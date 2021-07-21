@@ -12,7 +12,7 @@ class SocketEventListener extends lx.socket.EventListener {
 
 	onGameCreated(event) {
 		let data = event.getData();
-		let game = this._plugin.core.lists.currentGamesList.add({
+		let game = this._core.addPendingGame({
 			channelKey: data.channelKey,
 			type: data.gameData.name,
 			name: data.gameName,
@@ -22,14 +22,14 @@ class SocketEventListener extends lx.socket.EventListener {
 			isOwned: event.isFromMe()
 		});
 
-		if (!event.isFromMe() || !this._plugin.core.__inConnecting) return;
+		if (!event.isFromMe() || !this._core.__inConnecting) return;
 
 		// password
-		var connectData = this._plugin.core.__inConnecting;
-		delete this._plugin.core.__inConnecting;
-		connectData.protocol = this._plugin.core.connectData.protocol;
-		connectData.port = this._plugin.core.connectData.port;
-		connectData.url = this._plugin.core.connectData.url;
+		var connectData = this._core.__inConnecting;
+		delete this._core.__inConnecting;
+		connectData.protocol = this._core.connectData.protocol;
+		connectData.port = this._core.connectData.port;
+		connectData.url = this._core.connectData.url;
 		connectData.channelKey = data.channelKey;
 		connectData.token = data.token;
 		connectData.userChannelData = {login: lx.User.login};
@@ -37,28 +37,20 @@ class SocketEventListener extends lx.socket.EventListener {
 	}
 
 	onGameStuffed(event) {
-		this._plugin.core.lists.currentGamesList.removeByData({
-			channelKey: event.getData().channel
-		});
+		this._core.dropPendingGame(event.getData().channel);
 	}
 
 	onGameClose(event) {
-		this._plugin.core.lists.currentGamesList.removeByData({
-			channelKey: event.getData().channel
-		});
+		this._core.dropPendingGame(event.getData().channel);
 	}
 
 	onGameStateChange(event) {
-		var arr = this._plugin.core.lists.currentGamesList.select({
-			channelKey: event.getData().channel
-		});
-		if (arr.len != 1) {
+		var data = event.getData();
+		var game = this._core.getPendingGame(data.channel);
+		if (!game) {
 			lx.Tost.error('Game state changing error');
 			return;
 		}
-
-		var game = arr[0];
-		var data = event.getData();
 
 		if (data.count !== undefined) {
 			game.gamersCurrent = data.count;
@@ -70,21 +62,18 @@ class SocketEventListener extends lx.socket.EventListener {
 	onGameJoining(event) {
 		let data = event.getData();
 
-		var arr = this._plugin.core.lists.currentGamesList.select({
-			channelKey: data.channelKey
-		});
-		if (arr.len != 1) {
+		var game = this._core.getPendingGame(data.channelKey);
+		if (!game) {
 			lx.Tost.error('Game state changing error');
 			return;
 		}
 
-		var game = arr[0];
 		// password
-		var connectData = this._plugin.core.__inConnecting;
-		delete this._plugin.core.__inConnecting;
-		connectData.protocol = this._plugin.core.connectData.protocol;
-		connectData.port = this._plugin.core.connectData.port;
-		connectData.url = this._plugin.core.connectData.url;
+		var connectData = this._core.__inConnecting;
+		delete this._core.__inConnecting;
+		connectData.protocol = this._core.connectData.protocol;
+		connectData.port = this._core.connectData.port;
+		connectData.url = this._core.connectData.url;
 		connectData.channelKey = data.channelKey;
 		connectData.token = data.token;
 		connectData.userChannelData = {login: lx.User.login};

@@ -4,13 +4,17 @@
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
 /**
+ * @property {Object} gamers
  * @method getPlugin()
  * @method getEnvironment()
  * @method isPending()
  */
 class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
+	getGamerClass() {
+		return lexedo.games.Evolution.Gamer;
+	}
+
 	init() {
-		this.gamers = {};
 		this.turnSequence = [];
 		this.gamersBySequence = new lx.Collection();
 		this.isLastTurn = false;
@@ -31,30 +35,12 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		this.logger.print(text);
 	}
 
-	registerGamer(channelMate) {
-		let gamer = new lexedo.games.Evolution.Gamer(this, channelMate);
-		this.gamers[gamer.getId()] = gamer;
-	}
+	actualizeAfterReconnect(data) {
+		console.log('!!!!! actualizeAfterReconnect !!!!!!!')
 
-	getGamers() {
-		return this.gamers;
-	}
+		console.log(data);
 
-	eachGamer(f) {
-		for (let id in this.gamers)
-			f(this.gamers[id]);
-	}
 
-	getLocalGamer() {
-		return this.getGamerById(this.getEnvironment().getSocket().getLocalMate().getId());
-	}
-
-	getActiveGamer() {
-		return this.phase.gamer;
-	}
-
-	getGamerById(id) {
-		return this.gamers[id];
 	}
 
 	onBegin(data) {
@@ -63,9 +49,8 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		this.resetPhase(data);
 	}
 
-	onGamerReconnected(data) {
-		console.log('onGamerReconnected!!!!!!!');
-		console.log(data);
+	getActiveGamer() {
+		return this.phase.gamer;
 	}
 
 	reset() {

@@ -28,8 +28,7 @@ const __WebSocketHandlers = {
 		console.log(mates);
 		console.log(data);
 
-		Plugin.core.lists.gamesList.reset(data.games);
-		Plugin.core.lists.currentGamesList.reset(data.currentGames);
+		Plugin.core.reset(data.games, data.currentGames);
 	},
 
 	onMessage: function(msg) {

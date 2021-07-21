@@ -3,6 +3,7 @@
 namespace lexedo\games\evolution\backend\game;
 
 use lexedo\games\AbstractGame;
+use lexedo\games\AbstractGamer;
 use lx;
 use lexedo\games\evolution\backend\I18nHelper;
 use lexedo\games\evolution\backend\EvolutionChannel;
@@ -107,19 +108,23 @@ class Game extends AbstractGame
         $this->prepareLogEvent('logMsg.begin', [], $event);
     }
 
-    public function fillEventGameDataForGamer(ChannelEvent $event, Connection $gamerConnection): void
+    public function fillEventGameDataForGamer(ChannelEvent $event, AbstractGamer $gamer): void
     {
+        $gamerConnection = $gamer->getConnection();
+        
         if ($this->isPending()) {
-            $event->setDataForConnection($gamerConnection, ['type' => self::RECONNECTION_STATUS_PENDING]);
+            $event->addDataForConnection($gamerConnection, ['gameData' => [
+                'type' => self::RECONNECTION_STATUS_PENDING
+            ]]);
             return;
         }
 
         if ($this->isWaitingForRevenge) {
-            $event->setDataForConnection($gamerConnection, [
+            $event->addDataForConnection($gamerConnection, ['gameData' => [
                 'type' => self::RECONNECTION_STATUS_REVENGE,
                 'approvesCount' => count($this->revengeApprovements),
                 'gamersCount' => $this->getGamersCount(),
-            ]);
+            ]]);
             return;
         }
 
@@ -133,7 +138,7 @@ class Game extends AbstractGame
         // активированное и зависшее свойство
         // лог, чат?
 
-        $event->setDataForConnection($gamerConnection, $data);
+        $event->addDataForConnection($gamerConnection, ['gameData' => $data]);
     }
 
     public function fillNewPhaseEvent(ChannelEvent $event, string $phase = self::PHASE_GROW): void
@@ -418,6 +423,11 @@ class Game extends AbstractGame
         }
 
         $this->cartPack->reset();
+    }
+
+    protected function getNewGamer(Connection $connection): Gamer
+    {
+        return new Gamer($this, $connection);
     }
 
     private function prepareGamers(): void

@@ -6,6 +6,7 @@ use lexedo\games\evolution\backend\game\Cart;
 use lexedo\games\evolution\backend\game\Game;
 use lexedo\games\evolution\backend\game\PropertyBank;
 use lexedo\games\GameChannel;
+use lx\socket\Connection;
 
 /**
  * @method Game getGame()
@@ -29,10 +30,5 @@ class EvolutionChannel extends GameChannel
         return [
             'properties' => PropertyBank::$data,
         ];
-    }
-
-    protected function onGamerDisconnected(string $gamerId)
-    {
-        $this->game->onGamerLeave($gamerId);
     }
 }

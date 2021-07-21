@@ -44,13 +44,12 @@ class Environment #lx:namespace lexedo.games {
 		this._eventCore.subscribe(eventName, callback);
 	}
 
-	onGameStuffed() {
-		if (this.useScreenLock) {
-			this.screenLock.del();
-			delete this.screenLock;
-			this.useScreenLock = false;
-		}
+	onChangeGamersList(data) {
+		this.game.onChangeGamersList(data);
+	}
 
+	onGameStuffed() {
+		this.unlockScreen();
 		this.game.onStuffed();
 		this.game.setPending(false);
 	}
@@ -60,6 +59,9 @@ class Environment #lx:namespace lexedo.games {
 	}
 
 	onGamerReconnected(data) {
+		this.game.setPending(data.gameIsPending);
+		if (!this.game.isPending())
+			this.unlockScreen();
 		this.game.onGamerReconnected(data);
 	}
 
@@ -72,6 +74,14 @@ class Environment #lx:namespace lexedo.games {
 			textWrapper.style('color', 'white');
 			textWrapper->text.style('fontSize', '2em');
 			textWrapper.align(lx.CENTER, lx.MIDDLE);
+		}
+	}
+
+	unlockScreen() {
+		if (this.useScreenLock) {
+			this.screenLock.del();
+			delete this.screenLock;
+			this.useScreenLock = false;
 		}
 	}
 }

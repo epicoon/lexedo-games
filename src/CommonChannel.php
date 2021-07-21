@@ -6,6 +6,8 @@ use lx;
 use lx\ModelInterface;
 use lx\AuthenticationInterface;
 use lx\socket\Channel\Channel;
+use lx\socket\Channel\ChannelRequest;
+use lx\socket\Channel\ChannelResponse;
 use lx\socket\Connection;
 
 class CommonChannel extends Channel
@@ -14,7 +16,10 @@ class CommonChannel extends Channel
     private array $userConnetionMap = [];
     private array $userList = [];
     private array $messageLog = [];
-    private array $currentGamesList = [];
+    /** @var array<GameChannel> */
+    private array $pendingGamesList = [];
+    /** @var array<GameChannel> */
+    private array $stuffedGamesList = [];
 
     public static function getConfigProtocol(): array
     {
@@ -29,14 +34,13 @@ class CommonChannel extends Channel
         $app = lx::$app;
 
         $currentGames = [];
-        /** @var GameChannel $game */
-        foreach ($this->currentGamesList as $game) {
-            $metaData = $game->getMetaData();
-            $gameData = $app->getService('lexedo/games')->gamesProvider->getGameData($metaData['type']);
+        foreach ($this->pendingGamesList as $game) {
+            $parameters = $game->getParameters();
+            $gameData = $app->getService('lexedo/games')->gamesProvider->getGameData($parameters['type']);
             $currentGames[] = [
                 'channelKey' => $game->getName(),
-                'type' => $metaData['type'],
-                'name' => $metaData['name'],
+                'type' => $parameters['type'],
+                'name' => $parameters['name'],
                 'image' => $gameData['image'],
                 'gamersCurrent' => $game->getConnectionsCount(),
                 'gamersRequired' => $game->getNeedleGamersCount(),
@@ -50,15 +54,59 @@ class CommonChannel extends Channel
         ];
     }
 
-    public function openWaitedGame(GameChannel $gameChannel): void
+    public function handleRequest(ChannelRequest $request): ChannelResponse
     {
-        $this->currentGamesList[$gameChannel->getName()] = $gameChannel;
+        switch ($request->getRoute()) {
+            case 'test':
+                $data = $request->getData();
+                return $this->prepareResponse('ok');
+
+            case 'checkReconnections':
+                $connection = $request->getInitiator();
+                $user = $this->getUser($connection);
+                $list = [];
+                foreach ($this->stuffedGamesList as $gameChannel) {
+                    if ($gameChannel->hasDisconnectedUser($user)) {
+                        $list[] = [
+                            'channelKey' => $gameChannel->getName(),
+                            'type' => $gameChannel->getParameter('type'),
+                            'name' => $gameChannel->getParameter('name'),
+                        ];
+                    }
+                }
+                return $this->prepareResponse($list);
+
+            default:
+                return $this->prepareResponse('error');
+        }
     }
 
-    public function closeWaitedGame(GameChannel $gameChannel): void
+    public function openPendingGame(GameChannel $gameChannel): void
     {
-        if (array_key_exists($gameChannel->getName(), $this->currentGamesList)) {
-            unset($this->currentGamesList[$gameChannel->getName()]);
+        $this->pendingGamesList[$gameChannel->getName()] = $gameChannel;
+    }
+
+    public function closePendingGame(GameChannel $gameChannel): void
+    {
+        if (array_key_exists($gameChannel->getName(), $this->pendingGamesList)) {
+            unset($this->pendingGamesList[$gameChannel->getName()]);
+        }
+    }
+    
+    public function stuffPendingGame(GameChannel $gameChannel): void
+    {
+        if (array_key_exists($gameChannel->getName(), $this->pendingGamesList)) {
+            $this->stuffedGamesList[$gameChannel->getName()] = $gameChannel;
+            unset($this->pendingGamesList[$gameChannel->getName()]);
+        }
+    }
+
+    public function closeGame(GameChannel $gameChannel): void
+    {
+        if (array_key_exists($gameChannel->getName(), $this->pendingGamesList)) {
+            unset($this->pendingGamesList[$gameChannel->getName()]);
+        } elseif (array_key_exists($gameChannel->getName(), $this->stuffedGamesList)) {
+            unset($this->stuffedGamesList[$gameChannel->getName()]);
         }
     }
 

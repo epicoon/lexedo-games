@@ -41,7 +41,7 @@ class EventListener extends ChannelEventListener
         /** @var GameChannel $channel */
         $channel = $app->channels->create($channelKey, $channelClass, [
             'reconnectionPeriod' => $app->getConfig('reconnectionPeriod') ?: 0,
-            'metaData' => [
+            'parameters' => [
                 'type' => $eventData['type'],
                 'name' => $eventData['name'],
                 'gamersCount' => $eventData['gamers'],
@@ -58,7 +58,7 @@ class EventListener extends ChannelEventListener
             $app->getCommonChannel()->getUser($event->getInitiator())
         );
 
-        $app->getCommonChannel()->openWaitedGame($channel);
+        $app->getCommonChannel()->openPendingGame($channel);
 
         $subEvent = $event->replaceEvent('gameCreated', [
             'channelKey' => $channelKey,

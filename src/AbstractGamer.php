@@ -9,11 +9,22 @@ abstract class AbstractGamer
 {
     protected AbstractGame $game;
     protected Connection $connection;
+    protected string $id;
 
     public function __construct(AbstractGame $game, Connection $connection)
     {
         $this->game = $game;
         $this->connection = $connection;
+    }
+    
+    public function setId(string $id)
+    {
+        $this->id = $id;
+    }
+    
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     public function getGame(): AbstractGame
@@ -21,18 +32,23 @@ abstract class AbstractGamer
         return $this->game;
     }
 
-    public function getId(): string
+    public function getConnection(): Connection
+    {
+        return $this->connection;
+    }
+
+    public function getConnectionId(): string
     {
         return $this->connection->getId();
+    }
+    
+    public function updateConnection(Connection $connection)
+    {
+        $this->connection = $connection;
     }
 
     public function getUser(): ModelInterface
     {
         return $this->getGame()->getChannel()->getUser($this->connection);
-    }
-    
-    public function getConnection(): Connection
-    {
-        return $this->connection;
     }
 }

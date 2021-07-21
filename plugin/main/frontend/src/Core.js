@@ -1,14 +1,17 @@
 class Core {
 	constructor(plugin) {
 		this.plugin = plugin;
+		this.connectData = {};
+		this.socketEventListener = null;
+		this.socket = null;
 
-		#lx:model-collection gamesList = {
+		#lx:model-collection gamePropotypes = {
 			name,
 			image,
 			minGamers,
 			maxGamers
 		};
-		#lx:model-collection currentGamesList = {
+		#lx:model-collection pendingGames = {
 			channelKey,
 			type,
 			name,
@@ -18,13 +21,25 @@ class Core {
 			follow: {default: false},
 			isOwned: {default: false}
 		};
+		#lx:model-collection stuffedGames = {
+			channelKey,
+			type,
+			name
+		};
 
 		this.lists = {
-			gamesList,
-			currentGamesList
+			gamePropotypes,
+			pendingGames,
+			stuffedGames
 		};
 
 		this.__initGui();
+	}
+	
+	reset(games, currentGames) {
+		this.lists.gamePropotypes.reset(games);
+		this.lists.pendingGames.reset(currentGames);
+		this.lists.stuffedGames.reset();
 	}
 
 	run() {
@@ -40,30 +55,51 @@ class Core {
 		});
 	}
 
+	getStuffedGame(channelKey) {
+		var arr = this.lists.stuffedGames.select({channelKey});
+		if (arr.len != 1) return null;
+		return arr[0];
+	}
+	
+	getPendingGame(channelKey) {
+		var arr = this.lists.pendingGames.select({channelKey});
+		if (arr.len != 1) return null;
+		return arr[0];
+	}
+	
+	addPendingGame(config) {
+		return this.lists.pendingGames.add(config);
+	}
+
+	dropPendingGame(channelKey) {
+		this.lists.pendingGames.removeByData({channelKey});
+	}
+
 	checkReconnections() {
-		var map = lx.Storage.get('lexedogames') || {},
-			filter = [],
-			reconnections = [];
-		if (map.channels) for (let key in map.channels) {
-			let connectData = map.channels[key];
-			var arr = this.lists.currentGamesList.select({
-				channelKey: connectData.channelKey
-			});
-			if (arr.len != 1) continue;
+		this.socket.request('checkReconnections').then(stuffedGamesList=>{
+			var map = lx.Storage.get('lexedogames') || {};
+			if (!map.channels) return;
 
-			var game = arr[0];
-			filter.push(connectData.channelKey);
-			reconnections.push({game, connectData});
-		}
+			this.lists.stuffedGames.reset(stuffedGamesList);
+			var filter = [],
+				reconnections = [];
+			for (let key in map.channels) {
+				let connectData = map.channels[key];
+				var game = this.getPendingGame(connectData.channelKey) || this.getStuffedGame(connectData.channelKey);
+				if (!game) continue;
+				filter.push(connectData.channelKey);
+				reconnections.push({game, connectData});
+			}
 
-		lx.socket.WebSocketClient.filterReconnectionsData(filter);
-		map.channels = {};		
-		lx.Storage.set('lexedogames', map);
+			lx.socket.WebSocketClient.filterReconnectionsData(filter);
+			map.channels = {};
+			lx.Storage.set('lexedogames', map);
 
-		for (let i in reconnections) {
-			let reconnection = reconnections[i];
-			this.loadGamePlugin(reconnection.game, reconnection.connectData);
-		}
+			for (let i in reconnections) {
+				let reconnection = reconnections[i];
+				this.loadGamePlugin(reconnection.game, reconnection.connectData);
+			}
+		});
 	}
 	
 	loadGamePlugin(game, connectData) {
@@ -128,7 +164,7 @@ class Core {
 		var core = this;
 
 		this.plugin->>gamesBox.matrix({
-			items: this.lists.gamesList,
+			items: this.lists.gamePropotypes,
 			itemBox: lx.Box,
 			itemRender: function(box, model) {
 				var img = box.add(lx.Image, {geom: true, filename: model.image});
@@ -141,7 +177,7 @@ class Core {
 		});
 
 		this.plugin->>currentGamesBox.matrix({
-			items: this.lists.currentGamesList,
+			items: this.lists.pendingGames,
 			itemBox: lx.Box,
 			itemRender: function(box, model) {
 				box.grid({
@@ -160,7 +196,7 @@ class Core {
 				box.add(lx.Box, {text:'/'}).align(lx.CENTER, lx.MIDDLE);
 				box.add(lx.Box, {field:'gamersRequired'}).align(lx.CENTER, lx.MIDDLE);
 				box.click(function() {
-					core.__switchRelationToGame(core.lists.currentGamesList.at(this.index));
+					core.__switchRelationToGame(core.lists.pendingGames.at(this.index));
 				});
 				box.setField('follow', function(val) {
 					this.fill(val ? 'lightgreen' : '');

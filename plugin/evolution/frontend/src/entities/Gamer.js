@@ -2,22 +2,17 @@
 
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
-class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
+class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 	#lx:schema
 		dropping: {default: 0},
 		isPassed: {default: false},
 		isActive: {default: false},
 		canGetFood: {default: false};
 
-	constructor(game, channelMate) {
-		super();
+	constructor(game, id, channelMate) {
+		super(game, id, channelMate);
 
-		this._game = game;
-		this._id = channelMate.getId();
-		this._name = channelMate.login;
-		this._isLocal = channelMate.isLocal();
 		this._colorIndex = 0;
-
 		this.creatureHasUsedFat = null;
 
 		this._hand = new lx.Collection();
@@ -25,22 +20,6 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 
 		this._creatures = new lx.Collection();
 		__setBinds(this);
-	}
-
-	getEnvironment() {
-		return this._game.getEnvironment();
-	}
-
-	getId() {
-		return this._id;
-	}
-
-	getName() {
-		return this._name;
-	}
-
-	isLocal() {
-		return this._isLocal;
 	}
 
 	reset() {

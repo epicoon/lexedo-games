@@ -6,39 +6,21 @@ use lexedo\games\AbstractGamer;
 use lx\socket\Connection;
 
 /**
- * Class Gamer
- * @package lexedo\games\evolution\backend\game
- *
  * @property Game $game
- *
  * @method Game getGame()
  */
 class Gamer extends AbstractGamer
 {
-    /** @var bool */
-    private $isPassed;
+    private bool $isPassed;
+    private bool $canGetFood;
+    private ?Creature $creatureHasUsedFat;
+    /** @var array<Cart> */
+    private array $hand;
+    /** @var array<Creature> */
+    private array $creatures;
+    private int $droppingCounter;
 
-    /** @var bool */
-    private $canGetFood;
-
-    /** @var Creature|null */
-    private $creatureHasUsedFat;
-
-    /** @var Cart[] */
-    private $hand;
-
-    /** @var Creature[] */
-    private $creatures;
-
-    /** @var int */
-    private $droppingCounter;
-
-    /**
-     * Gamer constructor.
-     * @param Game $game
-     * @param Connection $connection
-     */
-    public function __construct($game, $connection)
+    public function __construct(Game $game, Connection $connection)
     {
         parent::__construct($game, $connection);
         $this->isPassed = false;
@@ -51,7 +33,7 @@ class Gamer extends AbstractGamer
         $this->droppingCounter = 0;
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->isPassed = false;
         $this->hand = [];
@@ -59,51 +41,32 @@ class Gamer extends AbstractGamer
         $this->droppingCounter = 0;
     }
 
-    /**
-     * @param bool $value
-     */
-    public function setPassed($value)
+    public function setPassed(bool $value): void
     {
         $this->isPassed = $value;
     }
 
-    /**
-     * @return bool
-     */
-    public function isPassed()
+    public function isPassed(): bool
     {
         return $this->isPassed;
     }
 
-    /**
-     * @return bool
-     */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->getGame()->getActiveGamer() === $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isAvailableToFeedCreature()
+    public function isAvailableToFeedCreature(): bool
     {
         return $this->canGetFood && ($this->creatureHasUsedFat === null);
     }
 
-    /**
-     * @param Creature $creature
-     * @return bool
-     */
-    public function isAvailableToUseFat($creature)
+    public function isAvailableToUseFat(Creature $creature): bool
     {
         return $this->canGetFood && ($this->creatureHasUsedFat === null || $this->creatureHasUsedFat === $creature);
     }
 
-    /**
-     * @return bool
-     */
-    public function mustEat()
+    public function mustEat(): bool
     {
         return $this->canGetFood
             && $this->isActive()
@@ -112,83 +75,58 @@ class Gamer extends AbstractGamer
             && $this->hasHungryCreature();
     }
 
-    /**
-     * @param Cart $cart
-     */
-    public function receiveCart($cart)
+    public function receiveCart(Cart $cart): void
     {
         $this->hand[$cart->getId()] = $cart;
     }
 
     /**
-     * @param Cart[] $carts
+     * @param array<Cart> $carts
      */
-    public function receiveCarts($carts)
+    public function receiveCarts(array $carts): void
     {
         $this->hand = array_merge($this->hand, $carts);
     }
 
-    /**
-     * @return int
-     */
-    public function getCartsCount()
+    public function getCartsCount(): int
     {
         return count($this->hand);
     }
 
-    /**
-     * @param int $id
-     * @return Cart|null
-     */
-    public function getCartById($id)
+    public function getCartById(int $id): ?Cart
     {
         return $this->hand[$id] ?? null;
     }
 
-    /**
-     * @return int
-     */
-    public function getHandCartsCount()
+    public function getHandCartsCount(): int
     {
         return count($this->hand);
     }
 
-    /**
-     * @param int $count
-     */
-    public function incDroppingCounter($count = 1)
+    public function incDroppingCounter(int $count = 1): void
     {
         $this->droppingCounter += $count;
     }
 
-    /**
-     * @return int
-     */
-    public function getDropping()
+    public function getDropping(): int
     {
         return $this->droppingCounter;
     }
 
-    /**
-     * @return int
-     */
-    public function getCreaturesCount()
+    public function getCreaturesCount(): int
     {
         return count($this->creatures);
     }
 
     /**
-     * @return Creature[]
+     * @return array<Creature>
      */
-    public function getCreatures()
+    public function getCreatures(): array
     {
         return $this->creatures;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasActivities()
+    public function hasActivities(): bool
     {
         if ($this->game->isPhaseGrow()) {
             return false;
@@ -203,10 +141,7 @@ class Gamer extends AbstractGamer
         return false;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasPotentialActivities()
+    public function hasPotentialActivities(): bool
     {
         if ($this->game->isPhaseGrow()) {
             return false;
@@ -221,10 +156,7 @@ class Gamer extends AbstractGamer
         return false;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasHungryCreature()
+    public function hasHungryCreature(): bool
     {
         foreach ($this->creatures as $creature) {
             if ($creature->isHungry()) {
@@ -235,27 +167,17 @@ class Gamer extends AbstractGamer
         return false;
     }
 
-    /**
-     * @return bool
-     */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return ($this->getCartsCount() == 0 && $this->getCreaturesCount() == 0);
     }
 
-    /**
-     * @param Cart $cart
-     */
-    public function dropCart($cart)
+    public function dropCart(Cart $cart): void
     {
         unset($this->hand[$cart->getId()]);
     }
 
-    /**
-     * @param Cart $cart
-     * @return Creature
-     */
-    public function cartToCreature($cart)
+    public function cartToCreature(Cart $cart): Creature
     {
         $creature = new Creature($this);
         $this->creatures[$creature->getId()] = $creature;
@@ -263,14 +185,10 @@ class Gamer extends AbstractGamer
         return $creature;
     }
 
-    /**
-     * @param Creature $creature
-     * @return array
-     */
-    public function dropCreature($creature)
+    public function dropCreature(Creature $creature): array
     {
         if (!array_key_exists($creature->getId(), $this->creatures)) {
-            return;
+            return [];
         }
 
         $relIds = $creature->dropRelPropertiesOnDie();
@@ -289,53 +207,33 @@ class Gamer extends AbstractGamer
         return $result;
     }
 
-    /**
-     * @param $id
-     * @return Creature|null
-     */
-    public function getCreatureById($id)
+    public function getCreatureById(int $id): ?Creature
     {
         return $this->creatures[$id] ?? null;
     }
 
-    /**
-     * @return void
-     */
-    public function onCreatureEaten()
+    public function onCreatureEaten(): void
     {
         $this->canGetFood = false;
     }
 
-    /**
-     * @param Creature $creature
-     */
-    public function onCreatureUseFat($creature)
+    public function onCreatureUseFat(Creature $creature): void
     {
         $this->canGetFood = false;
         $this->creatureHasUsedFat = $creature;
     }
 
-    /**
-     * @param Creature $carnival
-     */
-    public function onCreatureAttak($carnival)
+    public function onCreatureAttak(Creature $carnival): void
     {
         $this->canGetFood = false;
     }
 
-    /**
-     * @param Creature $carnival
-     * @return array|null
-     */
-    public function onCreatureSuccessfullAttak($carnival)
+    public function onCreatureSuccessfullAttak(Creature $carnival): ?array
     {
         return $this->getGame()->onCreatureSuccessfullAttak($carnival);
     }
 
-    /**
-     * @return array
-     */
-    public function runExtinction()
+    public function runExtinction(): array
     {
         $report = [
             'dropping' => 0,
@@ -360,10 +258,7 @@ class Gamer extends AbstractGamer
         return $report;
     }
 
-    /**
-     * @return void
-     */
-    public function prepareToFeedTurn()
+    public function prepareToFeedTurn(): void
     {
         $this->canGetFood = true;
         $this->creatureHasUsedFat = null;
@@ -373,10 +268,7 @@ class Gamer extends AbstractGamer
         }
     }
 
-    /**
-     * @return array
-     */
-    public function restorePropertiesState()
+    public function restorePropertiesState(): array
     {
         $result = [];
         foreach ($this->creatures as $creature) {
@@ -388,10 +280,7 @@ class Gamer extends AbstractGamer
         return $result;
     }
 
-    /**
-     * @return int
-     */
-    public function calcScore()
+    public function calcScore(): int
     {
         $result = 0;
         foreach ($this->creatures as $creature) {

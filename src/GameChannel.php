@@ -71,7 +71,7 @@ abstract class GameChannel extends Channel
      */
     public function getNeedleGamersCount()
     {
-        return $this->metaData['gamersCount'];
+        return $this->parameters['gamersCount'];
     }
 
     public function checkOnConnect(Connection $connection, array $authData): bool
@@ -109,11 +109,14 @@ abstract class GameChannel extends Channel
 
         $this->timerOff();
 
+        $gamer = $this->game->createGamer($connection);
+        $this->trigger('new-gamer', $this->getGamersData());
+
         if ($this->getConnectionsCount() == $this->getNeedleGamersCount()) {
             $this->app->getCommonChannel()->trigger('game-stuffed', [
                 'channel' => $this->getName(),
             ]);
-            $this->app->getCommonChannel()->closeWaitedGame($this);
+            $this->app->getCommonChannel()->stuffPendingGame($this);
 
             $this->isStuffed = true;
             $this->trigger('game-stuffed');
@@ -137,9 +140,26 @@ abstract class GameChannel extends Channel
             $this->app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
         }
 
+        if (!$this->game->actualizeGamerAfterReconnection($connection)) {
+            $this->trigger('error', 'Gamer reconnection problem');
+            return;
+        }
+
+        $gamer = $this->game->getGamerByConnection($connection);
+
         $event = $this->createEvent('gamer-reconnected');
-        $event->addData(['oldConnectionId' => $connection->getOldId()]);
-        $this->getGame()->fillEventGameDataForGamer($event, $connection);
+        $event->addData([
+            'reconnectionData' => [
+                'oldConnectionId' => $connection->getOldId(),
+                'newConnectionId' => $connection->getId(),
+                'gamerId' => $gamer->getId(),
+                'gameIsPending' => $this->getGame()->isPending(),
+            ],
+        ]);
+        $event->setDataForConnection($connection, [
+            'gamersData' => $this->getGamersData(),
+        ]);
+        $this->getGame()->fillEventGameDataForGamer($event, $gamer);
         $this->sendEvent($event);
     }
 
@@ -151,8 +171,14 @@ abstract class GameChannel extends Channel
             $this->timerOn();
         }
 
-        $this->app->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
-        $this->onGamerDisconnected($connection->getId());
+        $user = $this->getUser($connection);
+        if (!$user) {
+            return;
+        }
+
+        if ($this->game->isPending()) {
+            $this->app->getCommonChannel()->onUserLeaveGame($this, $user);
+        }
 
         $this->disconnectedUsers[$connection->getId()] = $this->userList[$connection->getId()];
         unset($this->userList[$connection->getId()]);
@@ -166,13 +192,28 @@ abstract class GameChannel extends Channel
             $this->app->getCommonChannel()->trigger('game-close', [
                 'channel' => $this->getName(),
             ]);
-            $this->app->getCommonChannel()->closeWaitedGame($this);
+            $this->app->getCommonChannel()->closePendingGame($this);
             $this->drop();
         } else {
-            $this->app->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
-            $this->onGamerDisconnected($connection->getId());
+            if ($this->game->isPending()) {
+                $this->app->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
+            }
+
+            $gamer = $this->game->getGamerByConnection($connection);
+            $this->game->dropGamer($gamer);
+            $this->trigger('gamer-leave', ['gamer' => $gamer->getId()]);
             unset($this->userList[$connection->getId()]);
         }
+    }
+    
+    public function hasDisconnectedUser(ModelInterface $user): bool
+    {
+        return in_array($user, $this->disconnectedUsers);
+    }
+    
+    public function beforeClose(): void
+    {
+        $this->app->getCommonChannel()->closeGame($this);
     }
 
     public function onIteration(): void
@@ -181,13 +222,21 @@ abstract class GameChannel extends Channel
             $this->app->getCommonChannel()->trigger('game-close', [
                 'channel' => $this->getName(),
             ]);
-            $this->app->getCommonChannel()->closeWaitedGame($this);
+            $this->app->getCommonChannel()->closePendingGame($this);
             $this->app->channels->close($this->getName());
         }
     }
 
-    protected function onGamerDisconnected(string $gamerId)
+    private function getGamersData(): array
     {
-        // pass
+        $gamers = $this->game->getGamers();
+        $list = [];
+        foreach ($gamers as $gamer) {
+            $list[] = [
+                'connectionId' => $gamer->getConnectionId(),
+                'gamerId' => $gamer->getId(),
+            ];
+        }
+        return $list;
     }
 }

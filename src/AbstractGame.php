@@ -2,6 +2,7 @@
 
 namespace lexedo\games;
 
+use lx\Math;
 use lx\Plugin;
 use lx\socket\Channel\ChannelEvent;
 use lx\socket\Connection;
@@ -13,6 +14,7 @@ abstract class AbstractGame
     protected bool $isActive;
     /** @var array<AbstractGamer> */
     protected array $gamers;
+    protected array $userToGamerMap;
     protected bool $isWaitingForRevenge;
     protected array $revengeApprovements;
     protected Plugin $plugin;
@@ -28,7 +30,8 @@ abstract class AbstractGame
     }
 
     abstract public function fillEventBeginGame(ChannelEvent $event): void;
-    abstract public function fillEventGameDataForGamer(ChannelEvent $event, Connection $gamerConnection): void;
+    abstract public function fillEventGameDataForGamer(ChannelEvent $event, AbstractGamer $gamer): void;
+    abstract protected function getNewGamer(Connection $connection): AbstractGamer;
 
     public function getChannel(): GameChannel
     {
@@ -73,9 +76,40 @@ abstract class AbstractGame
         return $this->gamers[$id] ?? null;
     }
 
+    public function getGamerByConnection(Connection $connection): ?AbstractGamer
+    {
+        return $this->getGamerById($this->userToGamerMap[$connection->getId()]);
+    }
+    
+    public function createGamer(Connection $connection): AbstractGamer
+    {
+        $gamer = $this->getNewGamer($connection);
+        $this->registerGamer($gamer);
+        return $gamer;
+    }
+
     public function registerGamer(AbstractGamer $gamer)
     {
-        $this->gamers[$gamer->getId()] = $gamer;
+        $id = Math::randHash();
+        $gamer->setId($id);
+        $this->userToGamerMap[$gamer->getConnectionId()] = $id;
+        $this->gamers[$id] = $gamer;
+    }
+    
+    public function actualizeGamerAfterReconnection(Connection $connection): bool
+    {
+        if (!array_key_exists($connection->getOldId(), $this->userToGamerMap)) {
+            return false;
+        }
+
+        $id = $this->userToGamerMap[$connection->getOldId()];
+        $gamer = $this->gamers[$id];
+        
+        $gamer->updateConnection($connection);
+        unset($this->userToGamerMap[$connection->getOldId()]);
+        $this->userToGamerMap[$connection->getId()] = $id;
+        
+        return true;
     }
 
     public function approveRevenge(string $gamerId): array
@@ -84,7 +118,9 @@ abstract class AbstractGame
             return [];
         }
 
-        $this->revengeApprovements[] = $gamerId;
+        if (!in_array($gamerId, $this->revengeApprovements)) {
+            $this->revengeApprovements[] = $gamerId;
+        }
         if (count($this->revengeApprovements) != $this->getGamersCount()) {
             return [
                 'start' => false,
@@ -98,9 +134,9 @@ abstract class AbstractGame
         }
     }
 
-    public function onGamerLeave(string $gamerId)
+    public function dropGamer(AbstractGamer $gamer): void
     {
+        unset($this->userToGamerMap[$gamer->getConnectionId()]);
         unset($this->gamers[$gamerId]);
-        $this->getChannel()->trigger('gamer-leave', ['gamer' => $gamerId]);
     }
 }
