@@ -89,4 +89,12 @@ class Game #lx:namespace lexedo.games {
 	getGamerById(id) {
 		return this.gamers[id];
 	}
+
+	getGamerByChannelMate(mate) {
+		for (let id in this.gamers) {
+			let gamer = this.gamers[id];
+			if (gamer._connectionId == mate.getId()) return gamer;
+		}
+		return null;		
+	}
 }

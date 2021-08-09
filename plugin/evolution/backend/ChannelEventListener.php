@@ -144,12 +144,12 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
 
         if (count($properties) == 2) {
             $asymmData = Property::bindPareProperties($properties[0], $properties[1]);
-            if ($asymmData === false) {
+            if ($asymmData === null) {
                 $this->setError($event, 'error.WrongPareProperty');
                 return;
             }
 
-            if ($asymmData) {
+            if (!empty($asymmData)) {
                 $creaturesData[0]['asymm'] = $asymmData[0];
                 $creaturesData[1]['asymm'] = $asymmData[1];
             }
@@ -352,7 +352,6 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
             return null;
         }
 
-        
         $gamerOnHold = $this->getGame()->getAttakCore()->getPendingGamer();
         if ($gamerOnHold) {
             if ($gamer === $gamerOnHold) {

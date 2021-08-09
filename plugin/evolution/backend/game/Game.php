@@ -2,9 +2,9 @@
 
 namespace lexedo\games\evolution\backend\game;
 
+use lx;
 use lexedo\games\AbstractGame;
 use lexedo\games\AbstractGamer;
-use lx;
 use lexedo\games\evolution\backend\I18nHelper;
 use lexedo\games\evolution\backend\EvolutionChannel;
 use lexedo\games\evolution\Plugin;
@@ -28,7 +28,7 @@ class Game extends AbstractGame
 {
     const RECONNECTION_STATUS_PENDING = 'pending';
     const RECONNECTION_STATUS_ACTIVE = 'active';
-    const RECONNECTION_STATUS_REVENGE = 'revenge';
+    const RECONNECTION_STATUS_REVANGE = 'revange';
 
     const PHASE_GROW = 'grow';
     const PHASE_FEED = 'feed';
@@ -46,17 +46,30 @@ class Game extends AbstractGame
     private int $foodCount;
     private bool $isLastTurn;
 
+    private int $creatureIdCounter;
+    private int $propertyIdCounter;
+    /** @var array<Creature> */
+    private array $creatures;
+    /** @var array<Property> */
+    private array $properties;
+
     public function __construct(EvolutionChannel $channel)
     {
         parent::__construct($channel);
 
         $this->log = [];
         $this->turnSequence = [];
+        $this->activeGamerIndex = 0;
         $this->attakCore = new AttakCore($this);
         $this->cartPack = null;
 
         $this->foodCount = 0;
         $this->isLastTurn = false;
+
+        $this->creatureIdCounter = 0;
+        $this->propertyIdCounter = 0;
+        $this->creatures = [];
+        $this->properties = [];
 
         $this->plugin = lx::$app->getPlugin('lexedo/games:evolution');
     }
@@ -101,6 +114,50 @@ class Game extends AbstractGame
         $carnivalCore = new CarnivalCore($this);
         return $carnivalCore->onAttak($carnival);
     }
+    
+    public function getCondition(): GameCondition
+    {
+        $condition = new GameCondition($this);
+        $condition
+            ->setTurnSequence($this->turnSequence)
+            ->setActiveGamer($this->getActiveGamer()->getId())
+            ->setLastTurn($this->isLastTurn)
+            ->setActivePhase($this->activePhase)
+            ->setFoodCount($this->foodCount);
+
+        if ($this->cartPack) {
+            $condition->setCartPack([
+                'index' => $this->cartPack->getIndex(),
+                'sequence' => $this->cartPack->getSequence(),
+            ]);
+        }
+
+        $creatures = [];
+        foreach ($this->creatures as $creature) {
+            $creatures[] = $creature->toArray();
+        }
+        $condition->setCreatures($creatures);
+
+        $properties = [];
+        foreach ($this->properties as $property) {
+            $properties[] = $property->toArray();
+        }
+        $condition->setProperties($properties);
+        
+        if ($this->attakCore->isOnHold()) {
+            $condition->setAttakState([
+                'onHold' => true,
+                'carnivalGamer' => $this->attakCore->getCarnival()->getGamer()->getId(),
+                'preyGamer' => $this->attakCore->getPrey()->getGamer()->getId(),
+                'carnival' => $this->attakCore->getCarnival()->getId(),
+                'preyGamer' => $this->attakCore->getPrey()->getId(),
+            ]);
+        } else {
+            $condition->setAttakState(['onHold' => false]);
+        }
+        
+        return $condition;
+    }
 
     public function fillEventBeginGame(ChannelEvent $event): void
     {
@@ -121,23 +178,17 @@ class Game extends AbstractGame
 
         if ($this->isWaitingForRevenge) {
             $event->addDataForConnection($gamerConnection, ['gameData' => [
-                'type' => self::RECONNECTION_STATUS_REVENGE,
+                'type' => self::RECONNECTION_STATUS_REVANGE,
                 'approvesCount' => count($this->revengeApprovements),
-                'gamersCount' => $this->getGamersCount(),
+                'gamersCount' => $this->getNeedleGamersCount(),
+                'revengeApprovements' => $this->revengeApprovements,
             ]]);
             return;
         }
 
         $data = ['type' => self::RECONNECTION_STATUS_ACTIVE];
 
-        //TODO active
-        // карты игрока
-        // стадия, данные стадии
-        // активный игрок, порядок ходов
-        // существа, свойства и их статусы
-        // активированное и зависшее свойство
-        // лог, чат?
-
+        $data['condition'] = $this->prepareConditionForGamer($gamer, $this->getCondition());
         $event->addDataForConnection($gamerConnection, ['gameData' => $data]);
     }
 
@@ -294,6 +345,42 @@ class Game extends AbstractGame
         }
 
         return true;
+    }
+
+    public function getCreature(int $id): ?Creature
+    {
+        return $this->creatures[$id] ?? null;
+    }
+
+    public function getProperty(int $id): ?Property
+    {
+        return $this->properties[$id] ?? null;
+    }
+
+    public function getNewCreature(Gamer $gamer): Creature
+    {
+        $this->creatureIdCounter++;
+        $creature = new Creature($gamer, $this->creatureIdCounter);
+        $this->creatures[$creature->getId()] = $creature;
+        return $creature;
+    }
+    
+    public function getNewProperty(Creature $creature, int $propertyType): Property
+    {
+        $this->propertyIdCounter++;
+        $property = new Property($creature, $propertyType, $this->propertyIdCounter);
+        $this->properties[$property->getId()] = $property;
+        return $property;
+    }
+    
+    public function dropCreature(Creature $creature): void
+    {
+        unset($this->creatures[$creature->getId()]);
+    }
+    
+    public function dropProperty(Property $property): void
+    {
+        unset($this->properties[$property->getId()]);
     }
 
     public function gamerAllowedToEat(Gamer $gamer): bool
@@ -508,5 +595,27 @@ class Game extends AbstractGame
         if ($this->activeGamerIndex == count($this->gamers)) {
             $this->activeGamerIndex = 0;
         }
+    }
+
+    private function prepareConditionForGamer(Gamer $gamer, GameCondition $condition): array
+    {
+        $result = $condition->toArray();
+        unset($result['cartPack']);
+        foreach ($result['gamers'] as $id => &$iGamer) {
+            if ($id == $gamer->getId()) {
+                $carts = [];
+                foreach ($iGamer['carts'] as $cartId) {
+                    $carts[] = $this->cartPack->getCart($cartId)->toArray();
+                }
+                $iGamer['carts'] = $carts;
+            } else {
+                unset($iGamer['carts']);
+            }
+        }
+        unset($iGamer);
+
+        $result['needleGamersCount'] = $this->getNeedleGamersCount();
+
+        return $result;
     }
 }

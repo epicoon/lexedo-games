@@ -29,6 +29,10 @@ class Constants #lx:namespace lexedo.games.Evolution {
 		FOOD_TYPE_BLUE = \lexedo\games\evolution\backend\game\Game::FOOD_TYPE_BLUE,
 		FOOD_TYPE_FAT = \lexedo\games\evolution\backend\game\Game::FOOD_TYPE_FAT,
 
+		RECONNECTION_STATUS_PENDING = \lexedo\games\evolution\backend\game\Game::RECONNECTION_STATUS_PENDING,
+		RECONNECTION_STATUS_REVANGE = \lexedo\games\evolution\backend\game\Game::RECONNECTION_STATUS_REVANGE,
+		RECONNECTION_STATUS_ACTIVE = \lexedo\games\evolution\backend\game\Game::RECONNECTION_STATUS_ACTIVE,
+
 		MOUSE_MODE_NONE = 0,
 		MOUSE_MODE_NEW_PROPERTY = 1,
 		MOUSE_MODE_USE_PROPERTY = 2, /* MIMICRY, DROP_TAIL, PIRACY, CARNIVAL */

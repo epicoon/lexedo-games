@@ -36,17 +36,35 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 	}
 
 	actualizeAfterReconnect(data) {
-		console.log('!!!!! actualizeAfterReconnect !!!!!!!')
+		if (data.type == #evConst.RECONNECTION_STATUS_PENDING) {
+			return;
+		}
 
-		console.log(data);
+		// Revange refreshing
+		if (data.type == #evConst.RECONNECTION_STATUS_REVANGE) {
+			var params = {
+				approvesCount: data.approvesCount,
+				gamersCount: data.gamersCount
+			};
+			this.showResult();
+			this.onRevengeApproved(params, data.revengeApprovements.contains(this.getLocalGamer().getId()));
+			return;
+		}
 
-
+		let restorer = new #ev.GameRestorer(this, data.condition);
+		restorer.run();
 	}
 
 	onBegin(data) {
 		this.reset();
 		this.getLocalGamer().receiveCarts(data.carts);
 		this.resetPhase(data);
+	}
+
+	onRevengeApproved(data, isFromMe) {
+		var resultBox = this.getPlugin()->>resultBox;
+		if (data.start) resultBox.hide();
+		else resultBox.refresh(data.approvesCount, data.gamersCount, isFromMe);		
 	}
 
 	getActiveGamer() {
@@ -253,12 +271,4 @@ function __setGui(self) {
 
 	// Результаты игры
 	plugin->>resultMatrix.env = self.getEnvironment();
-	self.getEnvironment().subscribeEvent('revengeApproved', (data, isFromMe)=>{
-		if (data.start) plugin->>resultBox.hide();
-		else {
-			let but = plugin->>butRestart;
-			if (isFromMe) but.disabled(true);
-			but.text(#lx:i18n(revenge) + ' (' + data.approvesCount + '/'+ data.gamersCount + ')');
-		}
-	});
 }

@@ -13,24 +13,56 @@ class Gamer extends AbstractGamer
 {
     private bool $isPassed;
     private bool $canGetFood;
+    private int $droppingCounter;
     private ?Creature $creatureHasUsedFat;
     /** @var array<Cart> */
     private array $hand;
     /** @var array<Creature> */
     private array $creatures;
-    private int $droppingCounter;
 
     public function __construct(Game $game, Connection $connection)
     {
         parent::__construct($game, $connection);
+
         $this->isPassed = false;
-
         $this->canGetFood = false;
-        $this->creatureHasUsedFat = null;
+        $this->droppingCounter = 0;
 
+        $this->creatureHasUsedFat = null;
         $this->hand = [];
         $this->creatures = [];
-        $this->droppingCounter = 0;
+    }
+
+    public function toArray(): array
+    {
+        $carts = [];
+        foreach ($this->hand as $cart) {
+            $carts[] = $cart->getId();
+        }
+        $creatures = [];
+        foreach ($this->creatures as $creature) {
+            $creatures[] = $creature->getId();
+        }
+        return [
+            'gamerId' => $this->getId(),
+            'isPassed' => $this->isPassed,
+            'canGetFood' => $this->canGetFood,
+            'droppingCounter' => $this->droppingCounter,
+            'carts' => $carts,
+            'creatures' => $creatures,
+        ];
+    }
+
+    public static function createFromArray(Game $game, Connection $connection, array $data): Gamer
+    {
+        $gamer = new self($game, $connection);
+        $gamer->isPassed = $data['isPassed'];
+        $gamer->canGetFood = $data['canGetFood'];
+        $gamer->droppingCounter = $data['droppingCounter'];
+
+        //TODO creatureHasUsedFat, creatures, carts
+
+        return $gamer;
     }
 
     public function reset(): void
@@ -179,7 +211,7 @@ class Gamer extends AbstractGamer
 
     public function cartToCreature(Cart $cart): Creature
     {
-        $creature = new Creature($this);
+        $creature = $this->getGame()->getNewCreature($this);
         $this->creatures[$creature->getId()] = $creature;
         unset($this->hand[$cart->getId()]);
         return $creature;
@@ -195,6 +227,7 @@ class Gamer extends AbstractGamer
         $dropped = $creature->getCartCount();
         $this->incDroppingCounter($dropped);
         unset($this->creatures[$creature->getId()]);
+        $this->getGame()->dropCreature($creature);
 
         $result = [
             'dropping' => $dropped,

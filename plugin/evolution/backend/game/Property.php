@@ -4,51 +4,26 @@ namespace lexedo\games\evolution\backend\game;
 
 use lexedo\games\evolution\backend\game\PropertyBehavior\PropertyBehavior;
 
-/**
- * Class Property
- * @package lexedo\games\evolution\backend\game
- */
 class Property
 {
-    private static $idCounter = 0;
+    private int $id;
+    private Creature $creature;
+    private int $type;
+    private array $currentFood;
+    private bool $isPaused;
+    private int $isStopped;
+    private PropertyBehavior $behavior;
+    private ?Property $relProperty;
+    private int $asymm;
+    private bool $isAvatar;
 
-    /** @var int */
-    private $id;
-
-    /** @var Creature */
-    private $creature;
-
-    /** @var int */
-    private $type;
-
-    /** @var int */
-    private $currentFood;
-
-    /** @var bool */
-    private $isPaused;
-
-    /** @var int */
-    private $isStopped;
-
-    /** @var PropertyBehavior */
-    private $behavior;
-
-    /** @var Property|null */
-    private $relProperty;
-
-    /** @var int */
-    private $asymm;
-
-    /** @var bool */
-    private $isAvatar;
-
-    public function __construct($creature, $type)
+    public function __construct(Creature $creature, int $type, int $id)
     {
-        $this->id = ++self::$idCounter;
+        $this->id = $id;
         $this->creature = $creature;
         $this->type = $type;
 
-        $this->currentFood = 0;
+        $this->currentFood = [];
         $this->isPaused = false;
         $this->isStopped = 0;
 
@@ -58,15 +33,44 @@ class Property
         $this->isAvatar = false;
     }
 
-    /**
-     * @param Property $property1
-     * @param Property $property2
-     * @return array|null
-     */
-    public static function bindPareProperties($property1, $property2)
+    public function toArray(): array
+    {
+        return [
+            'propertyId' => $this->getId(),
+            'creatureId' => $this->getCreature()->getId(),
+            'type' => $this->type,
+            'currentFood' => $this->currentFood,
+            'isPaused' => $this->isPaused,
+            'isStopped' => $this->isStopped,
+            'relProperty' => $this->relProperty ? $this->relProperty->getId() : null,
+            'asymm' => $this->asymm,
+            'isAvatar' => $this->isAvatar,
+        ];
+    }
+
+    public static function createFromArray(Game $game, array $data): Property
+    {
+        $creature = $game->getCreature($data['creatureId']);
+        $property = new self($creature, $data['type'], $data['propertyId']);
+        $property->currentFood = $data['currentFood'];
+        $property->isPaused = $data['isPaused'];
+        $property->isStopped = $data['isStopped'];
+        if ($data['relProperty']) {
+            $relProperty = $game->getProperty($data['relProperty']);
+            if ($relProperty) {
+                $property->setRelation($relProperty);
+                $relProperty->setRelation($property);
+            }
+        }
+        $property->asymm = $data['asymm'];
+        $property->isAvatar = $data['isAvatar'];
+        return $property;
+    }
+
+    public static function bindPareProperties(Property $property1, Property $property2): ?array
     {
         if ($property1->getType() != $property2->getType()) {
-            return false;
+            return null;
         }
 
         $property1->setRelation($property2);
@@ -74,7 +78,7 @@ class Property
         $property2->setAvatar();
         
         if (PropertyBank::isSymmetric($property1->getType())) {
-            return null;
+            return [];
         }
 
         $property1->setAsymm(0);
@@ -82,221 +86,145 @@ class Property
         return [0, 1];
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return int
-     */
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return PropertyBank::getName($this->type);
     }
 
-    /**
-     * @return bool
-     */
-    public function isAvailable()
+    public function isAvailable(): bool
     {
         return !$this->isPaused && ($this->isStopped == 0);
     }
 
-    public function setAvatar()
+    public function setAvatar(): void
     {
         $this->isAvatar = true;
     }
 
-    /**
-     * @param int $asymm
-     */
-    public function setAsymm($asymm)
+    public function setAsymm(int $asymm): void
     {
         $this->asymm = $asymm;
     }
 
-    /**
-     * @return int
-     */
-    public function getAsymm()
+    public function getAsymm(): int
     {
         return $this->asymm;
     }
 
-    /**
-     * @return Game
-     */
-    public function getGame()
+    public function getGame(): Game
     {
         return $this->getGamer()->getGame();
     }
 
-    /**
-     * @return Gamer
-     */
-    public function getGamer()
+    public function getGamer(): Gamer
     {
         return $this->creature->getGamer();
     }
 
-    /**
-     * @return Creature
-     */
-    public function getCreature()
+    public function getCreature(): Creature
     {
         return $this->creature;
     }
 
-    /**
-     * @return PropertyBehavior
-     */
-    public function getBehavior()
+    public function getBehavior(): PropertyBehavior
     {
         return $this->behavior;
     }
 
-    /**
-     * @param int $type
-     * @return bool
-     */
-    public function is($type)
+    public function is(int $type): bool
     {
         return $this->type == $type;
     }
 
-    /**
-     * @param bool $value
-     */
-    public function setPaused($value = true)
+    public function setPaused(bool $value = true): void
     {
         $this->isPaused = $value;
     }
 
-    /**
-     * @return bool
-     */
-    public function isPaused()
+    public function isPaused(): bool
     {
         return $this->isPaused;
     }
 
-    /**
-     * @param int $turns
-     */
-    public function setStopped($turns = 1)
+    public function setStopped(int $turns = 1): void
     {
         $this->isStopped = $turns;
     }
 
-    /**
-     * @return int
-     */
-    public function getStopped()
+    public function getStopped(): int
     {
         return $this->isStopped;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasActivity()
+    public function hasActivity(): bool
     {
         return $this->behavior->hasActivity();
     }
 
-    /**
-     * @return bool
-     */
-    public function hasPotentialActivity()
+    public function hasPotentialActivity(): bool
     {
         return $this->behavior->hasPotentialActivity();
     }
 
-    /**
-     * @return int
-     */
-    public function getNeedFood()
+    public function getNeedFood(): int
     {
         return PropertyBank::getNeedFood($this->type);
     }
 
-    /**
-     * @return int
-     */
-    public function getEatenFood()
+    public function getEatenFood(): int
     {
         if ($this->is(PropertyBank::FAT)) {
             return 0;
         }
 
-        return $this->currentFood;
+        return count($this->currentFood);
     }
 
-    /**
-     * @return bool
-     */
-    public function hasFat()
+    public function hasFat(): bool
     {
         if ($this->is(PropertyBank::FAT)) {
-            return $this->currentFood > 0;
+            return count($this->currentFood) > 0;
         }
 
         return false;
     }
 
-    /**
-     * @return void
-     */
-    public function eat()
+    public function eat(string $foodType): void
     {
-        $this->currentFood++;
+        $this->currentFood[] = $foodType;
     }
 
-    /**
-     * @return bool
-     */
-    public function loseFood()
+    public function loseFood(): bool
     {
-        if ($this->currentFood < 1) {
+        if (count($this->currentFood) < 1) {
             return false;
         }
 
-        $this->currentFood--;
+        array_pop($this->currentFood);
         return true;
     }
 
-    /**
-     * @param Property $relProperty
-     */
-    public function setRelation($relProperty)
+    public function setRelation(Property $relProperty): void
     {
         $this->relProperty = $relProperty;
     }
 
-    /**
-     * @return Property|null
-     */
-    public function getRelatedProperty()
+    public function getRelatedProperty(): ?Property
     {
         return $this->relProperty;
     }
 
-    /**
-     * @return Creature|null
-     */
-    public function getRelatedCreature()
+    public function getRelatedCreature(): ?Creature
     {
         if (!$this->relProperty) {
             return null;
@@ -305,24 +233,18 @@ class Property
         return $this->relProperty->getCreature();
     }
 
-    /**
-     * @return void
-     */
-    public function prepareToFeedTurn()
+    public function prepareToFeedTurn(): void
     {
         $this->isPaused = false;
     }
 
-    /**
-     * @return array
-     */
-    public function onFeedPhaseFinished()
+    public function onFeedPhaseFinished(): array
     {
         if ($this->is(PropertyBank::FAT)) {
             return [];
         }
 
-        $this->currentFood = 0;
+        $this->currentFood = [];
 
         $this->isPaused = false;
         $map = [];
@@ -334,11 +256,7 @@ class Property
         return $this->behavior->getStateReport($map);
     }
 
-    /**
-     * @param string $foodType
-     * @return array|null
-     */
-    public function onFeed($foodType)
+    public function onFeed(string $foodType): ?array
     {
         return $this->behavior->onFeed($foodType);
     }
@@ -363,10 +281,7 @@ class Property
         return $result;
     }
 
-    /**
-     * @return int
-     */
-    public function calcScore()
+    public function calcScore(): int
     {
         if ($this->isAvatar) {
             return 0;

@@ -2,51 +2,31 @@
 
 namespace lexedo\games\evolution\backend\game;
 
-/**
- * Class Cart
- * @package lexedo\games\evolution\backend\game
- */
 class Cart
 {
-    private static $idCounter = 0;
+    private int $id;
+    private array $properties = [];
 
-    /** @var int */
-    private $id;
-
-    /** @var array */
-    private $properties = [];
-
-    public function __construct($prop1, $prop2 = null)
+    public function __construct(int $id, int $prop1, ?int $prop2 = null)
     {
-        $this->id = ++self::$idCounter;
-
+        $this->id = $id;
         $this->properties[] = $prop1;
         if ($prop2) {
             $this->properties[] = $prop2;
         }
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $type
-     * @return bool
-     */
-    public function hasProperty($type)
+    public function hasProperty(int $type): bool
     {
         return in_array($type, $this->properties);
     }
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return array_merge([$this->id], $this->properties);
     }

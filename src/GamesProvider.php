@@ -9,18 +9,11 @@ use lx\FusionComponentTrait;
 use lx\ObjectTrait;
 use lx\Plugin;
 
-/**
- * Class GamesProvider
- * @package lexedo\games
- */
 class GamesProvider implements FusionComponentInterface
 {
     use FusionComponentTrait;
 
-    /**
-     * @return array
-     */
-    protected function getGames()
+    protected function getGames(): array
     {
         return [
             'chess' => [
@@ -40,10 +33,7 @@ class GamesProvider implements FusionComponentInterface
         ];
     }
 
-    /**
-     * @return array
-     */
-    public function getFullData()
+    public function getFullData(): array
     {
         $result = [];
         foreach ($this->getGames() as $name => $game) {
@@ -57,11 +47,7 @@ class GamesProvider implements FusionComponentInterface
         return $result;
     }
 
-    /**
-     * @param $name
-     * @return array|null
-     */
-    public function getGameData($name)
+    public function getGameData(string $name): ?array
     {
         if (!array_key_exists($name, $this->getGames())) {
             return null;
@@ -76,11 +62,7 @@ class GamesProvider implements FusionComponentInterface
         ];
     }
 
-    /**
-     * @param string $name
-     * @return string|null
-     */
-    public function getGameChannelClass($name)
+    public function getGameChannelClass(string $name): ?string
     {
         if (!array_key_exists($name, $this->getGames())) {
             return null;
@@ -89,11 +71,7 @@ class GamesProvider implements FusionComponentInterface
         return $this->getGames()[$name]['channel'] ?? null;
     }
 
-    /**
-     * @param string $name
-     * @return Plugin|null
-     */
-    public function getGamePlugin($name)
+    public function getGamePlugin(string $name): ?Plugin
     {
         if (!array_key_exists($name, $this->getGames())) {
             return null;

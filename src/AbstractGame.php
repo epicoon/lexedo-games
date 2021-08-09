@@ -29,6 +29,7 @@ abstract class AbstractGame
         $this->revengeApprovements = [];
     }
 
+    abstract public function getCondition(): AbstractGameCondition;
     abstract public function fillEventBeginGame(ChannelEvent $event): void;
     abstract public function fillEventGameDataForGamer(ChannelEvent $event, AbstractGamer $gamer): void;
     abstract protected function getNewGamer(Connection $connection): AbstractGamer;
@@ -61,6 +62,21 @@ abstract class AbstractGame
     public function getGamersCount(): int
     {
         return count($this->gamers);
+    }
+
+    public function getNeedleGamersCount(): int
+    {
+        return $this->getChannel()->getNeedleGamersCount();
+    }
+
+    public function isWaitingForRevenge(): bool
+    {
+        return $this->isWaitingForRevenge;
+    }
+    
+    public function getRevengeApprovements(): array
+    {
+        return $this->revengeApprovements;
     }
 
     /**
@@ -121,11 +137,11 @@ abstract class AbstractGame
         if (!in_array($gamerId, $this->revengeApprovements)) {
             $this->revengeApprovements[] = $gamerId;
         }
-        if (count($this->revengeApprovements) != $this->getGamersCount()) {
+        if (count($this->revengeApprovements) != $this->getNeedleGamersCount()) {
             return [
                 'start' => false,
                 'approvesCount' => count($this->revengeApprovements),
-                'gamersCount' => $this->getGamersCount(),
+                'gamersCount' => $this->getNeedleGamersCount(),
             ];
         } else {
             return [

@@ -102,7 +102,7 @@ class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexe
 
 	onApproveRevenge(event) {
 		let report = event.getData().report;
-		this.getEnvironment().triggerEvent('revengeApproved', [report, event.isFromMe()]);
+		this.getEnvironment().game.onRevengeApproved(report, event.isFromMe());
 	}
 
 	onGamerLeave(event) {

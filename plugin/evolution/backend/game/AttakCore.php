@@ -48,7 +48,7 @@ class AttakCore
     }
 
     /**
-     * @return Gamer|null
+     * @return Creature|null
      */
     public function getCarnival()
     {
@@ -57,6 +57,18 @@ class AttakCore
         }
 
         return $this->hold['carnival'];
+    }
+
+    /**
+     * @return Creature|null
+     */
+    public function getPrey()
+    {
+        if ($this->hold === null) {
+            return null;
+        }
+
+        return $this->hold['prey'];
     }
 
     /**

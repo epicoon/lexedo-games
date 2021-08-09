@@ -7,10 +7,6 @@ use lx\ModelInterface;
 use lx\socket\Channel\Channel;
 use lx\socket\Connection;
 
-/**
- * Class GameChannel
- * @package lexedo\games
- */
 abstract class GameChannel extends Channel
 {
     protected GamesServer $app;
@@ -24,11 +20,7 @@ abstract class GameChannel extends Channel
     /** @var array<ModelInterface> */
     private array $disconnectedUsers = [];
 
-    /**
-     * GameChannel constructor.
-     * @param array $config
-     */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         parent::__construct($config);
 
@@ -40,36 +32,22 @@ abstract class GameChannel extends Channel
         return $this->game;
     }
 
-    /**
-     * @return bool
-     */
-    public function isStuffed()
+    public function isStuffed(): bool
     {
         return $this->isStuffed;
     }
 
-    /**
-     * @param string $token
-     * @param ModelInterface $user
-     */
-    public function addUserWaiting($token, $user)
+    public function addUserWaiting(string $token, ModelInterface $user): void
     {
         $this->usersWaitingList[$token] = $user;
     }
 
-    /**
-     * @param Connection $connection
-     * @return ModelInterface
-     */
-    public function getUser($connection)
+    public function getUser(Connection $connection): ?ModelInterface
     {
         return $this->userList[$connection->getId()] ?? null;
     }
 
-    /**
-     * @return int
-     */
-    public function getNeedleGamersCount()
+    public function getNeedleGamersCount(): int
     {
         return $this->parameters['gamersCount'];
     }

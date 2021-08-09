@@ -1,5 +1,6 @@
 #lx:private;
 
+#lx:macros ev {lexedo.games.Evolution};
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
 class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
@@ -23,6 +24,7 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 	}
 
 	reset() {
+		this._colorIndex = 0;
 		this.dropping = 0;
 		this.isPassed = false;
 		this.isActive = false;
@@ -72,7 +74,7 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 
 	receiveCarts(carts) {
 		carts.each(cartData=>{
-			let cart = new lexedo.games.Evolution.Cart(
+			let cart = new #ev.Cart(
 				this.getEnvironment(),
 				cartData[0],
 				cartData[1],
@@ -106,10 +108,14 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 
 	cartToCreature(cart, creatureId) {
 		this._hand.remove(cart);
+		this.addCreature(creatureId);
+	}
 
+	addCreature(creatureId) {
 		this._creatures.add(
-			new lexedo.games.Evolution.Creature(this, creatureId)
+			new #ev.Creature(this, creatureId)
 		);
+		return this._creatures.last();
 	}
 
 	setCreaturesFeedMode(bool) {

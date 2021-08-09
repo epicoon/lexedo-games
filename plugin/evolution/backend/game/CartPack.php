@@ -4,82 +4,104 @@ namespace lexedo\games\evolution\backend\game;
 
 use lx\Math;
 
-/**
- * Class CartPack
- * @package lexedo\games\evolution\backend\game
- */
 class CartPack
 {
-    /** @var int */
-    private $index;
+    private int $cartIdCounter;
+    private int $index;
+    /** @var array<Cart> */
+    private array $carts;
+    /** @var array<Cart> */
+    private array $cartsMap;
 
-    /** @var array */
-    private $carts;
-
-    /**
-     * CartPack constructor.
-     */
     public function __construct()
     {
+        $this->cartIdCounter = 1;
         $this->index = 0;
         $this->carts = [];
         for ($i=0; $i<4; $i++) {
-            $this->carts[] = new Cart(PropertyBank::BIG, PropertyBank::FAT);
-            $this->carts[] = new Cart(PropertyBank::HIDE, PropertyBank::FAT);
-            $this->carts[] = new Cart(PropertyBank::BIG, PropertyBank::CARNIVAL);
-            $this->carts[] = new Cart(PropertyBank::HIBERNATE, PropertyBank::CARNIVAL);
-            $this->carts[] = new Cart(PropertyBank::TRAMP, PropertyBank::FAT);
-            $this->carts[] = new Cart(PropertyBank::VENOM, PropertyBank::CARNIVAL);
-            $this->carts[] = new Cart(PropertyBank::INTERACT, PropertyBank::CARNIVAL);
-            $this->carts[] = new Cart(PropertyBank::PARASITE, PropertyBank::FAT);
-            $this->carts[] = new Cart(PropertyBank::PARASITE, PropertyBank::CARNIVAL);
-            $this->carts[] = new Cart(PropertyBank::ACUTE, PropertyBank::FAT);
-            $this->carts[] = new Cart(PropertyBank::HOLE, PropertyBank::FAT);
-            $this->carts[] = new Cart(PropertyBank::COOP, PropertyBank::CARNIVAL);
-            $this->carts[] = new Cart(PropertyBank::COOP, PropertyBank::FAT);
-            $this->carts[] = new Cart(PropertyBank::FAST);
-            $this->carts[] = new Cart(PropertyBank::SWIM);
-            $this->carts[] = new Cart(PropertyBank::SWIM);
-            $this->carts[] = new Cart(PropertyBank::MIMICRY);
-            $this->carts[] = new Cart(PropertyBank::DROP_TAIL);
-            $this->carts[] = new Cart(PropertyBank::SCAVENGER);
-            $this->carts[] = new Cart(PropertyBank::PIRACY);
-            $this->carts[] = new Cart(PropertyBank::SYMBIOSIS);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::BIG, PropertyBank::FAT);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::HIDE, PropertyBank::FAT);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::BIG, PropertyBank::CARNIVAL);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::HIBERNATE, PropertyBank::CARNIVAL);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::TRAMP, PropertyBank::FAT);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::VENOM, PropertyBank::CARNIVAL);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::INTERACT, PropertyBank::CARNIVAL);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::PARASITE, PropertyBank::FAT);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::PARASITE, PropertyBank::CARNIVAL);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::ACUTE, PropertyBank::FAT);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::HOLE, PropertyBank::FAT);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::COOP, PropertyBank::CARNIVAL);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::COOP, PropertyBank::FAT);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::FAST);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::SWIM);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::SWIM);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::MIMICRY);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::DROP_TAIL);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::SCAVENGER);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::PIRACY);
+            $this->carts[] = new Cart($this->cartIdCounter++, PropertyBank::SYMBIOSIS);
+        }
+
+        $this->cartsMap = [];
+        foreach ($this->carts as $cart) {
+            $this->cartsMap[$cart->getId()] = $cart;
         }
     }
+    
+    public function getCart($id): ?Cart
+    {
+        return $this->cartsMap[$id] ?? null;
+    }
 
-    public function shuffle()
+    public function shuffle(): void
     {
         $this->carts = Math::shuffleArray($this->carts);
     }
 
-    public function reset()
+    public function getIndex(): int
+    {
+        return $this->index;
+    }
+
+    public function getSequence(): array
+    {
+        $result = [];
+        foreach ($this->carts as $cart) {
+            $result[] = $cart->getId();
+        }
+        return $result;
+    }
+
+    public function set(array $cartsSequence, int $index): void
+    {
+        $this->index = [];
+        $carts = array_flip($cartsSequence);
+        foreach ($this->carts as $cart) {
+            $carts[$cart->getId()] = $cart;
+        }
+        $this->carts = array_values($carts);
+    }
+
+    public function reset(): void
     {
         $this->shuffle();
         $this->index = 0;
     }
 
-    /**
-     * @return int
-     */
-    public function getCount()
+    public function getCount(): int
     {
         return count($this->carts) - $this->index;
     }
 
-    /**
-     * @return bool
-     */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return ($this->getCount() === 0);
     }
 
     /**
-     * @param int $count
-     * @return array
+     * @return array<Cart>
      */
-    public function handOver($count)
+    public function handOver(int $count): array
     {
         $result = [];
         $count = min($count, $this->getCount());
@@ -89,10 +111,7 @@ class CartPack
         return $result;
     }
 
-    /**
-     * @return Cart|null
-     */
-    public function handOverOne()
+    public function handOverOne(): ?Cart
     {
         $carts = $this->handOver(1);
         if (empty($carts)) {

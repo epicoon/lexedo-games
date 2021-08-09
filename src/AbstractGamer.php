@@ -9,12 +9,14 @@ abstract class AbstractGamer
 {
     protected AbstractGame $game;
     protected Connection $connection;
+    protected ModelInterface $user;
     protected string $id;
 
     public function __construct(AbstractGame $game, Connection $connection)
     {
         $this->game = $game;
         $this->connection = $connection;
+        $this->user = $game->getChannel()->getUser($connection);
     }
     
     public function setId(string $id)
@@ -49,6 +51,6 @@ abstract class AbstractGamer
 
     public function getUser(): ModelInterface
     {
-        return $this->getGame()->getChannel()->getUser($this->connection);
+        return $this->user;
     }
 }

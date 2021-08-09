@@ -60,10 +60,8 @@ class AttakCore #lx:namespace lexedo.games.Evolution {
 	processAttakResult(carnival, data) {
 		this.__unholdAttak();
 
-		let preyGamer = this.game.getGamerById(data.preyGamer);
-
 		if (data.result == #evConst.ATTAK_RESULT_PENDING) {
-			this.__holdAttak(data);
+			this.holdAttak(data);
 			return;
 		}
 
@@ -71,6 +69,7 @@ class AttakCore #lx:namespace lexedo.games.Evolution {
 			this.game.applyFeedReport(data.feedReport);
 			if (data.poisoned) carnival.poison();
 
+			let preyGamer = this.game.getGamerById(data.preyGamer);
 			preyGamer.dropCreature(data.preyReport);
 		}
 	}
@@ -90,7 +89,7 @@ class AttakCore #lx:namespace lexedo.games.Evolution {
 		});
 	}
 
-	__holdAttak(data) {
+	holdAttak(data) {
 		let carnivalGamer = this.game.getGamerById(data.carnivalGamer);
 		let carnival = carnivalGamer.getCreatureById(data.carnival);
 

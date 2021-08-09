@@ -10,7 +10,7 @@ class GameChat {
 
 	receive(event) {
 		this.messages.insert(0, {
-			from: this.game.getGamerById(event.getAuthor().getId()),
+			from: this.game.getGamerByChannelMate(event.getAuthor()),
 			text: event.getData().text
 		});
 	}

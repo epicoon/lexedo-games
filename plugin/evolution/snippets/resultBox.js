@@ -41,6 +41,11 @@ Snippet.onLoad(()=>{
 		Snippet->>butRestart.disabled(false);
 		Plugin->>resultBox.show();
 	};
+	resultMatrix.refresh = function(approvesCount, gamersCount, isFromMe) {
+		let but = Snippet->>butRestart;
+		if (isFromMe) but.disabled(true);
+		but.text(#lx:i18n(revenge) + ' (' + approvesCount + '/'+ gamersCount + ')');
+	};
 	resultMatrix.matrix({
 		items: results,
 		itemBox: [lx.Box, {grid:{indent:'10px'}}],

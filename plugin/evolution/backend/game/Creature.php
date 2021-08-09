@@ -2,89 +2,78 @@
 
 namespace lexedo\games\evolution\backend\game;
 
-/**
- * Class Creature
- * @package lexedo\games\evolution\backend\game
- */
 class Creature
 {
     const NEED_FOOD = 1;
 
-    private static $idCounter = 0;
+    private int $id;
+    private Gamer $gamer;
+    /** @var array<Property> */
+    private array $properties;
+    private array $currentFood;
+    private bool $isPoisoned;
 
-    /** @var int */
-    private $id;
-
-    /** @var Gamer */
-    private $gamer;
-
-    /** @var Property[] */
-    private $properties;
-
-    /** @var int */
-    private $currentFood;
-
-    /** @var bool */
-    private $isPoisoned;
-
-    /**
-     * Creature constructor.
-     * @param Gamer $gamer
-     */
-    public function __construct($gamer)
+    public function __construct(Gamer $gamer, int $id)
     {
-        $this->id = ++self::$idCounter;
+        $this->id = $id;
         $this->gamer = $gamer;
         $this->properties = [];
 
-        $this->currentFood = 0;
+        $this->currentFood = [];
         $this->isPoisoned = false;
     }
+    
+    public function toArray(): array
+    {
+        $properties = [];
+        foreach ($this->properties as $property) {
+            $properties[] = $property->getId();
+        }
+        return [
+            'creatureId' => $this->getId(),
+            'gamerId' => $this->getGamer()->getId(),
+            'currentFood' => $this->currentFood,
+            'isPoisoned' => $this->isPoisoned,
+            'properties' => $properties,
+        ];
+    }
+    
+    public static function createFromArray(Game $game, array $data): Creature
+    {
+        $gamer = $game->getGamerById($data['gamerId']);
+        $creature = new self($gamer, $data['creatureId']);
+        $creature->currentFood = $data['currentFood'] ?? [];
+        $creature->isPoisoned = $data['isPoisoned'] ?? false;
+        //TODO properties
+        return $creature;
+    }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return Game
-     */
-    public function getGame()
+    public function getGame(): Game
     {
         return $this->gamer->getGame();
     }
 
-    /**
-     * @return Gamer
-     */
-    public function getGamer()
+    public function getGamer(): Gamer
     {
         return $this->gamer;
     }
 
-    /**
-     * @return int
-     */
-    public function getCartCount()
+    public function getCartCount(): int
     {
         return count($this->properties) + 1;
     }
-
-    /**
-     * @return bool
-     */
-    public function isPoisoned()
+    
+    public function isPoisoned(): bool
     {
         return $this->isPoisoned;
     }
 
-    /**
-     * @return bool
-     */
-    public function mustDieOut()
+    public function mustDieOut(): bool
     {
         if ($this->isPoisoned()) {
             return true;
@@ -94,18 +83,17 @@ class Creature
     }
 
     /**
-     * @return Property[]
+     * @return array<Property>
      */
-    public function getProperties()
+    public function getProperties(): array
     {
         return $this->properties;
     }
 
     /**
-     * @param int $type
-     * @return Property[]
+     * @return array<Property>
      */
-    public function getPropertiesByType($type)
+    public function getPropertiesByType(int $type): array
     {
         $result = [];
         foreach ($this->properties as $property) {
@@ -116,20 +104,12 @@ class Creature
         return $result;
     }
 
-    /**
-     * @param int $id
-     * @return Property|null
-     */
-    public function getPropertyById($id)
+    public function getPropertyById(int $id): ?Property
     {
         return $this->properties[$id] ?? null;
     }
 
-    /**
-     * @param int $type
-     * @return bool
-     */
-    public function canAttachProperty($type)
+    public function canAttachProperty(int $type): bool
     {
         if ($type == PropertyBank::SCAVENGER && $this->hasProperty(PropertyBank::CARNIVAL)) {
             return false;
@@ -146,11 +126,7 @@ class Creature
         return true;
     }
 
-    /**
-     * @param Creature $creature
-     * @param int $propertyType
-     */
-    public function hasRelation($creature, $propertyType)
+    public function hasRelation(Creature $creature, int $propertyType): bool
     {
         $props = $this->getPropertiesByType($propertyType);
         foreach ($props as $property) {
@@ -162,25 +138,14 @@ class Creature
         return false;
     }
 
-    /**
-     * @param int $propertyType
-     * @return Property
-     */
-    public function addProperty($propertyType)
+    public function addProperty(int $propertyType): Property
     {
-        $property = new Property($this, $propertyType);
+        $property = $this->getGame()->getNewProperty($this, $propertyType);
         $this->properties[$property->getId()] = $property;
         return $property;
     }
 
-    /**
-     * @param string $foodType
-     * @param int $eatCount
-     * @param bool $useFat
-     * @param bool $useProperties
-     * @return array|null
-     */
-    public function eat($foodType, $eatCount = 1, $useFat = true, $useProperties = true)
+    public function eat(string $foodType, int $eatCount = 1, bool $useFat = true, bool $useProperties = true): ?array
     {
         if ($eatCount > 1) {
             $result = $this->eat($foodType, 1, $useFat, $useProperties);
@@ -200,13 +165,13 @@ class Creature
         $eaten = false;
         $workFoodType = $foodType;
         $propertyId = 0;
-        if ($this->currentFood == 0) {
-            $this->currentFood = 1;
+        if (empty($this->currentFood)) {
+            $this->currentFood[] = $workFoodType;
             $eaten = true;
         } else {
             foreach ($this->properties as $property) {
                 if ($property->getEatenFood() < $property->getNeedFood()) {
-                    $property->eat();
+                    $property->eat($workFoodType);
                     $propertyId = $property->getId();
                     $eaten = true;
                     break;
@@ -215,9 +180,9 @@ class Creature
             if (!$eaten && $useFat) {
                 foreach ($this->properties as $property) {
                     if ($property->is(PropertyBank::FAT) && !$property->hasFat()) {
-                        $property->eat();
-                        $propertyId = $property->getId();
                         $workFoodType = Game::FOOD_TYPE_FAT;
+                        $property->eat($workFoodType);
+                        $propertyId = $property->getId();
                         $eaten = true;
                     }
                 }
@@ -258,7 +223,7 @@ class Creature
     /**
      * @return int [[propertyId]]
      */
-    public function loseFood()
+    public function loseFood(): int
     {
         $prevProp = null;
         foreach ($this->properties as $property) {
@@ -272,7 +237,7 @@ class Creature
         }
 
         if ($prevProp === null) {
-            $this->currentFood--;
+            array_pop($this->currentFood);
             $result = 0;
         } else {
             $prevProp->loseFood();
@@ -282,25 +247,17 @@ class Creature
         return $result;
     }
 
-    /**
-     * @return bool
-     */
-    public function isUnderfed()
+    public function isUnderfed(): bool
     {
         return ($this->getNeedFood() > 0);
     }
 
-    /**
-     * @return int
-     */
-    public function getNeedFood() {
+    public function getNeedFood(): int
+    {
         return $this->getTotalNeedFood() - $this->getEatenFood();
     }
 
-    /**
-     * @return int
-     */
-    public function getTotalNeedFood()
+    public function getTotalNeedFood(): int
     {
         $result = self::NEED_FOOD;
         foreach ($this->properties as $property) {
@@ -310,12 +267,9 @@ class Creature
         return $result;
     }
 
-    /**
-     * @return int
-     */
-    public function getEatenFood()
+    public function getEatenFood(): int
     {
-        $result = $this->currentFood;
+        $result = count($this->currentFood);
         foreach ($this->properties as $property) {
             $result += $property->getEatenFood();
         }
@@ -323,10 +277,7 @@ class Creature
         return $result;
     }
 
-    /**
-     * @return bool
-     */
-    public function isHungry()
+    public function isHungry(): bool
     {
         if ($this->isUnderfed()) {
             return true;
@@ -335,10 +286,7 @@ class Creature
         return ($this->getCurrentFat() < $this->getTotalFat());
     }
 
-    /**
-     * @return int
-     */
-    public function getCurrentFat()
+    public function getCurrentFat(): int
     {
         $result = 0;
         foreach ($this->properties as $property) {
@@ -350,10 +298,7 @@ class Creature
         return $result;
     }
 
-    /**
-     * @return int
-     */
-    public function getTotalFat()
+    public function getTotalFat(): int
     {
         $result = 0;
         foreach ($this->properties as $property) {
@@ -365,10 +310,7 @@ class Creature
         return $result;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasActivities()
+    public function hasActivities(): bool
     {
         foreach ($this->properties as $property) {
             if ($property->hasActivity()) {
@@ -378,10 +320,7 @@ class Creature
         return false;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasPotentialActivities()
+    public function hasPotentialActivities(): bool
     {
         foreach ($this->properties as $property) {
             if ($property->hasPotentialActivity()) {
@@ -391,10 +330,7 @@ class Creature
         return false;
     }
 
-    /**
-     * @return void
-     */
-    public function trySurvive()
+    public function trySurvive(): void
     {
         //TODO
         /*
@@ -405,10 +341,7 @@ class Creature
         */
     }
 
-    /**
-     * @return array
-     */
-    public function dropRelPropertiesOnDie()
+    public function dropRelPropertiesOnDie(): array
     {
         $result = [];
         foreach ($this->properties as $property) {
@@ -424,11 +357,7 @@ class Creature
         return $result;
     }
 
-    /**
-     * @param Property $property
-     * @return array
-     */
-    public function dropProperty($property)
+    public function dropProperty(Property $property): array
     {
         if (!$this->removeProperty($property)) {
             return [];
@@ -447,36 +376,27 @@ class Creature
         return $result;
     }
 
-    /**
-     * @param Property $property
-     * @return bool
-     */
-    public function removeProperty($property)
+    public function removeProperty(Property $property): bool
     {
         if (!array_key_exists($property->getId(), $this->properties)) {
             return false;
         }
 
         unset($this->properties[$property->getId()]);
+        $this->getGame()->dropProperty($property);
         return true;
     }
 
-    /**
-     * @return void
-     */
-    public function prepareToFeedTurn()
+    public function prepareToFeedTurn(): void
     {
         foreach ($this->properties as $property) {
             $property->prepareToFeedTurn();
         }
     }
 
-    /**
-     * @return array
-     */
-    public function onFeedPhaseFinished()
+    public function onFeedPhaseFinished(): array
     {
-        $this->currentFood = 0;
+        $this->currentFood = [];
 
         $result = [];
         foreach ($this->properties as $property) {
@@ -488,10 +408,7 @@ class Creature
         return $result;
     }
 
-    /**
-     * @return int
-     */
-    public function calcScore()
+    public function calcScore(): int
     {
         $result = 2;
         foreach ($this->properties as $property) {
@@ -500,58 +417,37 @@ class Creature
         return $result;
     }
 
-    /**
-     * @return void
-     */
-    public function poison()
+    public function poison(): void
     {
         $this->isPoisoned = true;
     }
 
-    /**
-     * @return bool
-     */
-    public function isBig()
+    public function isBig(): bool
     {
         return $this->hasProperty(PropertyBank::BIG);
     }
 
-    /**
-     * @return bool
-     */
-    public function isSwimming()
+    public function isSwimming(): bool
     {
         return $this->hasProperty(PropertyBank::SWIM);
     }
 
-    /**
-     * @return bool
-     */
-    public function isHidden()
+    public function isHidden(): bool
     {
         return $this->hasProperty(PropertyBank::HIDE);
     }
 
-    /**
-     * @return bool
-     */
-    public function isAcute()
+    public function isAcute(): bool
     {
         return $this->hasProperty(PropertyBank::ACUTE);
     }
 
-    /**
-     * @return bool
-     */
-    public function isHole()
+    public function isHole(): bool
     {
         return $this->hasProperty(PropertyBank::HOLE);
     }
 
-    /**
-     * @return bool
-     */
-    public function isSymbiont()
+    public function isSymbiont(): bool
     {
         foreach ($this->properties as $property) {
             if ($property->is(PropertyBank::SYMBIOSIS) && ($property->getAsymm() == 0)) {
@@ -562,11 +458,7 @@ class Creature
         return false;
     }
 
-    /**
-     * @param int $type
-     * @return bool
-     */
-    public function hasProperty($type)
+    public function hasProperty(int $type): bool
     {
         foreach ($this->properties as $property) {
             if ($property->is($type)) {
