@@ -32,6 +32,11 @@ abstract class GameChannel extends Channel
         return $this->game;
     }
 
+    public function getGameReferences(): array
+    {
+        return [];
+    }
+
     public function isStuffed(): bool
     {
         return $this->isStuffed;
@@ -87,6 +92,7 @@ abstract class GameChannel extends Channel
 
         $this->timerOff();
 
+        $this->sendGameData($connection);
         $gamer = $this->game->createGamer($connection);
         $this->trigger('new-gamer', $this->getGamersData());
 
@@ -102,7 +108,7 @@ abstract class GameChannel extends Channel
             $this->getGame()->setPending(false);
             $event = $this->createEvent('game-begin');
             $this->getGame()->fillEventBeginGame($event);
-            $this->sendEvent($event);
+            $event->send();
         } else {
             $this->app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
         }
@@ -123,6 +129,7 @@ abstract class GameChannel extends Channel
             return;
         }
 
+        $this->sendGameData($connection);
         $gamer = $this->game->getGamerByConnection($connection);
 
         $event = $this->createEvent('gamer-reconnected');
@@ -138,7 +145,7 @@ abstract class GameChannel extends Channel
             'gamersData' => $this->getGamersData(),
         ]);
         $this->getGame()->fillEventGameDataForGamer($event, $gamer);
-        $this->sendEvent($event);
+        $event->send();;
     }
 
     public function onDisconnect(Connection $connection): void
@@ -203,6 +210,19 @@ abstract class GameChannel extends Channel
             $this->app->getCommonChannel()->closePendingGame($this);
             $this->app->channels->close($this->getName());
         }
+    }
+
+    private function sendGameData($connection): void
+    {
+        $data = $this->getGameReferences();
+        if (empty($data)) {
+            return;
+        }
+        
+        $this->createEvent('set-game-references')
+            ->setReceiver($connection)
+            ->setData($data)
+            ->send();
     }
 
     private function getGamersData(): array

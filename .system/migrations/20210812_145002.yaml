@@ -1,0 +1,9 @@
+modelChanges:
+  - modelName: GamerInGame
+    actions:
+      - type: addRelation
+        relationName: gameSave
+        definition:
+          type: manyToOne
+          relModel: GameSave
+          relAttribute: gamers

@@ -141,7 +141,8 @@ resultBox.hide();
 	#lx:use lx.EggMenu;
 	var devMenu = new lx.EggMenu({
 		key: 'devMenu',
-		coords: [2, 2],
+		top: 2,
+		right: 2,
 		menuWidget: lx.ActiveBox,
 		menuConfig: {size: ['400px', '250px']}
 	});

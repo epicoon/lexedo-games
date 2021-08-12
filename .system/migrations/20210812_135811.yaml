@@ -1,0 +1,36 @@
+actions:
+  - type: createTable
+    schema:
+      name: GameSave
+      fields:
+        name:
+          type: string
+          required: true
+          size: 256
+        date:
+          type: datetime
+          required: true
+        data:
+          type: string
+          required: true
+          size: 4000
+  - type: createTable
+    schema:
+      name: GamerInGame
+      fields:
+        userAuthValue:
+          type: string
+          required: true
+          size: 256
+        gamerId:
+          type: string
+          required: true
+          size: 256
+        isHolder:
+          type: bool
+          required: false
+          default: false
+        isSubscubed:
+          type: bool
+          required: false
+          default: true

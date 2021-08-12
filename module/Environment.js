@@ -48,6 +48,10 @@ class Environment #lx:namespace lexedo.games {
 		this.game.onChangeGamersList(data);
 	}
 
+	onSetGameReferences(data) {
+		this.game.setGameReferences(data);
+	}
+
 	onGameStuffed() {
 		this.unlockScreen();
 		this.game.onStuffed();

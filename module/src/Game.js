@@ -20,6 +20,10 @@ class Game #lx:namespace lexedo.games {
 		// abstract
 	}
 
+	setGameReferences(references) {
+		// abstract
+	}
+
 	onChangeGamersList(list) {
 		let gamerClass = this.getGamerClass();
 		for (let i=0; i<list.len; i++) {

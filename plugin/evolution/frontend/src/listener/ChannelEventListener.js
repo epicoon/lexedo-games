@@ -1,4 +1,4 @@
-class EventListener extends lexedo.games.ChannelEventListener #lx:namespace lexedo.games.Evolution {
+class ChannelEventListener extends lexedo.games.ChannelEventListener #lx:namespace lexedo.games.Evolution {
 	onError(event) {
 		lx.Tost.error(event.getData().message);
 		this.getEnvironment().game.mode.reset();

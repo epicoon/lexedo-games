@@ -453,7 +453,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         $event->replaceEvent('error', [
             'message' => $message,
         ]);
-        $event->setReceivers($event->getInitiator());
+        $event->setReceiver($event->getInitiator());
 
         I18nHelper::localizeEvent($event);
     }

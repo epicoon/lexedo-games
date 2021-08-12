@@ -3,8 +3,10 @@ name: lexedo/games
 autoload:
   psr-4:
     lexedo\games\:
+      - ''
       - 'src'
       - 'plugin'
+    lexedo\games\sys\: '.system'
     lexedo\games\monopoly\: 'plugin/monopoly/src'
     lexedo\games\chess: 'plugin/chesslike/src'
 

@@ -28,7 +28,7 @@ class CommonChannel extends Channel
         ]);
     }
 
-    public function getData(): array
+    public function getChannelData(): array
     {
         /** @var GamesServer $app */
         $app = lx::$app;

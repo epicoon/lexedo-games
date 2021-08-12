@@ -1,0 +1,10 @@
+name: GamerInGame
+
+fields:
+  userAuthValue: string required
+  gamerId: string required
+  isHolder: bool default(false)
+  isSubscubed: bool default(true)
+
+relations:
+  gameSave: (>-) GameSave.gamers

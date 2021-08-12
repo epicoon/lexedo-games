@@ -1,0 +1,9 @@
+name: GameSave
+
+fields:
+  name: string required
+  date: datetime required
+  data: string(4000) required
+
+relations:
+  gamers: (-<) GamerInGame.gameSave

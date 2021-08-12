@@ -25,7 +25,7 @@ class EvolutionChannel extends GameChannel
         $this->game = new Game($this);
     }
 
-    public function getData(): array
+    public function getGameReferences(): array
     {
         return [
             'properties' => PropertyBank::$data,

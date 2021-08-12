@@ -1,4 +1,4 @@
-class DataCatalog #lx:namespace lexedo.games.Evolution {
+class ReferencesBook #lx:namespace lexedo.games.Evolution {
 	constructor(data) {
 		this.properties = data.properties;
 	}

@@ -20,7 +20,7 @@ class EventListener extends ChannelEventListener
             $event->replaceEvent('error', [
                 'message' => 'Wrong game type'
             ]);
-            $event->setReceivers($event->getInitiator());
+            $event->setReceiver($event->getInitiator());
             return;
         }
 
@@ -28,7 +28,7 @@ class EventListener extends ChannelEventListener
             $event->replaceEvent('error', [
                 'message' => 'Wrong gamers count'
             ]);
-            $event->setReceivers($event->getInitiator());
+            $event->setReceiver($event->getInitiator());
             return;
         }
 
@@ -82,7 +82,7 @@ class EventListener extends ChannelEventListener
             $event->replaceEvent('error', [
                 'message' => 'Game not found'
             ]);
-            $event->setReceivers($event->getInitiator());
+            $event->setReceiver($event->getInitiator());
             return;
         }
 
@@ -90,7 +90,7 @@ class EventListener extends ChannelEventListener
             $event->replaceEvent('error', [
                 'message' => 'Game is stuffed'
             ]);
-            $event->setReceivers($event->getInitiator());
+            $event->setReceiver($event->getInitiator());
             return;
         }
 
@@ -104,6 +104,6 @@ class EventListener extends ChannelEventListener
             'channelKey' => $eventData['key'],
             'token' => $token,
         ]);
-        $subEvent->setReceivers($event->getInitiator());
+        $subEvent->setReceiver($event->getInitiator());
     }
 }

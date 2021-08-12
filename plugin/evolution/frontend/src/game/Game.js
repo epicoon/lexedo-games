@@ -14,6 +14,10 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		return lexedo.games.Evolution.Gamer;
 	}
 
+	setGameReferences(references) {
+		this.getEnvironment().dataCatalog = new lexedo.games.Evolution.ReferencesBook(references);
+	}
+
 	init() {
 		this.turnSequence = [];
 		this.gamersBySequence = new lx.Collection();

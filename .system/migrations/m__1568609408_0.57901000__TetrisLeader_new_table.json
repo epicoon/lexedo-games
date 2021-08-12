@@ -1,1 +1,0 @@
-{"type":"new_table","model":"TetrisLeader","schema":{"fields":{"name":{"type":"varchar"},"place":{"type":"integer"},"score":{"type":"integer"},"level":{"type":"integer"}}}}
