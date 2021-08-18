@@ -166,7 +166,15 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
  **********************************************************************************************************************/
 
 function __setGui(self) {
+	#lx:use lexedo.games.SaveMenu;
+
 	let plugin = self.getPlugin();
+
+	// Сохранение игры
+	plugin->>saveGameButton.click(()=>{
+		let menu = new lexedo.games.SaveMenu();
+		menu.setEnvironment(self.getEnvironment());
+	});
 
 	// Список игроков
 	plugin->>gamersBox.matrix({

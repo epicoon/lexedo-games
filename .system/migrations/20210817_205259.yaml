@@ -3,6 +3,10 @@ actions:
     schema:
       name: GameSave
       fields:
+        gameType:
+          type: string
+          required: true
+          size: 256
         name:
           type: string
           required: true

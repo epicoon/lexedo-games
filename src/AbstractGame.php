@@ -43,6 +43,11 @@ abstract class AbstractGame
     {
         return $this->plugin;
     }
+    
+    public function getType(): string
+    {
+        return $this->getChannel()->getParameter('type');
+    }
 
     public function setPending(bool $pending): void
     {

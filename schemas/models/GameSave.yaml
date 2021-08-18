@@ -1,6 +1,7 @@
 name: GameSave
 
 fields:
+  gameType: string required
   name: string required
   date: datetime required
   data: string(4000) required

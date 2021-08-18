@@ -2,9 +2,13 @@
 
 namespace lexedo\games;
 
+use lexedo\games\models\GamerInGame;
+use lexedo\games\models\GameSave;
 use lx;
 use lx\ModelInterface;
 use lx\socket\Channel\Channel;
+use lx\socket\Channel\ChannelRequest;
+use lx\socket\Channel\ChannelResponse;
 use lx\socket\Connection;
 
 abstract class GameChannel extends Channel
@@ -35,6 +39,54 @@ abstract class GameChannel extends Channel
     public function getGameReferences(): array
     {
         return [];
+    }
+
+    public function handleRequest(ChannelRequest $request): ChannelResponse
+    {
+        if ($request->getRoute() == 'saveGame') {
+            $data = $request->getData();
+            $gameName = $data['gameName'];
+
+            $gameSave = GameSave::findOne(['name' => $gameName]);
+            if (!$gameSave) {
+                $gameSave = new GameSave();
+            }
+
+            $game = $this->getGame();
+            $gameSave->gameType = $game->getType();
+            $gameSave->name = $gameName;
+            $gameSave->date = new \DateTime();
+            $gameSave->data = $game->getCondition()->toString();
+
+            $gamersInGame = [];
+            if ($gameSave->isNew()) {
+                /** @var lx\UserManagerInterface $userManager */
+                $userManager = lx::$app->userManager;
+                $gamers = $game->getGamers();
+                foreach ($gamers as $gamer) {
+                    $gamerInGame = new GamerInGame();
+                    $gamerInGame->userAuthValue = $userManager->getAuthField($gamer->getUser());
+                    $gamerInGame->gamerId = $gamer->getId();
+                    if ($request->getInitiator()->getId() == $gamer->getConnectionId()) {
+                        $gamerInGame->isHolder = true;
+                    }
+                    $gamerInGame->gameSave = $gameSave;
+                    $gamersInGame[] = $gamerInGame;
+                }
+            }
+            //TODO else - обновить холдеров
+
+            GameSave::getModelRepository()->hold();
+            $gameSave->save();
+            foreach ($gamersInGame as $gamerInGame) {
+                $gamerInGame->save();
+            }
+            GameSave::getModelRepository()->commit();
+
+            return $this->prepareResponse(true);
+        }
+
+        return $this->prepareResponse([]);
     }
 
     public function isStuffed(): bool

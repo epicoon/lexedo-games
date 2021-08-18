@@ -58,12 +58,12 @@ gameInfoBox.begin();
 	lbl.align(lx.CENTER, lx.MIDDLE);
 
 	// Список игроков
-	var gamersWrapper = new lx.Box({height:1, css:'lx-Box'});
+	var gamersWrapper = new lx.Box({height:4, css:'lx-Box'});
 	gamersWrapper.add(lx.Box, {key:'gamersBox', geom:true})
 		.stream({indent:'10px'});
 
 	// Чат/лог
-	var logWrapper = new lx.Box({height: 2});
+	var logWrapper = new lx.Box({height: 8});
 	var logs = logWrapper.add(lx.MultiBox, {geom:true, marks:[#lx:i18n(chat), #lx:i18n(log)]});
 	var chat = logs.sheet(0).add(lx.Box, {geom:true})
 		.streamProportional({step:'10px'});
@@ -80,7 +80,7 @@ gameInfoBox.begin();
 	// Чей ход
 	// Подсказка что можно делать
 	// Пульт управления в фазе
-	var phaseWrapper = new lx.Box({height:2, css:'lx-Box'});
+	var phaseWrapper = new lx.Box({height:8, css:'lx-Box'});
 	phaseInfo = phaseWrapper.add(lx.Box, {key:'phaseInfoBox', geom:true});
 	phaseInfo.streamProportional({
 		direction: lx.VERTICAL,
@@ -101,6 +101,16 @@ gameInfoBox.begin();
 		phaseFeedMenu.add(lx.Box, {geom:true, key:'foodBut', style:{cursor:'pointer'}});
 		phaseFeedMenu.add(lx.Button, {geom:[0, '50px', 100, '40px'], key:'feedEndTurnBut', text:#lx:i18n(endTurn)});
 	phaseInfo.end();
+
+	var butWrapper = new lx.Box({
+		height: 1
+	});
+	var menuBut = butWrapper.add(lx.Button, {
+		key: 'saveGameButton',
+		geom: true,
+		text: #lx:i18n(menu.saveGame)
+	});
+
 gameInfoBox.end();
 
 

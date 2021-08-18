@@ -3,6 +3,7 @@
 namespace lexedo\games\sys\models;
 
 use lx\model\Model;
+use lx\model\schema\field\value\DateTimeValue;
 use lx\model\modelTools\RelatedModelsCollection;
 use lexedo\games\models\GamerInGame;
 
@@ -10,8 +11,9 @@ use lexedo\games\models\GamerInGame;
  * Class GameSaveMediator
  * @package lexedo\games\sys\models
  *
+ * @property string $gameType
  * @property string $name
- * @property \DateTime $date
+ * @property DateTimeValue $date
  * @property string $data
  * @property RelatedModelsCollection&GamerInGame[] $gamers
  */
@@ -27,6 +29,10 @@ class GameSaveMediator extends Model
         return [
             'name' => 'GameSave',
             'fields' => [
+                'gameType' => [
+                    'type' => 'string',
+                    'required' => true,
+                ],
                 'name' => [
                     'type' => 'string',
                     'required' => true,

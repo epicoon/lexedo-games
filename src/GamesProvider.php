@@ -36,9 +36,9 @@ class GamesProvider implements FusionComponentInterface
     public function getFullData(): array
     {
         $result = [];
-        foreach ($this->getGames() as $name => $game) {
+        foreach ($this->getGames() as $type => $game) {
             $result[] = [
-                'name' => $name,
+                'type' => $type,
                 'image' => $game['image'],
                 'minGamers' => $game['minGamers'],
                 'maxGamers' => $game['maxGamers'],

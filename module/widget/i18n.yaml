@@ -1,0 +1,15 @@
+en-EN:
+  saveMenu: Game saving
+  gameName: Saved game name
+  save: Save
+  yourSaves: Your saves
+  savesWithYou: Saves with you
+  allSaves: All saves
+
+ru-RU:
+  saveMenu: Сохранение игры
+  gameName: Имя сохраненной игры
+  save: Сохранить
+  yourSaves: Ваши сохранения
+  savesWithYou: Сохранения с Вами
+  allSaves: Все сохранения

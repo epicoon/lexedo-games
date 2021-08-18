@@ -3,6 +3,13 @@
         "name": "lexedo.games",
         "path": "module\/Environment.js"
     },
+    "lexedo.games.SaveMenu": {
+        "name": "lexedo.games.SaveMenu",
+        "path": "module\/widget\/SaveMenu.js",
+        "data": {
+            "i18n": "i18n.yaml"
+        }
+    },
     "lexedo.games.ChessLocal": {
         "name": "lexedo.games.ChessLocal",
         "path": "plugin\/chesslike\/frontend\/modules\/ChessLocal.js"

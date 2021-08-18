@@ -2,6 +2,7 @@
 
 namespace lexedo\games;
 
+use lexedo\games\actions\ActionFactory;
 use lx;
 use lx\ModelInterface;
 use lx\AuthenticationInterface;
@@ -32,11 +33,13 @@ class CommonChannel extends Channel
     {
         /** @var GamesServer $app */
         $app = lx::$app;
+        /** @var GamesProvider $gamesProvider */
+        $gamesProvider = $app->getService('lexedo/games')->gamesProvider;
 
         $currentGames = [];
         foreach ($this->pendingGamesList as $game) {
             $parameters = $game->getParameters();
-            $gameData = $app->getService('lexedo/games')->gamesProvider->getGameData($parameters['type']);
+            $gameData = $gamesProvider->getGameData($parameters['type']);
             $currentGames[] = [
                 'channelKey' => $game->getName(),
                 'type' => $parameters['type'],
@@ -48,7 +51,7 @@ class CommonChannel extends Channel
         }
 
         return [
-            'games' => $app->getService('lexedo/games')->gamesProvider->getFullData(),
+            'games' => $gamesProvider->getFullData(),
             'messages' => $this->messageLog,
             'currentGames' => $currentGames,
         ];
@@ -56,29 +59,33 @@ class CommonChannel extends Channel
 
     public function handleRequest(ChannelRequest $request): ChannelResponse
     {
-        switch ($request->getRoute()) {
-            case 'test':
-                $data = $request->getData();
-                return $this->prepareResponse('ok');
-
-            case 'checkReconnections':
-                $connection = $request->getInitiator();
-                $user = $this->getUser($connection);
-                $list = [];
-                foreach ($this->stuffedGamesList as $gameChannel) {
-                    if ($gameChannel->hasDisconnectedUser($user)) {
-                        $list[] = [
-                            'channelKey' => $gameChannel->getName(),
-                            'type' => $gameChannel->getParameter('type'),
-                            'name' => $gameChannel->getParameter('name'),
-                        ];
-                    }
-                }
-                return $this->prepareResponse($list);
-
-            default:
-                return $this->prepareResponse('error');
+        if ($request->getRoute() == 'test') {
+            return $this->prepareResponse('ok');
         }
+        
+        $action = ActionFactory::getAction($this, $request);
+        if (!$action) {
+            return $this->prepareResponse('error');
+        }
+        
+        $result = $action->run();
+        return $this->prepareResponse($result);
+    }
+
+    /**
+     * @return array<GameChannel>
+     */
+    public function getPendingGames(): array
+    {
+        return $this->pendingGamesList;
+    }
+
+    /**
+     * @return array<GameChannel>
+     */
+    public function getStuffedGames(): array
+    {
+        return $this->stuffedGamesList;
     }
 
     public function openPendingGame(GameChannel $gameChannel): void

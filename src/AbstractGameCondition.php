@@ -73,4 +73,10 @@ abstract class AbstractGameCondition
         }
         return $result;
     }
+    
+    public function toString(): string
+    {
+        $array = $this->toArray();
+        return json_encode($array);
+    }
 }

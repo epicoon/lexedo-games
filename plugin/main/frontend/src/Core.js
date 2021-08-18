@@ -6,7 +6,7 @@ class Core {
 		this.socket = null;
 
 		#lx:model-collection gamePropotypes = {
-			name,
+			type,
 			image,
 			minGamers,
 			maxGamers
@@ -105,7 +105,7 @@ class Core {
 	loadGamePlugin(game, connectData) {
 		^Respondent.loadGamePlugin(game.type).then(res=>{
 			var box = new lx.ActiveBox({
-				header: game.name,
+				header: game.type,
 				geom: true //[20, 15, 60, 60]
 			});
 			box.setPlugin(res.data, {connectData});
@@ -130,17 +130,19 @@ class Core {
 				? values[2]
 				: gameData.minGamers;
 
-			this.__inConnecting = { password: values[1] };
+			this.__inConnecting = {
+				gameType: gameData.type,
+				password: values[1]
+			};
 
 			this.socket.trigger('newGame', {
-				type: gameData.name,
+				type: gameData.type,
 				name: values[0],
 				password: values[1],
 				gamers
 			});
 		});
 	}
-
 
 	__switchRelationToGame(game) {
 		if (game.follow) {
@@ -150,8 +152,9 @@ class Core {
 		} else {
 			//TODO password
 			this.plugin->>confirmPopup.open(#lx:i18n(ToJoin), ()=>{
-				
-				this.__inConnecting = {};
+				this.__inConnecting = {
+					gameType: game.type
+				};
 
 				this.socket.trigger('askForJoin', {
 					key: game.channelKey
@@ -161,6 +164,8 @@ class Core {
 	}
 
 	__initGui() {
+		#lx:use lx.Image;
+
 		var core = this;
 
 		this.plugin->>gamesBox.matrix({

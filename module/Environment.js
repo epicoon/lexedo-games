@@ -15,6 +15,7 @@ class Environment #lx:namespace lexedo.games {
 
 		this.mode = config.mode || 'prod';
 		this.name = config.name || 'Unknown';
+		this.type = this._plugin.attributes.connectData.gameType;
 
 		this.useScreenLock = (config.useScreenLock === undefined) ? true : config.useScreenLock;
 		this._connector = new Connector(plugin, this, config.game);
@@ -26,6 +27,26 @@ class Environment #lx:namespace lexedo.games {
 
 	getSocket() {
 		return this._connector.socket;
+	}
+
+	socketRequest(route, data = {}) {
+		if (!this._connector.socket) return {
+			then: function(callback) {
+				console.error('Socket connection doesn\'t exist');
+			}
+		};
+
+		return this._connector.socket.request(route, data);
+	}
+
+	commonSocketRequest(route, data = {}) {
+		if (!this._plugin || !this._plugin.parent || !this._plugin.parent.core || !this._plugin.parent.core.socket) return {
+			then: function(callback) {
+				console.error('Socket connection doesn\'t exist');
+			}
+		};
+
+		return this._plugin.parent.core.socket.request(route, data);
 	}
 
 	destruct() {

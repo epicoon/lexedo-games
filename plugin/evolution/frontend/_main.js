@@ -17,15 +17,3 @@ Plugin.environment = new lexedo.games.Environment(Plugin, {
 		channelEventListener: 'lexedo.games.Evolution.ChannelEventListener'
 	}
 });
-
-
-/*
-
-model-update --level=mediator
-
-model-update --level=gen-migration
-
-model-update --level=run-migration
-
-
-*/
