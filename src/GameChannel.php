@@ -66,8 +66,6 @@ abstract class GameChannel extends Channel
                 $gameSave = new GameSave();
             }
 
-            lx::$app->log( $gameSave->getFields() );
-
             $gameSave->gameType = $game->getType();
             $gameSave->name = $gameName;
             $gameSave->date = new \DateTime();
@@ -89,9 +87,7 @@ abstract class GameChannel extends Channel
             }
             //TODO else - обновить холдеров
 
-            lx::$app->log('before-save');
             $gameSave->save();
-            lx::$app->log('after-save');
 
             return $this->prepareResponse(true);
         }
