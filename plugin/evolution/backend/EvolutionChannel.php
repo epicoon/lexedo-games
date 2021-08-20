@@ -13,16 +13,16 @@ use lx\socket\Connection;
  */
 class EvolutionChannel extends GameChannel
 {
+    protected function createGame(): Game
+    {
+        return new Game($this);
+    }
+
     public static function getConfigProtocol(): array
     {
         return array_merge(parent::getConfigProtocol(), [
             'eventListener' => ChannelEventListener::class,
         ]);
-    }
-
-    public function init(): void
-    {
-        $this->game = new Game($this);
     }
 
     public function getGameReferences(): array

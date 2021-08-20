@@ -3,6 +3,8 @@ en-EN:
   Common_chat: Common chat
   Available_games: Available games
   Current_games: Current games
+  SavedGames: Saved games
+  GamersCount: Gamers count (${min}-${max})
 
   NewGameName: New game name
   Password: Password
@@ -19,3 +21,5 @@ ru-RU:
   Password: Пароль
   ToLeave: Вы хотите покинуть игру?
   ToJoin: Вы хотите присоединиться к игре?
+  SavedGames: Сохраненные игры
+  GamersCount: Количество игроков (${min}-${max})

@@ -15,7 +15,7 @@ class Environment #lx:namespace lexedo.games {
 
 		this.mode = config.mode || 'prod';
 		this.name = config.name || 'Unknown';
-		this.type = this._plugin.attributes.connectData.gameType;
+		this.type = this._plugin.attributes.gameType;
 
 		this.useScreenLock = (config.useScreenLock === undefined) ? true : config.useScreenLock;
 		this._connector = new Connector(plugin, this, config.game);
@@ -81,6 +81,10 @@ class Environment #lx:namespace lexedo.games {
 
 	onGameBegin(data) {
 		this.game.onBegin(data);
+	}
+
+	onGameLoaded(data) {
+		this.game.onLoaded(data);
 	}
 
 	onGamerReconnected(data) {

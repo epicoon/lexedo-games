@@ -108,7 +108,7 @@ class Core {
 				header: game.type,
 				geom: true //[20, 15, 60, 60]
 			});
-			box.setPlugin(res.data, {connectData});
+			box.setPlugin(res.data, {connectData, gameType: game.type});
 			game.box = box;
 
 			var map = lx.Storage.get('lexedogames') || {};
@@ -123,7 +123,7 @@ class Core {
 	__createGame(gameData) {
 		var params = [#lx:i18n(NewGameName), #lx:i18n(Password)];
 		if (gameData.minGamers != gameData.maxGamers)
-			params.push('Number of gamers ('+gameData.minGamers+'-'+gameData.maxGamers+')');
+			params.push(#lx:i18n(GamersCount, {min: gameData.minGamers, max: gameData.maxGamers}));
 
 		this.plugin->>inputPopup.open(params, (values)=>{
 			let gamers = (gameData.minGamers != gameData.maxGamers)
@@ -131,7 +131,6 @@ class Core {
 				: gameData.minGamers;
 
 			this.__inConnecting = {
-				gameType: gameData.type,
 				password: values[1]
 			};
 
@@ -153,7 +152,7 @@ class Core {
 			//TODO password
 			this.plugin->>confirmPopup.open(#lx:i18n(ToJoin), ()=>{
 				this.__inConnecting = {
-					gameType: game.type
+					password: ''
 				};
 
 				this.socket.trigger('askForJoin', {
@@ -165,19 +164,26 @@ class Core {
 
 	__initGui() {
 		#lx:use lx.Image;
+		#lx:use lexedo.games.SaveMenu;
 
 		var core = this;
+
+		this.plugin->>savedGamesBut.click(()=>{
+			let saveMenu = new lexedo.games.SaveMenu();
+			saveMenu.setCore(this);
+		});
 
 		this.plugin->>gamesBox.matrix({
 			items: this.lists.gamePropotypes,
 			itemBox: lx.Box,
 			itemRender: function(box, model) {
-				var img = box.add(lx.Image, {geom: true, filename: model.image});
+				var gameBox = new lx.Box({geom: true});
+				var img = gameBox.add(lx.Image, {geom: true, filename: model.image});
 				img.adapt();
-				box.on('resize', ()=>img.adapt());
-				box.align(lx.CENTER, lx.MIDDLE);
-				box.addClass('lx-Button');
-				box.click(()=>core.__createGame(model));
+				gameBox.on('resize', ()=>img.adapt());
+				gameBox.align(lx.CENTER, lx.MIDDLE);
+				gameBox.addClass('lx-Button');
+				gameBox.click(()=>core.__createGame(model));
 			}
 		});
 

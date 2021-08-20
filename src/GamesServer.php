@@ -2,25 +2,28 @@
 
 namespace lexedo\games;
 
+use lx\socket\Connection;
 use lx\socket\SocketServer;
 
-/**
- * Class GamesServer
- * @package lexedo\games
- */
 class GamesServer extends SocketServer
 {
-    /** @var array */
-    private $i18nReestr = [];
+    private array $i18nReestr = [];
 
-    /**
-     * @return CommonChannel
-     */
-    public function getCommonChannel()
+    public function getCommonChannel(): CommonChannel
     {
         /** @var CommonChannel $result */
         $result = $this->channels->get('common');
         return $result;
+    }
+    
+    public function getUserAuthFieldByConnection(Connection $connection): ?string
+    {
+        $channel = $this->getCommonChannel();
+        if (!$channel) {
+            return null;
+        }
+        
+        return $channel->getUserAuthFieldByConnection($connection);
     }
 
     /**

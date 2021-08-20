@@ -74,7 +74,7 @@ class CartPack
 
     public function set(array $cartsSequence, int $index): void
     {
-        $this->index = [];
+        $this->index = $index;
         $carts = array_flip($cartsSequence);
         foreach ($this->carts as $cart) {
             $carts[$cart->getId()] = $cart;

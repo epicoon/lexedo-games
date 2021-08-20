@@ -5,32 +5,26 @@ namespace lexedo\games\evolution\backend\game;
 use lexedo\games\evolution\backend\game\PropertyBehavior\MimicryBehavior;
 use lx\Math;
 
-/**
- * Class AttakCore
- * @package lexedo\games\evolution\backend\game
- */
 class AttakCore
 {
-    /** @var Game */
-    private $game;
+    private Game $game;
+    private ?array $hold;
 
-    /** @var array|null */
-    private $hold;
-
-    /**
-     * AttakCore constructor.
-     * @param Game $game
-     */
-    public function __construct($game)
+    public function __construct(Game $game)
     {
         $this->game = $game;
         $this->hold = null;
     }
+    
+    public function hold(Creature $carnival, Creature $prey): void
+    {
+        $this->hold = [
+            'carnival' => $carnival,
+            'prey' => $prey,
+        ];
+    }
 
-    /**
-     * @return Gamer
-     */
-    public function getPendingGamer()
+    public function getPendingGamer(): ?Gamer
     {
         if ($this->hold === null) {
             return null;
@@ -39,18 +33,12 @@ class AttakCore
         return $this->hold['prey']->getGamer();
     }
 
-    /**
-     * @return bool
-     */
-    public function isOnHold()
+    public function isOnHold(): bool
     {
         return $this->hold !== null;
     }
 
-    /**
-     * @return Creature|null
-     */
-    public function getCarnival()
+    public function getCarnival(): ?Creature
     {
         if ($this->hold === null) {
             return null;
@@ -59,10 +47,7 @@ class AttakCore
         return $this->hold['carnival'];
     }
 
-    /**
-     * @return Creature|null
-     */
-    public function getPrey()
+    public function getPrey(): ?Creature
     {
         if ($this->hold === null) {
             return null;
@@ -71,12 +56,7 @@ class AttakCore
         return $this->hold['prey'];
     }
 
-    /**
-     * @param Creature $carnival
-     * @param Creature $prey
-     * @return bool
-     */
-    public function checkAttakAvailability($carnival, $prey)
+    public function checkAttakAvailability(Creature $carnival, Creature $prey): bool
     {
         if ($carnival === $prey) {
             return false;
@@ -105,18 +85,13 @@ class AttakCore
         return true;
     }
 
-    /**
-     * @param Creature $carnival
-     * @param Creature $prey
-     * @return array
-     */
-    public function runAttak($carnival, $prey)
+    public function runAttak(Creature $carnival, Creature $prey): array
     {
         $this->hold = null;
         
         $this->game->log('logMsg.attak', [
-            'carnivalGamerName' => $carnival->getGamer()->getUser()->login,
-            'preyGamerName' => $prey->getGamer()->getUser()->login,
+            'carnivalGamerName' => $carnival->getGamer()->getAuthField(),
+            'preyGamerName' => $prey->getGamer()->getAuthField(),
         ]);
 
         $carnival->getGamer()->onCreatureAttak($carnival);
@@ -139,10 +114,7 @@ class AttakCore
         
         $needPending = $this->checkNeedPending($carnival, $prey);
         if ($needPending) {
-            $this->hold = [
-                'carnival' => $carnival,
-                'prey' => $prey,
-            ];
+            $this->hold($carnival, $prey);
             $result = array_merge($result, [
                 'result' => Constants::ATTAK_RESULT_PENDING,
                 'carnivalGamer' => $carnival->getGamer()->getId(),
@@ -151,7 +123,7 @@ class AttakCore
             ]);
 
             $this->game->log('logMsg.waitingForDefens', [
-                'name' => $prey->getGamer()->getUser()->login
+                'name' => $prey->getGamer()->getAuthField()
             ]);
 
             return $result;
@@ -175,7 +147,7 @@ class AttakCore
 
         if ($poisoned) {
             $this->game->log('logMsg.poisoned', [
-                'name' => $carnival->getGamer()->getUser()->login,
+                'name' => $carnival->getGamer()->getAuthField(),
             ]);
             
             $carnival->poison();
@@ -185,12 +157,7 @@ class AttakCore
         return $result;
     }
 
-    /**
-     * @param Creature $carnival
-     * @param Property $tail
-     * @return array
-     */
-    public function runAttakTail($carnival, $tail)
+    public function runAttakTail(Creature $carnival, Property $tail): array
     {
         $this->hold = null;
 
@@ -203,12 +170,7 @@ class AttakCore
         ];
     }
 
-    /**
-     * @param Creature $carnival
-     * @param Creature $prey
-     * @return bool
-     */
-    private function checkNeedPending($carnival, $prey)
+    private function checkNeedPending(Creature $carnival, Creature $prey): bool
     {
         if ($prey->hasProperty(PropertyBank::DROP_TAIL)) {
             return true;

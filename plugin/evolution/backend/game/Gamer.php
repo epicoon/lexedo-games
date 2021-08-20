@@ -14,15 +14,15 @@ class Gamer extends AbstractGamer
     private bool $isPassed;
     private bool $canGetFood;
     private int $droppingCounter;
-    private ?Creature $creatureHasUsedFat;
+    private ?int $creatureHasUsedFat;
     /** @var array<Cart> */
     private array $hand;
     /** @var array<Creature> */
     private array $creatures;
 
-    public function __construct(Game $game, Connection $connection)
+    public function __construct(Game $game, ?Connection $connection = null, $authField = null)
     {
-        parent::__construct($game, $connection);
+        parent::__construct($game, $connection, $authField);
 
         $this->isPassed = false;
         $this->canGetFood = false;
@@ -48,21 +48,23 @@ class Gamer extends AbstractGamer
             'isPassed' => $this->isPassed,
             'canGetFood' => $this->canGetFood,
             'droppingCounter' => $this->droppingCounter,
+            'creatureHasUsedFat' => $this->creatureHasUsedFat,
             'carts' => $carts,
             'creatures' => $creatures,
         ];
     }
 
-    public static function createFromArray(Game $game, Connection $connection, array $data): Gamer
+    function init(array $config): void
     {
-        $gamer = new self($game, $connection);
-        $gamer->isPassed = $data['isPassed'];
-        $gamer->canGetFood = $data['canGetFood'];
-        $gamer->droppingCounter = $data['droppingCounter'];
+        $this->isPassed = $config['isPassed'] ?? false;
+        $this->canGetFood = $config['canGetFood'] ?? false;
+        $this->droppingCounter = $config['droppingCounter'] ?? 0;
+        $this->creatureHasUsedFat = $config['creatureHasUsedFat'] ?? null;
 
-        //TODO creatureHasUsedFat, creatures, carts
-
-        return $gamer;
+        foreach (($config['carts'] ?? []) as $cartId) {
+            $cart = $this->getGame()->getCartPack()->getCart($cartId);
+            $this->receiveCart($cart);
+        }
     }
 
     public function reset(): void
@@ -95,7 +97,10 @@ class Gamer extends AbstractGamer
 
     public function isAvailableToUseFat(Creature $creature): bool
     {
-        return $this->canGetFood && ($this->creatureHasUsedFat === null || $this->creatureHasUsedFat === $creature);
+        return $this->canGetFood && (
+            $this->creatureHasUsedFat === null
+            || $this->creatureHasUsedFat === $creature->getId()
+        );
     }
 
     public function mustEat(): bool
@@ -203,6 +208,11 @@ class Gamer extends AbstractGamer
     {
         return ($this->getCartsCount() == 0 && $this->getCreaturesCount() == 0);
     }
+    
+    public function addCreature(Creature $creature): void
+    {
+        $this->creatures[$creature->getId()] = $creature;
+    }
 
     public function dropCart(Cart $cart): void
     {
@@ -212,7 +222,7 @@ class Gamer extends AbstractGamer
     public function cartToCreature(Cart $cart): Creature
     {
         $creature = $this->getGame()->getNewCreature($this);
-        $this->creatures[$creature->getId()] = $creature;
+        $this->addCreature($creature);
         unset($this->hand[$cart->getId()]);
         return $creature;
     }
@@ -253,7 +263,7 @@ class Gamer extends AbstractGamer
     public function onCreatureUseFat(Creature $creature): void
     {
         $this->canGetFood = false;
-        $this->creatureHasUsedFat = $creature;
+        $this->creatureHasUsedFat = $creature->getId();
     }
 
     public function onCreatureAttak(Creature $carnival): void

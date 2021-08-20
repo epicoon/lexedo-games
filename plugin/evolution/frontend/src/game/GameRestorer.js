@@ -2,9 +2,6 @@ class GameRestorer #lx:namespace lexedo.games.Evolution {
 	constructor(game, condition) {
 		this.game = game;
 		this.condition = condition;
-
-		console.log('!!!!! GameRestorer !!!!!!!')
-		console.log(condition);
 	}
 
 	run() {

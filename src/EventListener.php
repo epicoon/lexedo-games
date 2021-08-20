@@ -2,20 +2,23 @@
 
 namespace lexedo\games;
 
+use lexedo\games\models\GameSave;
 use lx;
 use lx\Math;
 use lx\socket\Channel\ChannelEvent;
 use lx\socket\Channel\ChannelEventListener;
 
+/**
+ * @method CommonChannel getChannel()
+ */
 class EventListener extends ChannelEventListener
 {
     public function onNewGame(ChannelEvent $event): void
     {
-        /** @var GamesServer $app */
-        $app = lx::$app;
-
+        $gamesProvider = $this->getChannel()->getGamesProvider();
         $eventData = $event->getData();
-        $gameData = $app->getService('lexedo/games')->gamesProvider->getGameData($eventData['type']);
+
+        $gameData = $gamesProvider->getGameData($eventData['type']);
         if (!$gameData) {
             $event->replaceEvent('error', [
                 'message' => 'Wrong game type'
@@ -32,41 +35,53 @@ class EventListener extends ChannelEventListener
             return;
         }
 
-        $channelClass = $app->getService('lexedo/games')->gamesProvider->getGameChannelClass($eventData['type']);
-        $channelKey = Math::randHash();
-        while ($app->channels->has($channelKey)) {
-            $channelKey = Math::randHash();
-        }
-
-        /** @var GameChannel $channel */
-        $channel = $app->channels->create($channelKey, $channelClass, [
-            'reconnectionPeriod' => $app->getConfig('reconnectionPeriod') ?: 0,
-            'parameters' => [
-                'type' => $eventData['type'],
-                'name' => $eventData['name'],
-                'gamersCount' => $eventData['gamers'],
-            ],
+        $channel = $this->createGameChannel([
+            'type' => $eventData['type'],
+            'name' => $eventData['name'],
+            'gamersCount' => $eventData['gamers'],
         ]);
-
         if (isset($eventData['password']) && $eventData['password'] != '') {
             $channel->setPassword($eventData['password']);
         }
 
-        $token = Math::randHash();
-        $channel->addUserWaiting(
-            $token,
-            $app->getCommonChannel()->getUser($event->getInitiator())
-        );
+        $this->finalizeNewGameEvent($event, $channel);
+    }
 
-        $app->getCommonChannel()->openPendingGame($channel);
-
-        $subEvent = $event->replaceEvent('gameCreated', [
-            'channelKey' => $channelKey,
-            'gameData' =>  $gameData,
-            'gameName' => $eventData['name'],
-            'gamersRequired' => $eventData['gamers'],
+    public function onLoadGame(ChannelEvent $event): void
+    {
+        $eventData = $event->getData();
+        $type = $eventData['type'];
+        $name = $eventData['name'];
+        $gameSave = GameSave::findOne([
+           'gameType' => $type,
+           'name' => $name
         ]);
-        $subEvent->setDataForConnection($event->getInitiator(), ['token' => $token]);
+        if (!$gameSave) {
+            $event->replaceEvent('error', [
+                'message' => 'Game not found'
+            ]);
+            $event->setReceiver($event->getInitiator());
+            return;
+        }
+
+        $gamersInGame = $gameSave->gamers;
+        $gamersCount = $gamersInGame->count();
+
+        $channel = $this->createGameChannel([
+            'type' => $type,
+            'name' => $name,
+            'gamersCount' => $gamersCount,
+            'loading' => true,
+            'condition' => $gameSave->data,
+        ]);
+        //TODO password
+
+        $users = [];
+        foreach ($gamersInGame as $gamerInGame) {
+            $users[] = $gamerInGame->userAuthValue;
+        }
+
+        $this->finalizeNewGameEvent($event, $channel, $users);
     }
 
     public function onAskForJoin(ChannelEvent $event): void
@@ -105,5 +120,64 @@ class EventListener extends ChannelEventListener
             'token' => $token,
         ]);
         $subEvent->setReceiver($event->getInitiator());
+    }
+
+    private function createGameChannel(array $parameters): GameChannel
+    {
+        /** @var GamesServer $app */
+        $app = lx::$app;
+        $channelKey = Math::randHash();
+        while ($app->channels->has($channelKey)) {
+            $channelKey = Math::randHash();
+        }
+
+        $gamesProvider = $this->getChannel()->getGamesProvider();
+        $channelClass = $gamesProvider->getGameChannelClass($parameters['type']);
+        /** @var GameChannel $channel */
+        return $app->channels->create($channelKey, $channelClass, [
+            'reconnectionPeriod' => $app->getConfig('reconnectionPeriod') ?: 0,
+            'parameters' => $parameters,
+        ]);
+    }
+
+    private function finalizeNewGameEvent(ChannelEvent $event, GameChannel $channel, array $users = []): void
+    {
+        $this->getChannel()->openPendingGame($channel, $users);
+
+        $token = Math::randHash();
+        $channel->addUserWaiting(
+            $token,
+            $this->getChannel()->getUser($event->getInitiator())
+        );
+
+        $gamesProvider = $this->getChannel()->getGamesProvider();
+        $gameData = $gamesProvider->getGameData($channel->getParameter('type'));
+        $eventData = [
+            'channelKey' => $channel->getName(),
+            'gameData' =>  $gameData,
+            'gameName' => $channel->getParameter('name'),
+            'gamersRequired' => $channel->getNeedleGamersCount(),
+        ];
+
+        $subEvent = $event->replaceEvent('gameCreated', $eventData);
+        if (!empty($users)) {
+            /** @var GamesServer $app */
+            $app = lx::$app;
+            $receivers = [];
+            foreach ($app->connections as $connection) {
+                $authField = $this->getChannel()->getUserAuthFieldByConnection($connection);
+                $index = array_search($authField, $users);
+                if ($index !== false) {
+                    $receivers[] = $connection;
+                    unset($users[$index]);
+                }
+                if (empty($users)) {
+                    break;
+                }
+            }
+            $subEvent->setReceivers($receivers);
+        }
+
+        $subEvent->setDataForConnection($event->getInitiator(), ['token' => $token]);
     }
 }

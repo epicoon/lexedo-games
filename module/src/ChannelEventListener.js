@@ -32,6 +32,11 @@ class ChannelEventListener extends lx.socket.EventListener #lx:namespace lexedo.
 		this.getEnvironment().onGameBegin(data);
 	}
 
+	onGameLoaded(event) {
+		var data = event.getData();
+		this.getEnvironment().onGameLoaded(data);		
+	}
+
 	onGamerReconnected(event) {
 		var data = event.getData();
 		this.getEnvironment().onGamerReconnected(data);

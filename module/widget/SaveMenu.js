@@ -4,10 +4,13 @@
 };
 
 #lx:use lx.ActiveBox;
+#lx:use lx.Image;
+
+#lx:private;
 
 class SaveMenu extends lx.ActiveBox #lx:namespace lexedo.games {
     modifyConfigBeforeApply(config) {
-    	config.geom = config.geom || [20, 15, 60, 60];
+    	config.geom = config.geom || [10, 15, 80, 60];
     	config.header = config.header || #lx:i18n(saveMenu);
     	config.closeButton = config.closeButton ?? true;
         return config;
@@ -23,43 +26,91 @@ class SaveMenu extends lx.ActiveBox #lx:namespace lexedo.games {
 
 		#lx:model-collection gamesList = {
 			type,
+			image,
 			name,
 			date,
-			gamers
+			gamers,
+			isActive: {default: false}
 		};
 		this.gamesList = gamesList;
+		this.activeSave = null;
 
     	content.filter.on('change', function(event, val) {
-    		console.log('Filter was changed', val);
-    	});
 
-    	content.actionBut.click(()=>{
-	    	this._env.socketRequest('saveGame', {
-	    		gameName: this.getGameName()
-	    	}).then((res)=>{
-	    		lx.Tost('Game has saved');
-	    	});
+    		//TODO фильтровать список игр
+    		console.log('Filter was changed', val);
     	});
 
     	content.list.matrix({
     		items: this.gamesList,
-    		itemBox: lx.Box,
-    		itemRender: function(box, model) {
+    		itemBox: [lx.Box, {height:'60px', gridProportional: {indent:'10px'}}],
+    		itemRender: (box, model)=>{
+    			let imgWrapper = new lx.Box({css:'lx-Box'});
+    			let img = imgWrapper.add(lx.Image, {filename: model.image});
+    			img.adapt();
 
-    			console.log(box);
-    			console.log(model);
+    			new lx.Box({field:'name', width:3, css:'lx-Box'});
+    			new lx.Box({field:'date', width:3, css:'lx-Box'});
+    			new lx.Box({field:'gamers', width:5, css:'lx-Box'});
 
+    			box.getChildren().each(c=>c.align(lx.CENTER, lx.MIDDLE));
+    			box.style('cursor', 'pointer');
+    			box.click(()=>__setActiveSave(this, model));
+    			box.setField('isActive', function(value) {
+					this.fill(value ? 'lightgreen' : ''); 
+    			});
     		}
     	});
     }
 
     #lx:client setEnvironment(env) {
+    	let actionBut = this->>actionBut;
+    	actionBut.text(#lx:i18n(save))
+    	actionBut.click(()=>{
+    		let gameName = this.getGameName();
+    		if (gameName == '') {
+    			lx.Tost.warning(#lx:i18n(needGameName));
+    			return;
+    		}
+
+	    	this._env.socketRequest('saveGame', {gameName}).then((res)=>{
+	    		lx.Tost('Game has saved');
+	    		__unsetActiveSave(this);
+	    		//TODO this.gamesList.reset()
+	    	});
+    	});
+
     	this._env = env;
     	this._env.commonSocketRequest('getSavedGames', {
     		gameType: this._env.type
-    	}).then((result)=>{
-    		console.log(result);
+    	}).then(result=>{
+    		this.gamesList.reset(result);
+    	});
+    }
 
+    #lx:client setCore(core) {
+    	let actionBut = this->>actionBut;
+    	actionBut.text(#lx:i18n(load))
+    	actionBut.click(()=>{
+    		let gameName = this.getGameName();
+    		if (gameName == '' || !this.activeSave) {
+    			lx.Tost.warning(#lx:i18n(needGameName));
+    			return;
+    		}
+
+    		//TODO password!!
+			this._core.__inConnecting = {
+				password: ''
+			};
+			this._core.socket.trigger('loadGame', {
+				type: this.activeSave.type,
+				name: this.activeSave.name
+			});
+			this.del();
+    	});
+
+    	this._core = core;
+    	this._core.socket.request('getSavedGames').then(result=>{
     		this.gamesList.reset(result);
     	});
     }
@@ -75,12 +126,28 @@ class SaveMenu extends lx.ActiveBox #lx:namespace lexedo.games {
 				.gridProportional(stepX:'10px')
 				<lx.Box>(width:3, text:#lx:i18n(gameName)).align(lx.CENTER, lx.MIDDLE)
 				<lx.Input:@nameInput>(width:6)
-				<lx.Button:@actionBut>(width:3, text:#lx:i18n(save))
+				<lx.Button:@actionBut>(width:3)
 			<lx.RadioGroup:@filter>(cols:3, height:'auto', labels:[
 				#lx:i18n(yourSaves),
 				#lx:i18n(savesWithYou),
 				#lx:i18n(allSaves)
 			])
-			<lx.Box:@list>(height:8).fill('white')
+			<lx.Box>(height:8).fill('white')
+				<lx.Box:@list>
+					.stream(direction:lx.VERTICAL, indent:'10px')
     }
+}
+
+
+function __setActiveSave(self, model) {
+	if (self.activeSave) self.activeSave.isActive = false;
+	self.activeSave = model;
+    self.nameInput.value(model.name);
+    model.isActive = true;
+}
+
+function __unsetActiveSave(self) {
+	if (self.activeSave) self.activeSave.isActive = false;
+	self.activeSave = null;
+	self.nameInput.value('');
 }

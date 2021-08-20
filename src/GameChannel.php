@@ -24,11 +24,20 @@ abstract class GameChannel extends Channel
     /** @var array<ModelInterface> */
     private array $disconnectedUsers = [];
 
-    public function __construct(array $config = [])
+    abstract protected function createGame(): AbstractGame;
+    
+    public function init(): void
     {
-        parent::__construct($config);
-
         $this->app = lx::$app;
+        $this->game = $this->createGame();
+
+        if ($this->getParameter('loading')) {
+            $conditionClass = $this->game->getConditionClass();
+            /** @var AbstractGameCondition $condition */
+            $condition = new $conditionClass();
+            $condition->initByString($this->getParameter('condition'));
+            $this->game->setCondition($condition);
+        }
     }
 
     public function getGame(): AbstractGame
@@ -47,12 +56,18 @@ abstract class GameChannel extends Channel
             $data = $request->getData();
             $gameName = $data['gameName'];
 
-            $gameSave = GameSave::findOne(['name' => $gameName]);
+            $game = $this->getGame();
+
+            $gameSave = GameSave::findOne([
+                'gameType' => $game->getType(),
+                'name' => $gameName,
+            ]);
             if (!$gameSave) {
                 $gameSave = new GameSave();
             }
 
-            $game = $this->getGame();
+            lx::$app->log( $gameSave->getFields() );
+
             $gameSave->gameType = $game->getType();
             $gameSave->name = $gameName;
             $gameSave->date = new \DateTime();
@@ -60,12 +75,10 @@ abstract class GameChannel extends Channel
 
             $gamersInGame = [];
             if ($gameSave->isNew()) {
-                /** @var lx\UserManagerInterface $userManager */
-                $userManager = lx::$app->userManager;
                 $gamers = $game->getGamers();
                 foreach ($gamers as $gamer) {
                     $gamerInGame = new GamerInGame();
-                    $gamerInGame->userAuthValue = $userManager->getAuthField($gamer->getUser());
+                    $gamerInGame->userAuthValue = $gamer->getAuthField();
                     $gamerInGame->gamerId = $gamer->getId();
                     if ($request->getInitiator()->getId() == $gamer->getConnectionId()) {
                         $gamerInGame->isHolder = true;
@@ -76,12 +89,9 @@ abstract class GameChannel extends Channel
             }
             //TODO else - обновить холдеров
 
-            GameSave::getModelRepository()->hold();
+            lx::$app->log('before-save');
             $gameSave->save();
-            foreach ($gamersInGame as $gamerInGame) {
-                $gamerInGame->save();
-            }
-            GameSave::getModelRepository()->commit();
+            lx::$app->log('after-save');
 
             return $this->prepareResponse(true);
         }
@@ -145,7 +155,13 @@ abstract class GameChannel extends Channel
         $this->timerOff();
 
         $this->sendGameData($connection);
-        $gamer = $this->game->createGamer($connection);
+
+        if ($this->game->isActive()) {
+            $this->game->actualizeGamerConnection($connection);
+            $gamer = $this->game->getGamerByConnection($connection);
+        } else {
+            $gamer = $this->game->createGamerByConnection($connection);
+        }
         $this->trigger('new-gamer', $this->getGamersData());
 
         if ($this->getConnectionsCount() == $this->getNeedleGamersCount()) {
@@ -153,13 +169,20 @@ abstract class GameChannel extends Channel
                 'channel' => $this->getName(),
             ]);
             $this->app->getCommonChannel()->stuffPendingGame($this);
-
             $this->isStuffed = true;
             $this->trigger('game-stuffed');
-
             $this->getGame()->setPending(false);
-            $event = $this->createEvent('game-begin');
-            $this->getGame()->fillEventBeginGame($event);
+
+            if ($this->game->isActive()) {
+                $event = $this->createEvent('game-loaded');
+                foreach ($this->getGame()->getGamers() as $gamer) {
+                    $this->getGame()->fillEventGameDataForGamer($event, $gamer);
+                }
+            } else {
+                $event = $this->createEvent('game-begin');
+                $this->getGame()->fillEventBeginGame($event);
+            }
+
             $event->send();
         } else {
             $this->app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
@@ -176,7 +199,7 @@ abstract class GameChannel extends Channel
             $this->app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
         }
 
-        if (!$this->game->actualizeGamerAfterReconnection($connection)) {
+        if (!$this->game->actualizeGamerConnection($connection)) {
             $this->trigger('error', 'Gamer reconnection problem');
             return;
         }
@@ -282,8 +305,13 @@ abstract class GameChannel extends Channel
         $gamers = $this->game->getGamers();
         $list = [];
         foreach ($gamers as $gamer) {
+            $connectionId = $gamer->getConnectionId();
+            if (!$connectionId) {
+                continue;
+            }
+
             $list[] = [
-                'connectionId' => $gamer->getConnectionId(),
+                'connectionId' => $connectionId,
                 'gamerId' => $gamer->getId(),
             ];
         }

@@ -4,6 +4,7 @@
  * @const {lx.Snippet} Snippet
  */
 
+#lx:use lx.Button;
 #lx:use lx.ActiveBox;
 
 var headHeight = '60px';
@@ -13,6 +14,13 @@ var headBox = new lx.Box({
 	geom: [0, 0, 100, headHeight]
 });
 headBox.border();
+headBox.gridProportional({indent:'10px'});
+headBox.add(lx.Button, {
+	key: 'savedGamesBut',
+	geom:[9, 0, 3, 1],
+	text:#lx:i18n(SavedGames)
+});
+
 
 
 var mainBox = new lx.Box({
@@ -20,7 +28,6 @@ var mainBox = new lx.Box({
 	geom: [0, headHeight, 100, null, null, 0]
 });
 mainBox.border();
-
 mainBox.begin();
 
 	var commonChatWindow = new lx.ActiveBox({
@@ -55,6 +62,7 @@ currentGamesBox.stream({
 	indent: '10px',
 	minHeight: '40px'
 });
+
 
 
 Snippet.addSnippet({plugin:'lx/tools:snippets', snippet:'confirmPopup'});

@@ -14,7 +14,7 @@ class SocketEventListener extends lx.socket.EventListener {
 		let data = event.getData();
 		let game = this._core.addPendingGame({
 			channelKey: data.channelKey,
-			type: data.gameData.name,
+			type: data.gameData.type,
 			name: data.gameName,
 			image: data.gameData.image,
 			gamersCurrent: 0,
@@ -24,16 +24,9 @@ class SocketEventListener extends lx.socket.EventListener {
 
 		if (!event.isFromMe() || !this._core.__inConnecting) return;
 
-		// password
-		var connectData = this._core.__inConnecting;
-		delete this._core.__inConnecting;
-		connectData.protocol = this._core.connectData.protocol;
-		connectData.port = this._core.connectData.port;
-		connectData.url = this._core.connectData.url;
-		connectData.channelKey = data.channelKey;
-		connectData.token = data.token;
-		connectData.userChannelData = {login: lx.User.login};
-		this._core.loadGamePlugin(game, connectData);
+		var connectData = this.__prepareConnectData(data);
+		if (connectData)
+			this._core.loadGamePlugin(game, connectData);
 	}
 
 	onGameStuffed(event) {
@@ -68,15 +61,25 @@ class SocketEventListener extends lx.socket.EventListener {
 			return;
 		}
 
-		// password
-		var connectData = this._core.__inConnecting;
+		var connectData = this.__prepareConnectData(data);
+		if (connectData)
+			this._core.loadGamePlugin(game, connectData);
+	}
+
+	__prepareConnectData(eventData)
+	{
+		if (!this._core.__inConnecting) return null;
+		var connectData = {
+			protocol: this._core.connectData.protocol,
+			port: this._core.connectData.port,
+			url: this._core.connectData.url,
+			channelKey: eventData.channelKey,
+			token: eventData.token,
+			userChannelData: {login: lx.User.login}
+		};
+		if (this._core.__inConnecting.password != '')
+			connectData.password = this._core.__inConnecting.password;
 		delete this._core.__inConnecting;
-		connectData.protocol = this._core.connectData.protocol;
-		connectData.port = this._core.connectData.port;
-		connectData.url = this._core.connectData.url;
-		connectData.channelKey = data.channelKey;
-		connectData.token = data.token;
-		connectData.userChannelData = {login: lx.User.login};
-		this._core.loadGamePlugin(game, connectData);
+		return connectData;
 	}
 }

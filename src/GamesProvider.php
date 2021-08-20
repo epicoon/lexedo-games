@@ -47,15 +47,15 @@ class GamesProvider implements FusionComponentInterface
         return $result;
     }
 
-    public function getGameData(string $name): ?array
+    public function getGameData(string $type): ?array
     {
-        if (!array_key_exists($name, $this->getGames())) {
+        if (!array_key_exists($type, $this->getGames())) {
             return null;
         }
 
-        $data = $this->getGames()[$name];
+        $data = $this->getGames()[$type];
         return [
-            'name' => $name,
+            'type' => $type,
             'image' => $data['image'],
             'minGamers' => $data['minGamers'],
             'maxGamers' => $data['maxGamers'],

@@ -38,16 +38,12 @@ class Creature
         ];
     }
     
-    public static function createFromArray(Game $game, array $data): Creature
+    public function init(array $config): void
     {
-        $gamer = $game->getGamerById($data['gamerId']);
-        $creature = new self($gamer, $data['creatureId']);
-        $creature->currentFood = $data['currentFood'] ?? [];
-        $creature->isPoisoned = $data['isPoisoned'] ?? false;
-        //TODO properties
-        return $creature;
+        $this->currentFood = $config['currentFood'] ?? [];
+        $this->isPoisoned = $config['isPoisoned'] ?? false;
     }
-
+    
     public function getId(): int
     {
         return $this->id;
@@ -138,10 +134,15 @@ class Creature
         return false;
     }
 
-    public function addProperty(int $propertyType): Property
+    public function addProperty(Property $property): void
+    {
+        $this->properties[$property->getId()] = $property;
+    }
+    
+    public function addNewProperty(int $propertyType): Property
     {
         $property = $this->getGame()->getNewProperty($this, $propertyType);
-        $this->properties[$property->getId()] = $property;
+        $this->addProperty($property);
         return $property;
     }
 

@@ -6,6 +6,18 @@ use lx;
 use lexedo\games\AbstractGameCondition;
 
 /**
+ * @method array getCartPack()
+ * @method array getTurnSequence()
+ * @method string getActiveGamer()
+ * @method bool getLastTurn()
+ * @method string getActivePhase()
+ * @method int getFoodCount()
+ * @method array getCreatures()
+ * @method array getProperties()
+ * @method array getAttakState()
+ * @method int getCreatureIdCounter()
+ * @method int getPropertyIdCounter()
+ * 
  * @method $this setCartPack(array $data)
  * @method $this setTurnSequence(array $sequence)
  * @method $this setActiveGamer(string $gamerId)
@@ -15,6 +27,8 @@ use lexedo\games\AbstractGameCondition;
  * @method $this setCreatures(array $creatures)
  * @method $this setProperties(array $properties)
  * @method $this setAttakState(array $data)
+ * @method $this setCreatureIdCounter(int $value)
+ * @method $this setPropertyIdCounter(int $value)
  */
 class GameCondition extends AbstractGameCondition
 {
@@ -27,6 +41,8 @@ class GameCondition extends AbstractGameCondition
     protected array $creatures;
     protected array $properties;
     protected array $attakState;
+    protected int $creatureIdCounter;
+    protected int $propertyIdCounter;
 
     protected function getFields(): array
     {
@@ -40,6 +56,8 @@ class GameCondition extends AbstractGameCondition
             'creatures',
             'properties',
             'attakState',
+            'creatureIdCounter',
+            'propertyIdCounter',
         ]);
     }
 
@@ -48,12 +66,10 @@ class GameCondition extends AbstractGameCondition
      */
     public function setGamers(array $gamers): GameCondition
     {
-        /** @var lx\UserManagerInterface $userManager */
-        $userManager = lx::$app->userManager;
         $map = [];
         foreach ($gamers as $gamer) {
             $data = $gamer->toArray();
-            $data['authField'] = $userManager->getAuthField($gamer->getUser());
+            $data['authField'] = $gamer->getAuthField();
             $map[$gamer->getId()] = $data;
         }
 

@@ -48,23 +48,20 @@ class Property
         ];
     }
 
-    public static function createFromArray(Game $game, array $data): Property
+    public function init(array $config): void
     {
-        $creature = $game->getCreature($data['creatureId']);
-        $property = new self($creature, $data['type'], $data['propertyId']);
-        $property->currentFood = $data['currentFood'];
-        $property->isPaused = $data['isPaused'];
-        $property->isStopped = $data['isStopped'];
-        if ($data['relProperty']) {
-            $relProperty = $game->getProperty($data['relProperty']);
+        $this->currentFood = $config['currentFood'];
+        $this->isPaused = $config['isPaused'];
+        $this->isStopped = $config['isStopped'];
+        if ($config['relProperty']) {
+            $relProperty = $this->getGame()->getProperty($config['relProperty']);
             if ($relProperty) {
-                $property->setRelation($relProperty);
-                $relProperty->setRelation($property);
+                $this->setRelation($relProperty);
+                $relProperty->setRelation($this);
             }
         }
-        $property->asymm = $data['asymm'];
-        $property->isAvatar = $data['isAvatar'];
-        return $property;
+        $this->asymm = $config['asymm'];
+        $this->isAvatar = $config['isAvatar'];
     }
 
     public static function bindPareProperties(Property $property1, Property $property2): ?array
@@ -272,7 +269,7 @@ class Property
             $key = $this->behavior->getLogKey();
             if ($key) {
                 $this->getGame()->log($key, [
-                    'name' => $this->getGamer()->getUser()->login,
+                    'name' => $this->getGamer()->getAuthField(),
                     'property' => $this->getName(),
                 ]);
             }

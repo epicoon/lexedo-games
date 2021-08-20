@@ -2,6 +2,7 @@
 
 namespace lexedo\games\evolution\backend\game;
 
+use lexedo\games\AbstractGameCondition;
 use lx;
 use lexedo\games\AbstractGame;
 use lexedo\games\AbstractGamer;
@@ -15,7 +16,6 @@ use lx\socket\Connection;
 
 /**
  * @property EvolutionChannel $channel
- * @property array<Gamer> $gamers
  * @property Plugin $plugin;
  *
  * @method EvolutionChannel getChannel()
@@ -114,7 +114,12 @@ class Game extends AbstractGame
         $carnivalCore = new CarnivalCore($this);
         return $carnivalCore->onAttak($carnival);
     }
-    
+
+    public function getConditionClass(): string
+    {
+        return GameCondition::class;
+    }
+
     public function getCondition(): GameCondition
     {
         $condition = new GameCondition($this);
@@ -123,7 +128,9 @@ class Game extends AbstractGame
             ->setActiveGamer($this->getActiveGamer()->getId())
             ->setLastTurn($this->isLastTurn)
             ->setActivePhase($this->activePhase)
-            ->setFoodCount($this->foodCount);
+            ->setFoodCount($this->foodCount)
+            ->setCreatureIdCounter($this->creatureIdCounter)
+            ->setPropertyIdCounter($this->propertyIdCounter);
 
         if ($this->cartPack) {
             $condition->setCartPack([
@@ -150,13 +157,68 @@ class Game extends AbstractGame
                 'carnivalGamer' => $this->attakCore->getCarnival()->getGamer()->getId(),
                 'preyGamer' => $this->attakCore->getPrey()->getGamer()->getId(),
                 'carnival' => $this->attakCore->getCarnival()->getId(),
-                'preyGamer' => $this->attakCore->getPrey()->getId(),
+                'prey' => $this->attakCore->getPrey()->getId(),
             ]);
         } else {
             $condition->setAttakState(['onHold' => false]);
         }
         
         return $condition;
+    }
+
+    /**
+     * @param GameCondition $condition
+     */
+    public function setCondition(AbstractGameCondition $condition): void
+    {
+        parent::setCondition($condition);
+        
+        $this->turnSequence = $condition->getTurnSequence();
+        $activeGamerId = $condition->getActiveGamer();
+        $this->activeGamerIndex = array_search($activeGamerId, $this->turnSequence);
+        $this->isLastTurn = $condition->getLastTurn();
+        $this->activePhase = $condition->getActivePhase();
+        $this->foodCount = $condition->getFoodCount();
+        $this->creatureIdCounter = $condition->getCreatureIdCounter();
+        $this->propertyIdCounter = $condition->getPropertyIdCounter();
+        
+        $this->cartPack = new CartPack();
+        $cartPackData = $condition->getCartPack();
+        $this->cartPack->set($cartPackData['sequence'], $cartPackData['index']);
+        
+        $gamers = $condition->getGamers();
+        foreach ($gamers as $gamerData) {
+            $authField = $gamerData['authField'];
+            $gamerId = $gamerData['gamerId'];
+            $gamer = $this->createGamerByAuthField($authField, $gamerId);
+            $gamer->init($gamerData);
+        }
+        
+        $creatures = $condition->getCreatures();
+        foreach ($creatures as $creatureData) {
+            $gamer = $this->getGamerById($creatureData['gamerId']);
+            $creatureId = $creatureData['creatureId'];
+            $creature = $this->getNewCreature($gamer, $creatureId);
+            $creature->init($creatureData);
+            $gamer->addCreature($creature);
+        }
+        
+        $properties = $condition->getProperties();
+        foreach ($properties as $propertyData) {
+            $creature = $this->getCreature($propertyData['creatureId']);
+            $propertyId = $propertyData['propertyId'];
+            $propertyType = $propertyData['type'];
+            $property = $this->getNewProperty($creature, $propertyType, $propertyId);
+            $property->init($propertyData);
+            $creature->addProperty($property);
+        }
+ 
+        $attakState = $condition->getAttakState();
+        if ($attakState['onHold']) {
+            $carnival = $this->getCreature($attakState['carnival']);
+            $prey = $this->getCreature($attakState['prey']);
+            $this->attakCore->hold($carnival, $prey);
+        }
     }
 
     public function fillEventBeginGame(ChannelEvent $event): void
@@ -209,7 +271,7 @@ class Game extends AbstractGame
             $firstTurn = true;
         } else {
             $this->updateGamersSequence($this->isPhaseGrow());
-            foreach ($this->gamers as $gamer) {
+            foreach ($this->getGamers() as $gamer) {
                 $gamer->setPassed(false);
             }
         }
@@ -236,7 +298,7 @@ class Game extends AbstractGame
                 'isLastTurn' => $this->isLastTurn,
             ]);
 
-            foreach ($this->gamers as $id => $gamer) {
+            foreach ($this->getGamers() as $id => $gamer) {
                 $cartsData = [];
                 /** @var Cart $cart */
                 foreach ($newCarts[$id] as $cart) {
@@ -305,7 +367,8 @@ class Game extends AbstractGame
 
     public function getGamerByIndex(int $index): Gamer
     {
-        return $this->gamers[$this->turnSequence[$index]];
+        $gamers = $this->getGamers();
+        return $gamers[$this->turnSequence[$index]];
     }
 
     public function nextActiveGamer(): void
@@ -327,7 +390,7 @@ class Game extends AbstractGame
 
     public function checkGrowPhaseFinished(): bool
     {
-        foreach ($this->gamers as $gamer) {
+        foreach ($this->getGamers() as $gamer) {
             if (!$gamer->isPassed()) {
                 return false;
             }
@@ -338,7 +401,7 @@ class Game extends AbstractGame
 
     public function checkFeedPhaseFinished(): bool
     {
-        foreach ($this->gamers as $gamer) {
+        foreach ($this->getGamers() as $gamer) {
             if ($this->gamerAllowedToEat($gamer) || $gamer->hasPotentialActivities()) {
                 return false;
             }
@@ -347,6 +410,11 @@ class Game extends AbstractGame
         return true;
     }
 
+    public function getCartPack(): ?CartPack
+    {
+        return $this->cartPack;
+    }
+    
     public function getCreature(int $id): ?Creature
     {
         return $this->creatures[$id] ?? null;
@@ -357,18 +425,24 @@ class Game extends AbstractGame
         return $this->properties[$id] ?? null;
     }
 
-    public function getNewCreature(Gamer $gamer): Creature
+    public function getNewCreature(Gamer $gamer, ?int $id = null): Creature
     {
-        $this->creatureIdCounter++;
-        $creature = new Creature($gamer, $this->creatureIdCounter);
+        if ($id === null) {
+            $id = ++$this->creatureIdCounter;
+        }
+        
+        $creature = new Creature($gamer, $id);
         $this->creatures[$creature->getId()] = $creature;
         return $creature;
     }
     
-    public function getNewProperty(Creature $creature, int $propertyType): Property
+    public function getNewProperty(Creature $creature, int $propertyType, ?int $id = null): Property
     {
-        $this->propertyIdCounter++;
-        $property = new Property($creature, $propertyType, $this->propertyIdCounter);
+        if ($id === null) {
+            $id = ++$this->propertyIdCounter;
+        }
+        
+        $property = new Property($creature, $propertyType, $id);
         $this->properties[$property->getId()] = $property;
         return $property;
     }
@@ -414,7 +488,7 @@ class Game extends AbstractGame
         $feedReport = $creature->eat(self::FOOD_TYPE_RED);
 
         $this->log('logMsg.feed', [
-            'name' => $creature->getGamer()->getUser()->login,
+            'name' => $creature->getGamer()->getAuthField(),
         ]);
 
         return $feedReport;
@@ -422,7 +496,7 @@ class Game extends AbstractGame
 
     public function hasHungryCreature(): bool
     {
-        foreach ($this->gamers as $gamer) {
+        foreach ($this->getGamers() as $gamer) {
             if ($gamer->hasHungryCreature()) {
                 return true;
             }
@@ -434,11 +508,11 @@ class Game extends AbstractGame
     public function runExtinction(): array
     {
         $report = [];
-        foreach ($this->gamers as $gamer) {
+        foreach ($this->getGamers() as $gamer) {
             $gamerReport = $gamer->runExtinction();
 
             $this->log('logMsg.extinction', [
-                'name' => $gamer->getUser()->login,
+                'name' => $gamer->getAuthField(),
                 'deadCreatures' => count($gamerReport['creatures']),
                 'droppedCarts' => $gamerReport['dropping'],
             ]);
@@ -452,7 +526,7 @@ class Game extends AbstractGame
     public function restorePropertiesState(): array
     {
         $result = [];
-        foreach ($this->gamers as $gamer) {
+        foreach ($this->getGamers() as $gamer) {
             $report = $gamer->restorePropertiesState();
             if (!empty($report)) {
                 $result[$gamer->getId()] = $report;
@@ -464,7 +538,7 @@ class Game extends AbstractGame
     public function calcScore(): array
     {
         $list = [];
-        foreach ($this->gamers as $gamer) {
+        foreach ($this->getGamers() as $gamer) {
             $score = $gamer->calcScore();
             if (!array_key_exists($score, $list)) {
                 $list[$score] = [];
@@ -512,14 +586,14 @@ class Game extends AbstractGame
         $this->cartPack->reset();
     }
 
-    protected function getNewGamer(Connection $connection): Gamer
+    protected function getNewGamer(?Connection $connection = null, $authField = null): Gamer
     {
-        return new Gamer($this, $connection);
+        return new Gamer($this, $connection, $authField);
     }
 
     private function prepareGamers(): void
     {
-        if (empty($this->gamers)) {
+        if (empty($this->getGamers())) {
             $connections = $this->getChannel()->getConnections();
             foreach ($connections as $connection) {
                 $gamer = new Gamer($this, $connection);
@@ -527,7 +601,7 @@ class Game extends AbstractGame
             }
         } else {
             $this->turnSequence = [];
-            foreach ($this->gamers as $gamer) {
+            foreach ($this->getGamers() as $gamer) {
                 $gamer->reset();
             }
         }
@@ -541,7 +615,7 @@ class Game extends AbstractGame
     private function updateGamersSequence(bool $shift = false): void
     {
         if (empty($this->turnSequence)) {
-            $this->turnSequence = Math::shuffleArray(array_keys($this->gamers));
+            $this->turnSequence = Math::shuffleArray(array_keys($this->getGamers()));
         } elseif ($shift) {
             $gamerId = array_shift($this->turnSequence);
             $this->turnSequence[] = $gamerId;
@@ -557,7 +631,7 @@ class Game extends AbstractGame
     {
         $counters = [];
         $carts = [];
-        foreach ($this->gamers as $gamerId => $gamer) {
+        foreach ($this->getGamers() as $gamerId => $gamer) {
             $counters[$gamerId] = $gamer->isEmpty() ? Constants::START_CARTS_COUNT : $gamer->getCreaturesCount() + 1;
             $carts[$gamerId] = [];
         }
@@ -567,7 +641,7 @@ class Game extends AbstractGame
                 break;
             }
 
-            foreach ($this->gamers as $gamerId => $gamer) {
+            foreach ($this->getGamers() as $gamerId => $gamer) {
                 if (!array_key_exists($gamerId, $counters)) {
                     continue;
                 }
@@ -592,7 +666,7 @@ class Game extends AbstractGame
     private function incActiveGamerIndex(): void
     {
         $this->activeGamerIndex++;
-        if ($this->activeGamerIndex == count($this->gamers)) {
+        if ($this->activeGamerIndex == count($this->getGamers())) {
             $this->activeGamerIndex = 0;
         }
     }
@@ -615,6 +689,8 @@ class Game extends AbstractGame
         unset($iGamer);
 
         $result['needleGamersCount'] = $this->getNeedleGamersCount();
+        unset($result['creatureIdCounter']);
+        unset($result['propertyIdCounter']);
 
         return $result;
     }

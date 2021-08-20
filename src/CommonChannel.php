@@ -17,8 +17,7 @@ class CommonChannel extends Channel
     private array $userConnetionMap = [];
     private array $userList = [];
     private array $messageLog = [];
-    /** @var array<GameChannel> */
-    private array $pendingGamesList = [];
+    private array $pendingGamesMap = [];
     /** @var array<GameChannel> */
     private array $stuffedGamesList = [];
 
@@ -29,15 +28,21 @@ class CommonChannel extends Channel
         ]);
     }
 
-    public function getChannelData(): array
+    public function getChannelData(Connection $connection): array
     {
-        /** @var GamesServer $app */
-        $app = lx::$app;
-        /** @var GamesProvider $gamesProvider */
-        $gamesProvider = $app->getService('lexedo/games')->gamesProvider;
+        $gamesProvider = $this->getGamesProvider();
 
         $currentGames = [];
-        foreach ($this->pendingGamesList as $game) {
+        foreach ($this->pendingGamesMap as $gameData) {
+            $users = $gameData['users'];
+            if (!empty($users)) {
+                $authField = $this->getUserAuthFieldByConnection($connection);
+                if (!in_array($authField, $users)) {
+                    continue;
+                }
+            } 
+            
+            $game = $gameData['channel'];
             $parameters = $game->getParameters();
             $gameData = $gamesProvider->getGameData($parameters['type']);
             $currentGames[] = [
@@ -55,6 +60,15 @@ class CommonChannel extends Channel
             'messages' => $this->messageLog,
             'currentGames' => $currentGames,
         ];
+    }
+    
+    public function getGamesProvider(): GamesProvider
+    {
+        /** @var GamesServer $app */
+        $app = lx::$app;
+        /** @var GamesProvider $gamesProvider */
+        $gamesProvider = $app->getService('lexedo/games')->gamesProvider;
+        return $gamesProvider;
     }
 
     public function handleRequest(ChannelRequest $request): ChannelResponse
@@ -75,43 +89,38 @@ class CommonChannel extends Channel
     /**
      * @return array<GameChannel>
      */
-    public function getPendingGames(): array
-    {
-        return $this->pendingGamesList;
-    }
-
-    /**
-     * @return array<GameChannel>
-     */
     public function getStuffedGames(): array
     {
         return $this->stuffedGamesList;
     }
 
-    public function openPendingGame(GameChannel $gameChannel): void
+    public function openPendingGame(GameChannel $gameChannel, array $users = []): void
     {
-        $this->pendingGamesList[$gameChannel->getName()] = $gameChannel;
+        $this->pendingGamesMap[$gameChannel->getName()] = [
+            'channel' => $gameChannel,
+            'users' => $users,
+        ];
     }
 
     public function closePendingGame(GameChannel $gameChannel): void
     {
-        if (array_key_exists($gameChannel->getName(), $this->pendingGamesList)) {
-            unset($this->pendingGamesList[$gameChannel->getName()]);
+        if (array_key_exists($gameChannel->getName(), $this->pendingGamesMap)) {
+            unset($this->pendingGamesMap[$gameChannel->getName()]);
         }
     }
     
     public function stuffPendingGame(GameChannel $gameChannel): void
     {
-        if (array_key_exists($gameChannel->getName(), $this->pendingGamesList)) {
+        if (array_key_exists($gameChannel->getName(), $this->pendingGamesMap)) {
             $this->stuffedGamesList[$gameChannel->getName()] = $gameChannel;
-            unset($this->pendingGamesList[$gameChannel->getName()]);
+            unset($this->pendingGamesMap[$gameChannel->getName()]);
         }
     }
 
     public function closeGame(GameChannel $gameChannel): void
     {
-        if (array_key_exists($gameChannel->getName(), $this->pendingGamesList)) {
-            unset($this->pendingGamesList[$gameChannel->getName()]);
+        if (array_key_exists($gameChannel->getName(), $this->pendingGamesMap)) {
+            unset($this->pendingGamesMap[$gameChannel->getName()]);
         } elseif (array_key_exists($gameChannel->getName(), $this->stuffedGamesList)) {
             unset($this->stuffedGamesList[$gameChannel->getName()]);
         }
@@ -160,6 +169,17 @@ class CommonChannel extends Channel
     public function getUser(Connection $connection): ?ModelInterface
     {
         return $this->userList[$connection->getId()]['user'] ?? null;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUserAuthFieldByConnection(Connection $connection)
+    {
+        $user = $this->getUser($connection);
+        /** @var lx\UserManagerInterface $userManager */
+        $userManager = lx::$app->userManager;
+        return $userManager->getAuthField($user);
     }
 
     public function getUserCookie(ModelInterface $user): array
