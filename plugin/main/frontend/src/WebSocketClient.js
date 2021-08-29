@@ -27,8 +27,6 @@ const __WebSocketHandlers = {
 	    console.log('ON CLIENT CONNECTED');
 		console.log(mates);
 		console.log(data);
-
-		Plugin.core.reset(data.games, data.currentGames);
 	},
 
 	onMessage: function(msg) {

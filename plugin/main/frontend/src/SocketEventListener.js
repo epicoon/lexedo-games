@@ -10,6 +10,11 @@ class SocketEventListener extends lx.socket.EventListener {
 		lx.Tost.error(event.getData().message);
 	}
 
+	onNewUser(event) {
+		var data = event.getData();
+		Plugin.core.reset(data.games, data.currentGames);
+	}
+
 	onGameCreated(event) {
 		let data = event.getData();
 		let game = this._core.addPendingGame({

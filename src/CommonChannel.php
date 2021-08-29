@@ -28,40 +28,6 @@ class CommonChannel extends Channel
         ]);
     }
 
-    public function getChannelData(Connection $connection): array
-    {
-        $gamesProvider = $this->getGamesProvider();
-
-        $currentGames = [];
-        foreach ($this->pendingGamesMap as $gameData) {
-            $users = $gameData['users'];
-            if (!empty($users)) {
-                $authField = $this->getUserAuthFieldByConnection($connection);
-                if (!in_array($authField, $users)) {
-                    continue;
-                }
-            } 
-            
-            $game = $gameData['channel'];
-            $parameters = $game->getParameters();
-            $gameData = $gamesProvider->getGameData($parameters['type']);
-            $currentGames[] = [
-                'channelKey' => $game->getName(),
-                'type' => $parameters['type'],
-                'name' => $parameters['name'],
-                'image' => $gameData['image'],
-                'gamersCurrent' => $game->getConnectionsCount(),
-                'gamersRequired' => $game->getNeedleGamersCount(),
-            ];
-        }
-
-        return [
-            'games' => $gamesProvider->getFullData(),
-            'messages' => $this->messageLog,
-            'currentGames' => $currentGames,
-        ];
-    }
-    
     public function getGamesProvider(): GamesProvider
     {
         /** @var GamesServer $app */
@@ -221,6 +187,15 @@ class CommonChannel extends Channel
 
         return true;
     }
+    
+    public function onConnect(Connection $connection): void
+    {
+        parent::onConnect($connection);
+
+        $this->createEvent('new-user', $this->getCommonData($connection))
+            ->setReceiver($connection)
+            ->send();
+    }
 
     public function onDisconnect(Connection $connection): void
     {
@@ -232,6 +207,40 @@ class CommonChannel extends Channel
         unset($this->userList[$connection->getId()]);
 
         parent::onDisconnect($connection);
+    }
+
+    private function getCommonData(Connection $connection): array
+    {
+        $gamesProvider = $this->getGamesProvider();
+
+        $currentGames = [];
+        foreach ($this->pendingGamesMap as $gameData) {
+            $users = $gameData['users'];
+            if (!empty($users)) {
+                $authField = $this->getUserAuthFieldByConnection($connection);
+                if (!in_array($authField, $users)) {
+                    continue;
+                }
+            }
+
+            $game = $gameData['channel'];
+            $parameters = $game->getParameters();
+            $gameData = $gamesProvider->getGameData($parameters['type']);
+            $currentGames[] = [
+                'channelKey' => $game->getName(),
+                'type' => $parameters['type'],
+                'name' => $parameters['name'],
+                'image' => $gameData['image'],
+                'gamersCurrent' => $game->getConnectionsCount(),
+                'gamersRequired' => $game->getNeedleGamersCount(),
+            ];
+        }
+
+        return [
+            'games' => $gamesProvider->getFullData(),
+            'messages' => $this->messageLog,
+            'currentGames' => $currentGames,
+        ];
     }
 
     private function parseCookie(string $cookieString): array

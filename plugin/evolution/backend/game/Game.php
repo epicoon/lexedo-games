@@ -449,6 +449,10 @@ class Game extends AbstractGame
     
     public function dropCreature(Creature $creature): void
     {
+        foreach ($creature->getProperties() as $property) {
+            $this->dropProperty($property);
+        }
+
         unset($this->creatures[$creature->getId()]);
     }
     
