@@ -9,7 +9,7 @@ jsBootstrap: frontend/_bootstrap.js
 images: @web/images/games_evolution
 css: assets/css
 
-cacheType: build
+cacheType: smart
 
 respondents:
   Respondent: backend\Respondent

@@ -101,12 +101,16 @@ class Core {
 			}
 		});
 	}
-	
+
 	loadGamePlugin(game, connectData) {
 		^Respondent.loadGamePlugin(game.type).then(res=>{
+			var plugin = this.plugin;
 			var box = new lx.ActiveBox({
 				header: game.type,
-				geom: true //[20, 15, 60, 60]
+				geom: true, //[20, 15, 60, 60]
+				closeButton: {
+					click: ()=>plugin->>confirmPopup.open(#lx:i18n(ToLeave), ()=>box.del())
+				}
 			});
 			box.setPlugin(res.data, {connectData, gameType: game.type});
 			game.box = box;
