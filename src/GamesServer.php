@@ -57,6 +57,8 @@ class GamesServer extends SocketServer
 
     protected function beforeProcess(): void
     {
-        $this->channels->create('common', CommonChannel::class);
+        $this->channels->create('common', CommonChannel::class, [
+            'reconnectionPeriod' => $this->getConfig('reconnectionPeriod') ?: 0,
+        ]);
     }
 }

@@ -216,7 +216,7 @@ abstract class GameChannel extends Channel
             'gamersData' => $this->getGamersData(),
         ]);
         $this->getGame()->fillEventGameDataForGamer($event, $gamer);
-        $event->send();;
+        $event->send();
     }
 
     public function onDisconnect(Connection $connection): void
