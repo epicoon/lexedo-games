@@ -34,7 +34,7 @@ class Map #lx:namespace lexedo.games.Hive {
 		if (tyle) return tyle;
 
 		let key = x + '_' + z;
-		tyle = new #hive.Tyle(this, x, z);
+		tyle = new >>>hive.Tyle(this, x, z);
 		this.map[key] = tyle;
 
 		return tyle;

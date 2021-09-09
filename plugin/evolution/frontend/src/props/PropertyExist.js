@@ -2,7 +2,7 @@
 
 class PropertyExist extends lexedo.games.Evolution.Property #lx:namespace lexedo.games.Evolution {
 	constructor(creature) {
-		super(creature, #evConst.PROPERTY_EXIST);
+		super(creature, >>>evConst.PROPERTY_EXIST);
 	}
 
 	getNeedFood() {
@@ -14,15 +14,15 @@ class PropertyExist extends lexedo.games.Evolution.Property #lx:namespace lexedo
 
 		let mode = this.getGame().mode;
 		switch (true) {
-			case mode.isMode(#evConst.MOUSE_MODE_NEW_PROPERTY):
+			case mode.isMode(>>>evConst.MOUSE_MODE_NEW_PROPERTY):
 				this.__onClickNewProperty(mode);
 				break;
 
-			case mode.isMode(#evConst.MOUSE_MODE_FEED):
+			case mode.isMode(>>>evConst.MOUSE_MODE_FEED):
 				this.__onClickFeed(mode);
 				break;
 
-			case mode.isMode(#evConst.MOUSE_MODE_USE_PROPERTY):
+			case mode.isMode(>>>evConst.MOUSE_MODE_USE_PROPERTY):
 				this.__onClickUseProperty(mode);
 				break;
 		}

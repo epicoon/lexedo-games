@@ -29,9 +29,9 @@ class Food #lx:namespace lexedo.games.Evolution {
 	}
 
 	getPicture() {
-		if (this.type == #evConst.FOOD_TYPE_FAT) return '_fat.png';
+		if (this.type == >>>evConst.FOOD_TYPE_FAT) return '_fat.png';
 
-		var picture = (this.type == #evConst.FOOD_TYPE_RED) ? '_redFood' : '_blueFood';
+		var picture = (this.type == >>>evConst.FOOD_TYPE_RED) ? '_redFood' : '_blueFood';
 		switch (this.position) {
 			case self::MIDDLE: return picture += '.png';
 			case self::TOP:    return picture += '21.png';
@@ -54,11 +54,11 @@ class Food #lx:namespace lexedo.games.Evolution {
  **********************************************************************************************************************/
 
 function __definePosition(self) {
-	if (self.type == #evConst.FOOD_TYPE_FAT) return #evFood.MIDDLE;
+	if (self.type == >>>evConst.FOOD_TYPE_FAT) return >>>evFood.MIDDLE;
 
 	var needFood = self.property.getNeedFood();
-	if (needFood == 1) return #evFood.MIDDLE;
+	if (needFood == 1) return >>>evFood.MIDDLE;
 
-	if (self.property.getEatenFood() == 0) return #evFood.TOP;
-	return #evFood.BOTTOM;
+	if (self.property.getEatenFood() == 0) return >>>evFood.TOP;
+	return >>>evFood.BOTTOM;
 }

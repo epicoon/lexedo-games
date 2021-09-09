@@ -29,7 +29,7 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		this.mouse = new Mouse(this);
 		this.mode = new MouseMode(this);
 
-		this.getEnvironment().attakCore = new #ev.AttakCore(this);
+		this.getEnvironment().attakCore = new >>>ev.AttakCore(this);
 
 		__setGui(this);
 	}
@@ -40,12 +40,12 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 	}
 
 	actualizeAfterReconnect(data) {
-		if (data.type == #evConst.RECONNECTION_STATUS_PENDING) {
+		if (data.type == >>>evConst.RECONNECTION_STATUS_PENDING) {
 			return;
 		}
 
 		// Revange refreshing
-		if (data.type == #evConst.RECONNECTION_STATUS_REVANGE) {
+		if (data.type == >>>evConst.RECONNECTION_STATUS_REVANGE) {
 			var params = {
 				approvesCount: data.approvesCount,
 				gamersCount: data.gamersCount
@@ -55,7 +55,7 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 			return;
 		}
 
-		let restorer = new #ev.GameRestorer(this, data.condition);
+		let restorer = new >>>ev.GameRestorer(this, data.condition);
 		restorer.run();
 	}
 
@@ -241,9 +241,9 @@ function __setGui(self) {
 		if (!val) return;
 
 		plugin->>phaseMenu.getChildren().each(child=>child.hide());
-		if (val == #evConst.PHASE_GROW) {
+		if (val == >>>evConst.PHASE_GROW) {
 			plugin->>phaseGrowMenu.show();
-		} else if (val == #evConst.PHASE_FEED) {
+		} else if (val == >>>evConst.PHASE_FEED) {
 			plugin->>phaseFeedMenu.show();
 		}
 	});

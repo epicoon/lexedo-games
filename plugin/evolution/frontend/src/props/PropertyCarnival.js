@@ -7,7 +7,7 @@ class PropertyCarnival extends lexedo.games.Evolution.Property #lx:namespace lex
 
 	onClick(event) {
 		if (super.onClick() === false) return;
-		if (!this.getGame().phaseIs(#evConst.PHASE_FEED)) return;
+		if (!this.getGame().phaseIs(>>>evConst.PHASE_FEED)) return;
 		if (!this.getGamer().isLocal()) return;
 
 		if (!this.getGamer().canGetFood) return;
@@ -19,7 +19,7 @@ class PropertyCarnival extends lexedo.games.Evolution.Property #lx:namespace lex
 			return;
 		}
 
-		this.getGame().mode.switchMode(#evConst.MOUSE_MODE_USE_PROPERTY, event, {
+		this.getGame().mode.switchMode(>>>evConst.MOUSE_MODE_USE_PROPERTY, event, {
 			property: this
 		});
 	}

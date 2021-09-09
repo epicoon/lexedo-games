@@ -9,7 +9,7 @@ class GamePhase extends lx.BindableModel {
 	}
 
 	reset() {
-		this.set(#evConst.PHASE_NONE);
+		this.set(>>>evConst.PHASE_NONE);
 		this.food = 0;
 	}
 
@@ -26,13 +26,13 @@ class GamePhase extends lx.BindableModel {
 
 	actualize(gamer = null) {
 		if (gamer) this.gamer = gamer;
-		if (this.type == #evConst.PHASE_GROW) {
+		if (this.type == >>>evConst.PHASE_GROW) {
 			this.name = #lx:i18n(phaseName.Growing);
 			if (this.gamer.isLocal())
 				this.hint = #lx:i18n(phaseHint.UseCart);
 			else
 				this.hint = #lx:i18n(phaseHint.Waiting);
-		} else if (this.type == #evConst.PHASE_FEED) {
+		} else if (this.type == >>>evConst.PHASE_FEED) {
 			this.name = #lx:i18n(phaseName.Feeding);
 			if (this.gamer.isLocal())
 				this.hint = #lx:i18n(phaseHint.UseProperties);
@@ -42,10 +42,10 @@ class GamePhase extends lx.BindableModel {
 	}
 
 	isGrow() {
-		return this.type == #evConst.PHASE_GROW;
+		return this.type == >>>evConst.PHASE_GROW;
 	}
 
 	isFeed() {
-		return this.type == #evConst.PHASE_FEED;
+		return this.type == >>>evConst.PHASE_FEED;
 	}
 }

@@ -3,18 +3,18 @@
 class MouseMode {
 	constructor(game) {
 		this.game = game;
-		this.mode = #evConst.MOUSE_MODE_NONE;
+		this.mode = >>>evConst.MOUSE_MODE_NONE;
 		this.highlightedProps = [];
 		this.data = {};
 	}
 
 	reset() {
-		this.setMode(#evConst.MOUSE_MODE_NONE);
+		this.setMode(>>>evConst.MOUSE_MODE_NONE);
 	}
 
 	switchMode(mode, e, data = {}) {
 		if (this.mode == mode)
-			this.setMode(#evConst.MOUSE_MODE_NONE);
+			this.setMode(>>>evConst.MOUSE_MODE_NONE);
 		else
 			this.setMode(mode, e, data);
 	}
@@ -51,13 +51,13 @@ class MouseMode {
 
 	__getPropsForHightlight() {
 		switch (this.mode) {
-			case #evConst.MOUSE_MODE_NONE:
+			case >>>evConst.MOUSE_MODE_NONE:
 				return [];
-			case #evConst.MOUSE_MODE_NEW_PROPERTY:
+			case >>>evConst.MOUSE_MODE_NEW_PROPERTY:
 				return this.__getHPNew();
-			case #evConst.MOUSE_MODE_FEED:
+			case >>>evConst.MOUSE_MODE_FEED:
 				return this.__getHPFeed();
-			case #evConst.MOUSE_MODE_USE_PROPERTY:
+			case >>>evConst.MOUSE_MODE_USE_PROPERTY:
 				return this.__getHPUse();
 		}
 	}

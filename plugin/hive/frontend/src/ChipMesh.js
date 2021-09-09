@@ -75,8 +75,8 @@ class ChipMesh #lx:namespace lexedo.games.Hive {
 
 function __genMesh(self) {
     self.mesh = self.getWorld().newMesh({
-        geometry: #hive.Tyle.getGeometry(),
-        material: #hive.ChipMesh.getMaterial(),
+        geometry: >>>hive.Tyle.getGeometry(),
+        material: >>>hive.ChipMesh.getMaterial(),
         clickable: true
     });
 }

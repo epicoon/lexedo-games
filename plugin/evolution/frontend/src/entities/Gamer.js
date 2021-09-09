@@ -39,7 +39,7 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 		if (!val)
 			this.canGetFood = false;
 		else {
-			if (this._game.phaseIs(#evConst.PHASE_FEED) && this._game.phase.food) {
+			if (this._game.phaseIs(>>>evConst.PHASE_FEED) && this._game.phase.food) {
 				this.canGetFood = true;
 				this.creatureHasUsedFat = null;
 				this.unpauseProperties();
@@ -74,7 +74,7 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 
 	receiveCarts(carts) {
 		carts.each(cartData=>{
-			let cart = new #ev.Cart(
+			let cart = new >>>ev.Cart(
 				this.getEnvironment(),
 				cartData[0],
 				cartData[1],
@@ -113,7 +113,7 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 
 	addCreature(creatureId) {
 		this._creatures.add(
-			new #ev.Creature(this, creatureId)
+			new >>>ev.Creature(this, creatureId)
 		);
 		return this._creatures.last();
 	}
@@ -238,7 +238,7 @@ function __bindButtons(self) {
 	self.bind(plugin->>feedEndTurnBut);
 
 	plugin->>foodBut.click(function(e) {
-		self._game.mode.switchMode(#evConst.MOUSE_MODE_FEED, e);
+		self._game.mode.switchMode(>>>evConst.MOUSE_MODE_FEED, e);
 	});
 	plugin->>foodBut.setField('canGetFood', function(val) {
 		this.disabled(!val);

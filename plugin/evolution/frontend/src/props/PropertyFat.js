@@ -3,7 +3,7 @@
 class PropertyFat extends lexedo.games.Evolution.Property #lx:namespace lexedo.games.Evolution {
 	onClick(event) {
 		if (super.onClick() === false) return;
-		if (!this.getGame().phaseIs(#evConst.PHASE_FEED)) return;
+		if (!this.getGame().phaseIs(>>>evConst.PHASE_FEED)) return;
 		if (!this.getGamer().isLocal()) return;
 
 		if (this.hasFat()

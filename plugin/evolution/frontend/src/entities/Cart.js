@@ -73,7 +73,7 @@ class Cart #lx:namespace lexedo.games.Evolution {
 
 	useAsProperty(mouseEvent) {
 		this.getGame().mode.switchMode(
-			#evConst.MOUSE_MODE_NEW_PROPERTY,
+			>>>evConst.MOUSE_MODE_NEW_PROPERTY,
 			mouseEvent,
 			new CartToPropertyData(this)
 		);
@@ -104,11 +104,11 @@ class CartToPropertyData {
 
 	checkDueCreature(creature) {
 		if (this.cart.isPropertySingle()) {
-			if (this.cart.getTitleProperty() == #evConst.PROPERTY_CARNIVAL) {
-				if (creature.hasProperty(#evConst.PROPERTY_SCAVENGER))
+			if (this.cart.getTitleProperty() == >>>evConst.PROPERTY_CARNIVAL) {
+				if (creature.hasProperty(>>>evConst.PROPERTY_SCAVENGER))
 					return false;
-			} else if (this.cart.getTitleProperty() == #evConst.PROPERTY_SCAVENGER) {
-				if (creature.hasProperty(#evConst.PROPERTY_CARNIVAL))
+			} else if (this.cart.getTitleProperty() == >>>evConst.PROPERTY_SCAVENGER) {
+				if (creature.hasProperty(>>>evConst.PROPERTY_CARNIVAL))
 					return false;
 			}
 

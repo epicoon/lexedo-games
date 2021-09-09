@@ -3,7 +3,7 @@
 class PropertyMimicry extends lexedo.games.Evolution.Property #lx:namespace lexedo.games.Evolution {
 	onClick(event) {
 		if (super.onClick() === false) return;
-		if (!this.getGame().phaseIs(#evConst.PHASE_FEED)) return;
+		if (!this.getGame().phaseIs(>>>evConst.PHASE_FEED)) return;
 		if (!this.getGamer().isLocal()) return;
 
 		if (this.getEnvironment().attakCore.getPendingGamer() !== this.getGamer()) return;
@@ -14,7 +14,7 @@ class PropertyMimicry extends lexedo.games.Evolution.Property #lx:namespace lexe
 			return;
 		}
 
-		this.getGame().mode.switchMode(#evConst.MOUSE_MODE_USE_PROPERTY, event, {
+		this.getGame().mode.switchMode(>>>evConst.MOUSE_MODE_USE_PROPERTY, event, {
 			property: this
 		});
 	}

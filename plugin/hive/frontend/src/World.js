@@ -22,7 +22,7 @@ class World extends lx3d.World #lx:namespace lexedo.games.Hive {
         // Игровой стол
         this.table = null;
 
-        this.map = new #hive.Map(this.game);
+        this.map = new >>>hive.Map(this.game);
     }
 
     getMap() {

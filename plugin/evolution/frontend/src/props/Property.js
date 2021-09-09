@@ -36,26 +36,26 @@ class Property #lx:namespace lexedo.games.Evolution {
 
 	static map() {
 		let map = {};
-		map[#evConst.PROPERTY_EXIST] = 'lexedo.games.Evolution.PropertyExist';
-		map[#evConst.PROPERTY_BIG] = 'lexedo.games.Evolution.PropertyBig';
-		map[#evConst.PROPERTY_FAST] = 'lexedo.games.Evolution.PropertyFast';
-		map[#evConst.PROPERTY_INTERACT] = 'lexedo.games.Evolution.PropertyInteract';
-		map[#evConst.PROPERTY_SWIM] = 'lexedo.games.Evolution.PropertySwim';
-		map[#evConst.PROPERTY_HIDE] = 'lexedo.games.Evolution.PropertyHide';
-		map[#evConst.PROPERTY_MIMICRY] = 'lexedo.games.Evolution.PropertyMimicry';
-		map[#evConst.PROPERTY_HOLE] = 'lexedo.games.Evolution.PropertyHole';
-		map[#evConst.PROPERTY_ACUTE] = 'lexedo.games.Evolution.PropertyAcute';
-		map[#evConst.PROPERTY_DROP_TAIL] = 'lexedo.games.Evolution.PropertyDropTail';
-		map[#evConst.PROPERTY_SCAVENGER] = 'lexedo.games.Evolution.PropertyScavenger';
-		map[#evConst.PROPERTY_PARASITE] = 'lexedo.games.Evolution.PropertyParasite';
-		map[#evConst.PROPERTY_PIRACY] = 'lexedo.games.Evolution.PropertyPiracy';
-		map[#evConst.PROPERTY_SYMBIOSIS] = 'lexedo.games.Evolution.PropertySymbiosis';
-		map[#evConst.PROPERTY_COOP] = 'lexedo.games.Evolution.PropertyCoop';
-		map[#evConst.PROPERTY_HIBERNATE] = 'lexedo.games.Evolution.PropertyHibernate';
-		map[#evConst.PROPERTY_TRAMP] = 'lexedo.games.Evolution.PropertyTramp';
-		map[#evConst.PROPERTY_VENOM] = 'lexedo.games.Evolution.PropertyVenom';
-		map[#evConst.PROPERTY_CARNIVAL] = 'lexedo.games.Evolution.PropertyCarnival';
-		map[#evConst.PROPERTY_FAT] = 'lexedo.games.Evolution.PropertyFat';
+		map[>>>evConst.PROPERTY_EXIST] = 'lexedo.games.Evolution.PropertyExist';
+		map[>>>evConst.PROPERTY_BIG] = 'lexedo.games.Evolution.PropertyBig';
+		map[>>>evConst.PROPERTY_FAST] = 'lexedo.games.Evolution.PropertyFast';
+		map[>>>evConst.PROPERTY_INTERACT] = 'lexedo.games.Evolution.PropertyInteract';
+		map[>>>evConst.PROPERTY_SWIM] = 'lexedo.games.Evolution.PropertySwim';
+		map[>>>evConst.PROPERTY_HIDE] = 'lexedo.games.Evolution.PropertyHide';
+		map[>>>evConst.PROPERTY_MIMICRY] = 'lexedo.games.Evolution.PropertyMimicry';
+		map[>>>evConst.PROPERTY_HOLE] = 'lexedo.games.Evolution.PropertyHole';
+		map[>>>evConst.PROPERTY_ACUTE] = 'lexedo.games.Evolution.PropertyAcute';
+		map[>>>evConst.PROPERTY_DROP_TAIL] = 'lexedo.games.Evolution.PropertyDropTail';
+		map[>>>evConst.PROPERTY_SCAVENGER] = 'lexedo.games.Evolution.PropertyScavenger';
+		map[>>>evConst.PROPERTY_PARASITE] = 'lexedo.games.Evolution.PropertyParasite';
+		map[>>>evConst.PROPERTY_PIRACY] = 'lexedo.games.Evolution.PropertyPiracy';
+		map[>>>evConst.PROPERTY_SYMBIOSIS] = 'lexedo.games.Evolution.PropertySymbiosis';
+		map[>>>evConst.PROPERTY_COOP] = 'lexedo.games.Evolution.PropertyCoop';
+		map[>>>evConst.PROPERTY_HIBERNATE] = 'lexedo.games.Evolution.PropertyHibernate';
+		map[>>>evConst.PROPERTY_TRAMP] = 'lexedo.games.Evolution.PropertyTramp';
+		map[>>>evConst.PROPERTY_VENOM] = 'lexedo.games.Evolution.PropertyVenom';
+		map[>>>evConst.PROPERTY_CARNIVAL] = 'lexedo.games.Evolution.PropertyCarnival';
+		map[>>>evConst.PROPERTY_FAT] = 'lexedo.games.Evolution.PropertyFat';
 		return map;
 	}
 
@@ -96,7 +96,7 @@ class Property #lx:namespace lexedo.games.Evolution {
 
 	getPicture() {
 		var catalog = this.getEnvironment().dataCatalog;
-		if (this.type == #evConst.PROPERTY_EXIST)
+		if (this.type == >>>evConst.PROPERTY_EXIST)
 			return catalog.getCreaturePicrute();
 		return catalog.getPropertyPictureUse(this.type, this.asymm);
 	}
@@ -115,7 +115,7 @@ class Property #lx:namespace lexedo.games.Evolution {
 
 	onClick(event) {
 		let mode = this.getGame().mode;
-		if (mode.isMode(#evConst.MOUSE_MODE_USE_PROPERTY)) {
+		if (mode.isMode(>>>evConst.MOUSE_MODE_USE_PROPERTY)) {
 			if (mode.data.property === this) return true;
 			mode.data.property.processTarget(this);
 			return false;

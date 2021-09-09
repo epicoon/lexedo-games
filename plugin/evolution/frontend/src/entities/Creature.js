@@ -15,7 +15,7 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 		this.properties.add(
 			lexedo.games.Evolution.Property.create({
 				creature: this,
-				type: #evConst.PROPERTY_EXIST
+				type: >>>evConst.PROPERTY_EXIST
 			})
 		);
 	}
@@ -125,12 +125,12 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	}
 
 	getTotalFat() {
-		var selected = this.properties.select(prop=>prop.type==#evConst.PROPERTY_FAT);
+		var selected = this.properties.select(prop=>prop.type==>>>evConst.PROPERTY_FAT);
 		return selected.len;
 	}
 
 	getCurrentFat() {
-		var selected = this.properties.select(prop=>prop.type==#evConst.PROPERTY_FAT);
+		var selected = this.properties.select(prop=>prop.type==>>>evConst.PROPERTY_FAT);
 		var totalFat = 0;
 		selected.each(fat=>totalFat+=fat.hasFat());
 		return totalFat;
@@ -160,29 +160,29 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	}
 
 	isBig() {
-		return this.hasProperty(#evConst.PROPERTY_BIG);		
+		return this.hasProperty(>>>evConst.PROPERTY_BIG);		
 	}
 
 	isSwimming() {
-		return this.hasProperty(#evConst.PROPERTY_SWIM);		
+		return this.hasProperty(>>>evConst.PROPERTY_SWIM);		
 	}
 
 	isHidden() {
-		return this.hasProperty(#evConst.PROPERTY_HIDE);		
+		return this.hasProperty(>>>evConst.PROPERTY_HIDE);		
 	}
 
 	isAcute() {
-		return this.hasProperty(#evConst.PROPERTY_ACUTE);		
+		return this.hasProperty(>>>evConst.PROPERTY_ACUTE);		
 	}
 
 	isHole() {
-		return this.hasProperty(#evConst.PROPERTY_HOLE);
+		return this.hasProperty(>>>evConst.PROPERTY_HOLE);
 	}
 
 	isSymbiont() {
 		let match = false;
 		this.properties.each(property=>{
-			if (property.getType() == #evConst.PROPERTY_SYMBIOSIS && property.asymm == 0)
+			if (property.getType() == >>>evConst.PROPERTY_SYMBIOSIS && property.asymm == 0)
 				match = true;
 		});
 		return match;

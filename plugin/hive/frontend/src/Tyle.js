@@ -14,15 +14,15 @@ class Tyle #lx:namespace lexedo.games.Hive {
 
 	static getGeometry() {
 		if (!this.geometry) {
-			let size = #hive.Constants.GEOM_SIZE - #hive.Constants.GEOM_INDENT * 2;
-			let height = Math.round(#hive.Constants.GEOM_SIZE / 6);
-			let minStep = Math.round(#hive.Constants.GEOM_SIZE * 0.25 - #hive.Constants.GEOM_INDENT);
-			let maxStep = Math.round(#hive.Constants.GEOM_SIZE * 0.5 - #hive.Constants.GEOM_INDENT);
+			let size = >>>hive.Constants.GEOM_SIZE - >>>hive.Constants.GEOM_INDENT * 2;
+			let height = Math.round(>>>hive.Constants.GEOM_SIZE / 6);
+			let minStep = Math.round(>>>hive.Constants.GEOM_SIZE * 0.25 - >>>hive.Constants.GEOM_INDENT);
+			let maxStep = Math.round(>>>hive.Constants.GEOM_SIZE * 0.5 - >>>hive.Constants.GEOM_INDENT);
 
 			this.geometry = new lx3d.Geometry.cutBox(
 				/*coords*/ size, height, size,
 				/*angles*/ [[minStep, maxStep], [minStep, maxStep], [minStep, maxStep], [minStep, maxStep]],
-				/*precision*/ #hive.Constants.GEOM_PRECISION
+				/*precision*/ >>>hive.Constants.GEOM_PRECISION
 			);
 		}
 
@@ -67,9 +67,9 @@ class Tyle #lx:namespace lexedo.games.Hive {
 	}
 
 	calcPosition() {
-		let x = #hive.Constants.GEOM_SIZE * 0.75 * this.x;
-		let z = #hive.Constants.GEOM_SIZE * this.z;
-		if (this.x % 2) z -= (#hive.Constants.GEOM_SIZE * 0.5);
+		let x = >>>hive.Constants.GEOM_SIZE * 0.75 * this.x;
+		let z = >>>hive.Constants.GEOM_SIZE * this.z;
+		if (this.x % 2) z -= (>>>hive.Constants.GEOM_SIZE * 0.5);
 		return {x, y:0, z};
 	}
 

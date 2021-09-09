@@ -14,20 +14,20 @@ class Mouse {
 
 	setMode(mode, e) {
 		switch (mode) {
-			case #evConst.MOUSE_MODE_NONE:
+			case >>>evConst.MOUSE_MODE_NONE:
 				this.box.hide();
 				return;
 
-			case #evConst.MOUSE_MODE_FEED:
+			case >>>evConst.MOUSE_MODE_FEED:
 				this.__init('mouse/_food.png', '40px', '40px');
 				break;
-			case #evConst.MOUSE_MODE_NEW_PROPERTY:
+			case >>>evConst.MOUSE_MODE_NEW_PROPERTY:
 				var pic = this.getEnvironment().dataCatalog.getPropertyPictureUse(
 					this.game.mode.data.cart.getTitleProperty()
 				);
 				this.__init(pic, '37px', '60px');
 				break;
-			case #evConst.MOUSE_MODE_USE_PROPERTY:
+			case >>>evConst.MOUSE_MODE_USE_PROPERTY:
 				var pic = this.game.mode.data.property.getPicture();
 				this.__init(pic, '37px', '60px');
 				break;
@@ -50,7 +50,7 @@ class Mouse {
 
 	static __initGui(self) {
 		self.getEnvironment().getPlugin().root.on('mousemove', (e)=>{
-			if (self.game.mode.isMode(#evConst.MOUSE_MODE_NONE)) return;
+			if (self.game.mode.isMode(>>>evConst.MOUSE_MODE_NONE)) return;
 
 			this.__moveBox(self, e);
 		});

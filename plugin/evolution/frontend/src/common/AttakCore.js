@@ -60,12 +60,12 @@ class AttakCore #lx:namespace lexedo.games.Evolution {
 	processAttakResult(carnival, data) {
 		this.__unholdAttak();
 
-		if (data.result == #evConst.ATTAK_RESULT_PENDING) {
+		if (data.result == >>>evConst.ATTAK_RESULT_PENDING) {
 			this.holdAttak(data);
 			return;
 		}
 
-		if (data.result == #evConst.ATTAK_RESULT_SUCCESS) {
+		if (data.result == >>>evConst.ATTAK_RESULT_SUCCESS) {
 			this.game.applyFeedReport(data.feedReport);
 			if (data.poisoned) carnival.poison();
 
