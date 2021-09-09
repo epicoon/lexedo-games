@@ -131,9 +131,11 @@ abstract class GameChannel extends Channel
         return true;
     }
 
-    public function checkOnReconnect(Connection $connection, string $oldConnectionId, array $authData): bool
+    public function checkOnReconnect(Connection $connection, string $oldConnectionId): bool
     {
-        parent::checkOnReconnect($connection, $oldConnectionId, $authData);
+        if (!parent::checkOnReconnect($connection, $oldConnectionId)) {
+            return false;
+        }
 
         if (!array_key_exists($oldConnectionId, $this->disconnectedUsers)) {
             return false;
