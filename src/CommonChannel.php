@@ -197,6 +197,15 @@ class CommonChannel extends Channel
             ->send();
     }
 
+    public function onReconnect(Connection $connection): void
+    {
+        parent::onConnect($connection);
+
+        $this->createEvent('new-user', $this->getCommonData($connection))
+            ->setReceiver($connection)
+            ->send();
+    }
+
     public function onDisconnect(Connection $connection): void
     {
         $user = $this->getUser($connection);
