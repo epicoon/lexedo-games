@@ -10,6 +10,9 @@ use lx\socket\Connection;
 
 abstract class AbstractGame
 {
+    const GAMER_CLASS = 'gamer';
+    const CONDITION_CLASS = 'condition';
+
     private GameChannel $channel;
     private bool $isPending;
     /** @var array<AbstractGamer> */
@@ -21,9 +24,8 @@ abstract class AbstractGame
     protected bool $isWaitingForRevenge;
     protected array $revengeApprovements;
 
-    public function __construct(GameChannel $channel)
+    public function __construct()
     {
-        $this->channel = $channel;
         $this->isPending = true;
         $this->isActive = false;
         $this->gamers = [];
@@ -31,11 +33,16 @@ abstract class AbstractGame
         $this->revengeApprovements = [];
     }
 
-    abstract public function getConditionClass(): string;
+    abstract public function getClassesMap(): array;
     abstract public function getCondition(): AbstractGameCondition;
     abstract public function fillEventBeginGame(ChannelEvent $event): void;
     abstract public function fillEventGameDataForGamer(ChannelEvent $event, AbstractGamer $gamer): void;
-    abstract protected function getNewGamer(?Connection $connection = null, $authField = null): AbstractGamer;
+
+    public function getBasicCondition(): AbstractGameCondition
+    {
+        $class = $this->getDependedClass(self::CONDITION_CLASS);
+        return new $class($this);
+    }
 
     public function setCondition(AbstractGameCondition $condition): void
     {
@@ -43,6 +50,11 @@ abstract class AbstractGame
         $this->isActive = $condition->getActive();
         $this->isWaitingForRevenge = $condition->getWaitingForRevenge();
         $this->revengeApprovements = $condition->getRevengeApprovements();
+    }
+
+    public function setChannel(GameChannel $channel): void
+    {
+        $this->channel = $channel;
     }
 
     public function getChannel(): GameChannel
@@ -58,6 +70,16 @@ abstract class AbstractGame
     public function getType(): string
     {
         return $this->getChannel()->getParameter('type');
+    }
+
+    public function getDependedClass(string $key): ?string
+    {
+        if (!in_array($key, [self::GAMER_CLASS, self::CONDITION_CLASS])) {
+            return null;
+        }
+
+        $map = $this->getClassesMap();
+        return $map[$key] ?? null;
     }
 
     public function setPending(bool $pending): void
@@ -197,5 +219,11 @@ abstract class AbstractGame
         $authField = $gamer->getAuthField();
         unset($this->userToGamerMap[$authField]);
         unset($this->gamers[$gamerId]);
+    }
+
+    private function getNewGamer(?Connection $connection = null, $authField = null): AbstractGamer
+    {
+        $class = $this->getDependedClass(self::GAMER_CLASS);
+        return new $class($this, $connection, $authField);
     }
 }

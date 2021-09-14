@@ -39,7 +39,8 @@ Snippet.addSnippet('newGameMenu', {geom:[1, 6, '400px', '400px']});
 // Подсказка что делать в данный момент
 decorateBox(new lx.Box({
 	key: 'lblHint',
-	geom: [0.5, 92, 18, 7]
+	geom: [0.5, 92, 18, 7],
+	text: 'Начните новую игру'
 }));
 
 
@@ -98,10 +99,8 @@ Snippet.addSnippet('scoreTable', {geom:[0, 0, 100, 100]});
 
 
 // Попап подтверждения решений
-Snippet.addSnippet({
-	plugin: 'lx/tools:snippets',
-	snippet: 'confirmPopup'
-});
+#lx:use lx.ConfirmPopup;
+new lx.ConfirmPopup();
 
 
 //======================================================================================================================

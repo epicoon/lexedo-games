@@ -3,9 +3,9 @@
 #lx:macros hive {lexedo.games.Hive}
 
 class Game #lx:namespace lexedo.games.Hive {
-	constructor(plugin, env) {
-
+	constructor(env) {
 		this.env = env;
+		this.plugin = env.getPlugin();
 		let config = {
 			lights : [ 0x000000, 0x777777, 0xffffff ],
 			cameraPosition : {x:0, y:1033, z:1033},
@@ -20,7 +20,7 @@ class Game #lx:namespace lexedo.games.Hive {
 					z: [500, 4000]
 				}
 			},
-			canvas : plugin->>canvas
+			canvas : this.plugin->>canvas
 		};
 		this.world = new >>>hive.World(config, env, this);
 

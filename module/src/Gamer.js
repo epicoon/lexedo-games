@@ -1,5 +1,5 @@
 class Gamer extends lx.BindableModel #lx:namespace lexedo.games {
-	constructor(game, id, channelMate) {
+	constructor(game, id, channelMate, data = {}) {
 		super();
 
 		this._game = game;
@@ -7,6 +7,12 @@ class Gamer extends lx.BindableModel #lx:namespace lexedo.games {
 		this._connectionId = channelMate.getId();
 		this._name = channelMate.login;
 		this._isLocal = channelMate.isLocal();
+
+		this.init(data);
+	}
+
+	init(data) {
+		// pass
 	}
 
 	updateChannelMate(channelMate) {

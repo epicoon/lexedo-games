@@ -3,43 +3,25 @@
  * @const {lx.Snippet} Snippet
  */
 
+#lx:macros Const {lexedo.games.Cofb.Constants};
+
 //======================================================================================================================
 // Кнопка открытия меню создания игры
 Snippet->butNewGame.click(()=>{
 	var menu = Snippet->newGameMenu;
-
-	// console.log(menu);
 
 	if (menu.visibility()) {
 		menu.close();
 		return;
 	}
 
-	if (!cofb.status.isNone() && !cofb.status.isOver())
+	let game = Plugin.environment.getGame();
+	if (!game.status.isNone() && !game.status.isOver())
 		Snippet->confirmPopup.open('Вы уверены, что хотите начать новую игру? Текущая будет сброшена.', ()=>{
-			//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			bgGame.reset();
+			game.reset();
 			menu.open()
 		});
 	else menu.open();
-});
-
-
-//======================================================================================================================
-// Подсказка что делать в данный момент
-const hintBox = Snippet->lblHint;
-cofb.EventSupervisor.subscribe('cofb_status_changed', function(status) {
-	switch (status) {
-		case cofb.Status.PHASE_ACTIVATE : {
-			hintBox.text('Кликните по товарам фазы, чтобы начать');
-		} break;
-		case cofb.Status.PLAY_CUBES : {
-			hintBox.text('Разыграйте кубики - кликните любой'); 
-		} break;
-	}
-});
-cofb.EventSupervisor.subscribe('cofb_gamer_activated', function(gamer) {
-	hintBox.text('Ходит игрок ' + gamer.getName());
 });
 
 
@@ -48,12 +30,7 @@ cofb.EventSupervisor.subscribe('cofb_gamer_activated', function(gamer) {
 const turnEndsBox = Snippet->lblTurnEnds;
 turnEndsBox.click(function() {
 	this.hide();
-
-	//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	bgGame.passMove();
-});
-cofb.EventSupervisor.subscribe('cofb_gamer_move_ends', function(gamer) {
-	turnEndsBox.show();
+	Plugin.environment.getGame().passMove();
 });
 
 
@@ -73,45 +50,6 @@ lx.on('mousemove', function(event) {
 	if ( !statusIcon.visibility() ) return;
 	event = event ||  window.event;
 	statusIcon.locate(event);
-});
-cofb.EventSupervisor.subscribe('cofb_active_cube_changed', function(newValue) {
-	statusIcon.picture('cube' + newValue + '.jpg');
-});
-cofb.EventSupervisor.subscribe('cofb_status_changed', function(newStatus, data = {}) {
-	if (cofb.status.isPending()) {
-		statusIcon.hide();
-		return;
-	}
-
-	//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	if (bgGame.gamer() && bgGame.gamer().AI) return;
-
-	switch (true) {
-		case cofb.status.isGetGoods() :
-			statusIcon.start(data.dowble?'getGoods2.png':'getGoods.png');
-		break;
-		case cofb.status.isUseCube():
-			statusIcon.start((data.value==7)?'cubeJoker.jpg':'cube'+data.value+'.jpg', data.event);
-			break;
-		case cofb.status.isUseSilver(data.event):
-			statusIcon.start('silver.jpg', data.event);
-			break;
-		case cofb.status.isTrade():
-			statusIcon.start('trade.png');
-		break;
-		case cofb.status.isGetBuilding():
-			statusIcon.start('getBuilding.png');
-		break;
-		case cofb.status.isGetMCK():
-			statusIcon.start('getMCK.png');
-		break;
-		case cofb.status.isGetAS():
-			statusIcon.start('getAS.png');
-		break;
-		case cofb.status.isSetChip():
-			statusIcon.start('setChip.png');
-		break;
-	}
 });
 
 
@@ -183,8 +121,11 @@ function __calcCount(locus) {
 }
 
 Snippet->canvas.on('mousemove', function() {
-	var staff = cofb.world.getIntersectedStaff();
-	if (!staff || staff.locus === undefined) {
+	let game = Plugin.environment.getGame();
+	if (!game) return;
+	
+	let staff = game.world.getIntersectedStaff();
+	if (!staff || !staff.locus) {
 		pileContain.close();
 		return;
 	}
@@ -195,7 +136,8 @@ Snippet->canvas.on('mousemove', function() {
 
 	if (staff.info == undefined) return;
 	if (staff.locus.chips.length == 1) return;
-	if (staff.locus.parent == bgGame.field && staff.locus.name.substr(0, 2) == 'st') return;
+	if (staff.locus.parent == game.field && staff.locus.name.substr(0, 2) == 'st')
+		return;
 
 	pileContain.open(staff.locus);
 });

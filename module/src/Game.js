@@ -1,7 +1,7 @@
 class Game #lx:namespace lexedo.games {
-	constructor(plugin, env) {
-		this._plugin = plugin;
+	constructor(env) {
 		this._environment = env;
+		this._plugin = env.getPlugin();
 		this._pending = true;
 
 		this.gamers = {};

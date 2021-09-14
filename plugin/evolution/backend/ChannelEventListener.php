@@ -2,6 +2,7 @@
 
 namespace lexedo\games\evolution\backend;
 
+use lexedo\games\GameEventListener;
 use lexedo\games\GamesServer;
 use lx;
 use lexedo\games\evolution\backend\game\Game;
@@ -12,35 +13,22 @@ use lx\socket\Channel\ChannelEvent;
 use lx\socket\Connection;
 
 /**
- * Class ChannelEventListener
- * @package lexedo\games\evolution\backend
- *
  * @method EvolutionChannel getChannel()
+ * @method Game getGame()
  */
-class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
+class ChannelEventListener extends GameEventListener
 {
-    /**
-     * @return Game
-     */
-    public function getGame()
-    {
-        return $this->getChannel()->getGame();
-    }
-
     public function getAvailableEventNames(): array
     {
         return ['chat-message'];
     }
 
 
-    /*******************************************************************************************************************
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * EVENT HANDLERS
-     ******************************************************************************************************************/
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    /**
-     * @param ChannelEvent $event
-     */
-    public function onCartToCreature($event)
+    public function onCartToCreature(ChannelEvent $event): void
     {
         $gamer = $this->checkGamerInPhase(Game::PHASE_GROW, $event);
         if (!$gamer) {
@@ -64,10 +52,7 @@ class ChannelEventListener extends \lx\socket\Channel\ChannelEventListener
         $this->onGrowPhaseAction($event, $gamer);
     }
 
-    /**
-     * @param ChannelEvent $event
-     */
-    public function onCartToProperty($event)
+    public function onCartToProperty(ChannelEvent $event): void
     {
         $gamer = $this->checkGamerInPhase(Game::PHASE_GROW, $event);
         if (!$gamer) {

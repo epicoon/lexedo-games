@@ -18,7 +18,12 @@ class Environment #lx:namespace lexedo.games {
 		this.type = this._plugin.attributes.gameType;
 
 		this.useScreenLock = (config.useScreenLock === undefined) ? true : config.useScreenLock;
+		this.game = null;
 		this._connector = new Connector(plugin, this, config.game);
+	}
+
+	setGame(game) {
+		this.game = game;
 	}
 
 	getPlugin() {
@@ -27,6 +32,10 @@ class Environment #lx:namespace lexedo.games {
 
 	getSocket() {
 		return this._connector.socket;
+	}
+
+	getGame() {
+		return this.game;
 	}
 
 	socketRequest(route, data = {}) {

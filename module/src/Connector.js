@@ -24,11 +24,19 @@ class Connector {
 		} else if (this._gameConfig.isObject) {
 			var className = this._gameConfig.class;
 			if (this.isOnline() && this._gameConfig.online) {
+				if (this._gameConfig.online.class)
+					this._gameConfig.class = this._gameConfig.online.class;
+				if (this._gameConfig.online.channelEventListener)
+					this._gameConfig.channelEventListener = this._gameConfig.online.channelEventListener;
+				if (this._gameConfig.online.connectionEventListener)
+					this._gameConfig.connectionEventListener = this._gameConfig.online.connectionEventListener;
 				this._plugin.useModule(
 					this._gameConfig.online.module,
 					()=>this.initGame(className)
 				);
 			} else if (!this.isOnline() && this._gameConfig.local) {
+				if (this._gameConfig.local.class)
+					this._gameConfig.class = this._gameConfig.local.class;
 				this._plugin.useModule(
 					this._gameConfig.local.module,
 					()=>this.initGame(className)
@@ -69,7 +77,7 @@ class Connector {
 	}
 
 	initGame(className) {
-		this._environment.game = lx.createObject(className, [this._plugin, this._environment]);
+		this._environment.setGame(lx.createObject(className, [this._environment]));
 
 		if (this.isOnline()) {
 			this._environment.lockScreen();

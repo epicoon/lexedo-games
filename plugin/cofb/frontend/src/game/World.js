@@ -1,8 +1,12 @@
 #lx:private;
 
-class bgWorld extends lx3dWorld {
+#lx:macros Const {lexedo.games.Cofb.Constants};
+
+class World extends lx3dWorld #lx:namespace lexedo.games.Cofb {
 	constructor(config) {
 		super(config);
+		
+		this.game = config.game;
 
 		// Таймер плавного перехода камеры
 		__initTimer(this);
@@ -18,12 +22,12 @@ class bgWorld extends lx3dWorld {
 	}
 
 	createTable() {
-		var w = cofb.FIELD_SIZE * 3,
-			d = cofb.FIELD_SIZE * 2;
+		var w = >>>Const.FIELD_SIZE * 3,
+			d = >>>Const.FIELD_SIZE * 2;
 
-		this.table = cofb.world.newMesh({
-			geometry: lx3dGeometry.cutBox(w, 40, d, [0, 0, 0, 0], cofb.fisSMOOTH),
-			material: new THREE.MeshLambertMaterial({ map : cofb.world.getTexture('olha') })
+		this.table = this.newMesh({
+			geometry: lx3dGeometry.cutBox(w, 40, d, [0, 0, 0, 0], >>>Const.fisSMOOTH),
+			material: new THREE.MeshLambertMaterial({ map : this.getTexture('olha') })
 		});
 
 		this.table.position.y = -22;
@@ -32,7 +36,7 @@ class bgWorld extends lx3dWorld {
 	getTexture(name) {
 		if (name in this.texturesList) return this.texturesList[name];
 
-		var fileName = Plugin.getImage(name + '.jpg');
+		var fileName = this.game.getPlugin().getImage(name + '.jpg');
 
 		var texture = (new THREE.TextureLoader).load(fileName);
 		texture.minFilter = texture.magFilter = THREE.LinearFilter;
@@ -74,9 +78,6 @@ class bgWorld extends lx3dWorld {
 		return null;
 	}
 }
-
-cofb.World = bgWorld;
-
 /***********************************************************************************************************************
  * PRIVATE
  **********************************************************************************************************************/
@@ -86,7 +87,7 @@ function __initTimer(self) {
 	self.cameraAnimator.on = function( position, mode, Y ) {
 		if (this.inAction) return;
 
-		var camera = cofb.world.camera;
+		var camera = self.camera;
 		this.mode = mode || -1;
 
 		// Записываем исходные положение и кватернион
@@ -120,7 +121,7 @@ function __initTimer(self) {
 	self.cameraAnimator.whileCycle(function() {
 		var k = this.shift();
 
-		var camera = cofb.world.camera,
+		var camera = self.camera,
 			q = new THREE.Quaternion();
 		q.copy( this.q0 );
 		q.slerp( this.q1, k );
@@ -133,11 +134,11 @@ function __initTimer(self) {
 		camera.position.copy( pos );
 
 		if (this.periodEnds()) {
-			this.q0 = undefined;
-			this.q1 = undefined;
+			this.q0 = null;
+			this.q1 = null;
 			this.stop();
 
-			if (this.mode != -1) cofb.status.set(this.mode);
+			if (this.mode != -1) self.game.status.set(this.mode);
 		}
 	});
 }
@@ -147,7 +148,7 @@ function __initStaffList(self) {
 		data : [],
 		counter : 0,
 		spiritMeshes : [],
-		spiritInitiator : undefined,
+		spiritInitiator : null,
 
 		add : function(obj) {
 			if (obj.name !== undefined) this.data[obj.name] = obj;
@@ -160,8 +161,8 @@ function __initStaffList(self) {
 		},
 
 		genSpiritChip : function(loc) {
-			var w = cofb.FIELD_SIZE * 0.0625,
-				h = cofb.FIELD_SIZE * 0.00625,
+			var w = >>>Const.FIELD_SIZE * 0.0625,
+				h = >>>Const.FIELD_SIZE * 0.00625,
 				d = w,
 				w2 = w * 0.5,
 				w4 = w * 0.25,
@@ -170,8 +171,8 @@ function __initStaffList(self) {
 			var material = new THREE.MeshLambertMaterial({ color : 0xffff00 });
 			material.opacity = 0.8;
 			material.transparent = true;
-			var mesh = cofb.world.newMesh({
-				geometry: new lx3dGeometry.cutBox(w, h, d, angles, cofb.fisSMOOTH),
+			var mesh = self.newMesh({
+				geometry: new lx3dGeometry.cutBox(w, h, d, angles, >>>Const.fisSMOOTH),
 				material,
 				clickable: true
 			});
@@ -181,8 +182,8 @@ function __initStaffList(self) {
 			this.data[name] = mesh;
 			this.spiritMeshes.push( mesh );
 
-			mesh.position.x = loc.parent.mesh.position.x + loc.x * cofb.FIELD_SIZE;
-			mesh.position.z = loc.parent.mesh.position.z + loc.z * cofb.FIELD_SIZE;
+			mesh.position.x = loc.parent.mesh.position.x + loc.x * >>>Const.FIELD_SIZE;
+			mesh.position.z = loc.parent.mesh.position.z + loc.z * >>>Const.FIELD_SIZE;
 			mesh.position.y = loc.parent.surface() + h * 0.5;
 		},
 
@@ -190,16 +191,15 @@ function __initStaffList(self) {
 			for (var i in this.spiritMeshes) {
 				var mesh = this.spiritMeshes[i];
 
-				cofb.world.removeMesh(mesh);
+				self.removeMesh(mesh);
 				delete this.data[mesh.name];
 			}
 
 			this.spiritMeshes = [];
-			this.spiritInitiator = undefined;
+			this.spiritInitiator = null;
 		}
 	};
 }
-
 
 function __defineHandlers(self) {
 	self.canvas.on('mouseup', (event)=>{
@@ -220,7 +220,7 @@ function __defineHandlers(self) {
 		if (event.button == 0) {
 			var obj = intersects[0].object;
 			if (obj.name && obj.name in self.staffList.data) {
-				cofb.EventSupervisor.trigger('cofb_chip_clicked', [
+				self.game.triggerLocalEvent('cofb_chip_clicked', [
 					self.staffList.data[obj.name],
 					event,
 					intersects[0].point

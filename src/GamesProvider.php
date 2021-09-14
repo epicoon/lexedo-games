@@ -4,6 +4,7 @@ namespace lexedo\games;
 
 use lexedo\games\chesslike\backend\ChessChannel;
 use lexedo\games\evolution\backend\EvolutionChannel;
+use lexedo\games\cofb\backend\CofbChannel;
 use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
 use lx\ObjectTrait;
@@ -12,25 +13,37 @@ use lx\Plugin;
 class GamesProvider implements FusionComponentInterface
 {
     use FusionComponentTrait;
+    
+    protected array $games = [];
+    private ?array $gamesData = null;
 
     protected function getGames(): array
     {
-        return [
-            'chess' => [
-                'channel' => ChessChannel::class,
-                'plugin' => 'lexedo/games:chesslike',
-                'image' => 'chess.png',
-                'minGamers' => 2,
-                'maxGamers' => 2,
-            ],
-            'evolution' => [
-                'channel' => EvolutionChannel::class,
-                'plugin' => 'lexedo/games:evolution',
-                'image' => 'evolution.png',
-                'minGamers' => 2,
-                'maxGamers' => 2,
-            ],
-        ];
+        if ($this->gamesData === null) {
+            $this->loadGamesData();
+        }
+        
+        return $this->gamesData;
+    }
+    
+    private function loadGamesData(): void
+    {
+        $data = [];
+        foreach ($this->games as $gamePluginName) {
+            $gamePlugin = \lx::$app->getPlugin($gamePluginName);
+            if (!$gamePlugin || !($gamePlugin instanceof GamePlugin)) {
+                continue;
+            }
+            
+            $data[$gamePlugin->getGameSlug()] = [
+                'channel' => $gamePlugin->getGameChannelClass(),
+                'plugin' => $gamePluginName,
+                'image' => $gamePlugin->getTitleImage(),
+                'minGamers' => $gamePlugin->getMinGamers(),
+                'maxGamers' => $gamePlugin->getMaxGamers(),
+            ];
+        }
+        $this->gamesData = $data;
     }
 
     public function getFullData(): array

@@ -53,9 +53,9 @@ class Game extends AbstractGame
     /** @var array<Property> */
     private array $properties;
 
-    public function __construct(EvolutionChannel $channel)
+    public function __construct()
     {
-        parent::__construct($channel);
+        parent::__construct();
 
         $this->log = [];
         $this->turnSequence = [];
@@ -72,6 +72,14 @@ class Game extends AbstractGame
         $this->properties = [];
 
         $this->plugin = lx::$app->getPlugin('lexedo/games:evolution');
+    }
+
+    public function getClassesMap(): array
+    {
+        return [
+            self::GAMER_CLASS => Gamer::class,
+            self::CONDITION_CLASS => GameCondition::class,
+        ];
     }
 
     public function log(string $msgKey, array $params = []): void
@@ -115,14 +123,9 @@ class Game extends AbstractGame
         return $carnivalCore->onAttak($carnival);
     }
 
-    public function getConditionClass(): string
-    {
-        return GameCondition::class;
-    }
-
     public function getCondition(): GameCondition
     {
-        $condition = new GameCondition($this);
+        $condition = $this->getBasicCondition();
         $condition
             ->setTurnSequence($this->turnSequence)
             ->setActiveGamer($this->getActiveGamer()->getId())
@@ -191,7 +194,7 @@ class Game extends AbstractGame
             $authField = $gamerData['authField'];
             $gamerId = $gamerData['gamerId'];
             $gamer = $this->createGamerByAuthField($authField, $gamerId);
-            $gamer->init($gamerData);
+            $gamer->restore($gamerData);
         }
         
         $creatures = $condition->getCreatures();
@@ -588,11 +591,6 @@ class Game extends AbstractGame
         }
 
         $this->cartPack->reset();
-    }
-
-    protected function getNewGamer(?Connection $connection = null, $authField = null): Gamer
-    {
-        return new Gamer($this, $connection, $authField);
     }
 
     private function prepareGamers(): void

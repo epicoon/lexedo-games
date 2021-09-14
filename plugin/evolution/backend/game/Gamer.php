@@ -20,10 +20,8 @@ class Gamer extends AbstractGamer
     /** @var array<Creature> */
     private array $creatures;
 
-    public function __construct(Game $game, ?Connection $connection = null, $authField = null)
+    protected function init(): void
     {
-        parent::__construct($game, $connection, $authField);
-
         $this->isPassed = false;
         $this->canGetFood = false;
         $this->droppingCounter = 0;
@@ -54,7 +52,7 @@ class Gamer extends AbstractGamer
         ];
     }
 
-    function init(array $config): void
+    function restore(array $config): void
     {
         $this->isPassed = $config['isPassed'] ?? false;
         $this->canGetFood = $config['canGetFood'] ?? false;

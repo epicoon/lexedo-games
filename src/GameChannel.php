@@ -24,15 +24,15 @@ abstract class GameChannel extends Channel
     /** @var array<ModelInterface> */
     private array $disconnectedUsers = [];
 
-    abstract protected function createGame(): AbstractGame;
-    
     public function init(): void
     {
         $this->app = lx::$app;
-        $this->game = $this->createGame();
+        if ($this->game) {
+            $this->game->setChannel($this);
+        }
 
         if ($this->getParameter('loading')) {
-            $conditionClass = $this->game->getConditionClass();
+            $conditionClass = $this->game->getDependedClass(AbstractGame::CONDITION_CLASS);
             /** @var AbstractGameCondition $condition */
             $condition = new $conditionClass();
             $condition->initByString($this->getParameter('condition'));
@@ -117,6 +117,10 @@ abstract class GameChannel extends Channel
 
     public function checkOnConnect(Connection $connection, array $authData): bool
     {
+        if (array_key_exists($connection->getId(), $this->userList)) {
+            return true;
+        }
+
         if ($this->requirePassword() && !$this->checkPassword($authData['password'] ?? null)) {
             return false;
         }

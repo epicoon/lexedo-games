@@ -11,14 +11,14 @@ const butP2 = menuBox->>p2;
 const butP1 = menuBox->>p1;
 const butAdd = menuBox->>add;
 
-
 menuBox.open = function() {
 	butM2.show();
 	butM1.show();
 	butP1.show();
 	butP2.show();
 
-	var gamer = bgGame.gamer();
+	var game = Plugin.environment.getGame(),
+		gamer = game.gamer();
 	if ( !gamer.plan.locus['worker'].chips.length ) {
 		butM2.hide();
 		butM1.hide();
@@ -33,8 +33,7 @@ menuBox.open = function() {
 	var bonus = '';
 	var text = 'Обменять кубик на двух рабочих';
 
-	//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	var gamer = bgGame.gamer();
+	var gamer = game.gamer();
 	if ( gamer.knows('k14') ) bonus = 'два рабочих';
 	if ( gamer.knows('k13') ) {
 		if (bonus == '') bonus = 'слиток серебра';
@@ -47,7 +46,6 @@ menuBox.open = function() {
 	this.show();
 };
 
-
 menuBox->back.click(()=>menuBox.hide());
 butM2.click(()=>__incCube(-2));
 butM1.click(()=>__incCube(-1));
@@ -55,20 +53,17 @@ butP1.click(()=>__incCube( 1));
 butP2.click(()=>__incCube( 2));
 butAdd.click(()=>__changeCubeToWorker());
 
-
 function __incCube(val) {
 	menuBox.hide();
 
-	//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	bgGame.gamer().plan.locus['worker'].delChips(1);
-	bgGame.activeCube.incValue(val);
-	cofb.world.clearSpiritStaff();
-	cofb.EventSupervisor.trigger('cofb_active_cube_changed', bgGame.activeCube.value);
+	let game = Plugin.environment.getGame();
+	game.gamer().plan.locus['worker'].delChips(1);
+	game.activeCube.incValue(val);
+	game.world.clearSpiritStaff();
+	game.triggerLocalEvent('cofb_active_cube_changed', game.activeCube.value);
 }
 
 function __changeCubeToWorker() {
 	menuBox.hide();
-
-	//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	bgGame.gamer().changeCubeToWorker();
+	Plugin.environment.getGame().gamer().changeCubeToWorker();
 }

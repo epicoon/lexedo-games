@@ -3,9 +3,10 @@
 #lx:require src/;
 
 class Game #lx:namespace lexedo.games.Chess {
-	constructor(plugin, env) {
+	constructor(env) {
 		#lx:require -F src/tool/__classInit;
 
+		var plugin = env.getPlugin();
 		this._environment.chessBoard = new lexedo.games.Chess.ChessBoard(plugin, env);
 		this._environment.chessPieces = new lexedo.games.Chess.ChessPieces(plugin, env);
 

@@ -27,10 +27,17 @@ abstract class AbstractGamer
         } else {
             $this->authField = $authField;
         }
+        
+        $this->init();
     }
-    
-    abstract function init(array $config): void;
-    
+
+    abstract function restore(array $config): void;
+
+    protected function init(): void
+    {
+        // pass
+    }
+
     public function setId(string $id)
     {
         $this->id = $id;

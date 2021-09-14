@@ -1,0 +1,28 @@
+<?php
+
+namespace <namespace>;
+
+use lexedo\games\GameEventListener;
+use lx\socket\Channel\ChannelEvent;
+
+/**
+ * @method <slug>Channel getChannel()
+ * @method <slug>Game getGame()
+ */
+class <slug>EventListener extends GameEventListener
+{
+    public function getAvailableEventNames(): array
+    {
+        return ['chat-message'];
+    }
+
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * EVENT HANDLERS
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    public function onTest(ChannelEvent $event): void
+    {
+        $event->addData(['server_test' => 'ok']);
+    }
+}

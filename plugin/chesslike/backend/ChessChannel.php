@@ -6,16 +6,11 @@ use lexedo\games\GameChannel;
 use lx\Math;
 use lx\socket\Channel\ChannelEvent;
 
-/**
- * Class WebSocketChannel
- * @package lexedo\games\chesslike\backend
- */
 class ChessChannel extends GameChannel
 {
-    /** @var string */
-    private $activeGamer = null;
+    private ?string $activeGamer = null;
 
-    protected function beginGame()
+    protected function beginGame(): void
     {
         $arr = ['white', 'black'];
         $this->activeGamer = 'white';
@@ -40,10 +35,7 @@ class ChessChannel extends GameChannel
         $this->sendEvent($event);
     }
 
-    /**
-     * @param ChannelEvent $event
-     */
-    private function onMovePiece($event)
+    private function onMovePiece(ChannelEvent $event): void
     {
         $data = $event->getData();
         if ($data['color'] != $this->activeGamer) {

@@ -1,3 +1,5 @@
+#lx:macros Const {lexedo.games.Cofb.Constants};
+
 #lx:private;
 
 const floatHint = Snippet->floatHint;
@@ -82,9 +84,12 @@ __timer.whileCycle(function() {
 });
 
 Plugin->canvas.on('mousemove', function(event) {
-	var staff = cofb.world.getIntersectedStaff();
+	let game = Plugin.environment.getGame();
+	if (!game) return;
+	
+	let staff = game.world.getIntersectedStaff();
 
-	if (!staff || staff.locus === undefined) {
+	if (!staff || !staff.locus) {
 		__finish();
 		return;
 	}
@@ -145,30 +150,31 @@ function __textIndex(chip) {
 	if ( chip.locus.name.substr(0, 5) == 'point' ) return 2;
 	if ( chip.locus.name.substr(0, 3) == 'seq' ) return 3;
 
-	if ( chip.value != undefined ) {
-		if ( chip.locus.parent === bgGame.field ) return 4;
+	var game = Plugin.environment.getGame();
+	if ( chip.value !== undefined ) {
+		if ( chip.locus.parent === game.field ) return 4;
 		return 5;
 	}
 
-	if ( chip.info.groupe == GROUPE_GOODS ) {
+	if ( chip.info.groupe == >>>Const.GROUPE_GOODS ) {
 		if ( chip.locus.name.substr(0, 2) == 'st' ) return 6;
 		if ( chip.locus.name.substr(0, 2) == 'tn' ) return 7;
-		if ( chip.locus.parent === bgGame.field ) return 8;
+		if ( chip.locus.parent === game.field ) return 8;
 		if ( chip.locus.name == 'goods' ) return 10;
 		return 9;
 	}
 
-	if ( chip.info.groupe == GROUPE_SILVER ) return 1;
-	if ( chip.info.groupe == GROUPE_WORKER ) return 0;
-	if ( chip.info.groupe == GROUPE_BONUS_MAX ) return 23;
-	if ( chip.info.groupe == GROUPE_BONUS_MIN ) return 24;
-	if ( chip.info.groupe == GROUPE_SHIP ) return 11;
-	if ( chip.info.groupe == GROUPE_ANIMAL ) return 12;
-	if ( chip.info.groupe == GROUPE_CASTLE ) return 13;
-	if ( chip.info.groupe == GROUPE_MINE ) return 14;
+	if ( chip.info.groupe == >>>Const.GROUPE_SILVER ) return 1;
+	if ( chip.info.groupe == >>>Const.GROUPE_WORKER ) return 0;
+	if ( chip.info.groupe == >>>Const.GROUPE_BONUS_MAX ) return 23;
+	if ( chip.info.groupe == >>>Const.GROUPE_BONUS_MIN ) return 24;
+	if ( chip.info.groupe == >>>Const.GROUPE_SHIP ) return 11;
+	if ( chip.info.groupe == >>>Const.GROUPE_ANIMAL ) return 12;
+	if ( chip.info.groupe == >>>Const.GROUPE_CASTLE ) return 13;
+	if ( chip.info.groupe == >>>Const.GROUPE_MINE ) return 14;
 
-	if ( chip.info.groupe == GROUPE_KNOWLEGE ) return ( chip.info.variant + 22 );
-	if ( chip.info.groupe == GROUPE_BUILDING ) return ( chip.info.variant - 26 );
+	if ( chip.info.groupe == >>>Const.GROUPE_KNOWLEGE ) return ( chip.info.variant + 22 );
+	if ( chip.info.groupe == >>>Const.GROUPE_BUILDING ) return ( chip.info.variant - 26 );
 }
 
 function __locate(x, y) {

@@ -1,6 +1,4 @@
 var cssList = new lx.CssContext();
-// cssList.addStyle('', {});
-// cssList.addClass('', {}, {});
 
 cssList.addClass('cofbBut', {
 	backgroundColor: 'black',

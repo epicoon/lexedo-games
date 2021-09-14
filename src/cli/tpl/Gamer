@@ -1,0 +1,22 @@
+<?php
+
+namespace <namespace>;
+
+use lexedo\games\AbstractGamer;
+
+/**
+ * @property <slug>Game $game
+ * @method <slug>Game getGame()
+ */
+class <slug>Gamer extends AbstractGamer
+{
+    protected function init(): void
+    {
+        // pass
+    }
+
+    function restore(array $config): void
+    {
+        //TODO
+    }
+}

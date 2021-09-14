@@ -1,0 +1,61 @@
+<?php
+
+namespace <namespace>;
+
+use lexedo\games\AbstractGame;
+use lexedo\games\AbstractGameCondition;
+use lexedo\games\AbstractGamer;
+use lx\socket\Channel\ChannelEvent;
+use lx\socket\Connection;
+use <use_plugin>;
+
+/**
+ * @property <slug>Channel $channel
+ * @property Plugin $plugin;
+ *
+ * @method <slug>Channel getChannel()
+ * @method Plugin getPlugin()
+ * @method <slug>Gamer[] getGamers()
+ * @method <slug>Gamer|null getGamerById(string $id)
+ * @method registerGamer(<slug>Gamer $gamer)
+ * @method <slug>GameCondition getBasicCondition()
+ */
+class <slug>Game extends AbstractGame
+{
+    public function getClassesMap(): array
+    {
+        return [
+            self::GAMER_CLASS => <slug>Gamer::class,
+            self::CONDITION_CLASS => <slug>GameCondition::class,
+        ];
+    }
+
+    public function getCondition(): <slug>GameCondition
+    {
+        $condition = $this->getBasicCondition();
+
+        //TODO
+
+        return $condition;
+    }
+
+    /**
+     * @param <slug>GameCondition $condition
+     */
+    public function setCondition(AbstractGameCondition $condition): void
+    {
+        parent::setCondition($condition);
+        
+        //TODO
+    }
+
+    public function fillEventBeginGame(ChannelEvent $event): void
+    {
+        //TODO
+    }
+
+    public function fillEventGameDataForGamer(ChannelEvent $event, AbstractGamer $gamer): void
+    {
+        //TODO
+    }
+}

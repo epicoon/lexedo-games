@@ -4,14 +4,23 @@
  * @const {lx.Box} Snippet
  */
 
+#lx:macros Const {lexedo.games.Cofb.Constants};
+
 var snippetBox = Snippet.widget;
 var firstStep = snippetBox->firstStep;
 var secondStep = snippetBox->secondStep;
 
 Snippet.gamersData = [];
 
+var rendered = false;
 snippetBox.open = function() {
 	if (this.visibility()) return;
+
+	if (!rendered) {
+		__render();
+		rendered = true;
+	}
+
 	this->secondStep.hide();
 	this->firstStep.show();
 	this.show();
@@ -26,23 +35,25 @@ snippetBox.close = function() {
 
 //======================================================================================================================
 // firstStep
-var gamersList = firstStep->gamersList;
-gamersList.begin();
-for (var i=0; i<4; i++) {
-	var color = new lx.Box({width: 2});
-	color.picture(cofb.GAMER_COLOR[i] + '.jpg');
-	color.border({color:'gray'});
+function __render() {
+	var gamersList = firstStep->gamersList;
+	gamersList.begin();
+	for (var i=0; i<4; i++) {
+		var color = new lx.Box({width: 2});
+		color.picture(>>>Const.GAMER_COLOR[i] + '.jpg');
+		color.border({color:'gray'});
 
-	var name = new lx.Box({width: 8});
-	name.text(cofb.GAMER_NAMES[i]);
-	name.align(lx.CENTER, lx.MIDDLE);
+		var name = new lx.Box({width: 8});
+		name.text(>>>Const.GAMER_NAMES[i]);
+		name.align(lx.CENTER, lx.MIDDLE);
 
-	var ch = new lx.Box({width: 2});
-	var check = ch.add(lx.Checkbox, {key: 'check'});
-	ch.align(lx.CENTER, lx.MIDDLE);
-	check.num = i;
+		var ch = new lx.Box({width: 2});
+		var check = ch.add(lx.Checkbox, {key: 'check'});
+		ch.align(lx.CENTER, lx.MIDDLE);
+		check.num = i;
+	}
+	gamersList.end();
 }
-gamersList.end();
 
 firstStep->>butOk.click(function() {
 	Snippet.gamersData = [];
@@ -86,8 +97,7 @@ secondStep->>butOk.click(()=>{
 	Snippet.gamersData = [];
 	snippetBox.hide();
 
-	//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	bgGame.start(data);
+	Plugin.environment.getGame().start(data);
 });
 
 
@@ -112,10 +122,10 @@ function __startSequanceMenu() {
 		row.gridProportional({step:'10px'});
 		row.begin();
 			var color = new lx.Box({width: 2});
-			color.picture(cofb.GAMER_COLOR[num] + '.jpg');
+			color.picture(>>>Const.GAMER_COLOR[num] + '.jpg');
 			color.border({color:'gray'});
 
-			var name = new lx.Box({width: 8, text:cofb.GAMER_NAMES[num]});
+			var name = new lx.Box({width: 8, text:>>>Const.GAMER_NAMES[num]});
 			name.align(lx.CENTER, lx.MIDDLE);
 
 			var seq = new lx.Box({key:'seq', width:1, text:'?'});

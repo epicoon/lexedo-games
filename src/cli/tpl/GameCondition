@@ -1,0 +1,15 @@
+<?php
+
+namespace <namespace>;
+
+use lexedo\games\AbstractGameCondition;
+
+class <slug>GameCondition extends AbstractGameCondition
+{
+    protected function getFields(): array
+    {
+        return array_merge(parent::getFields(), [
+            //TODO
+        ]);
+    }
+}

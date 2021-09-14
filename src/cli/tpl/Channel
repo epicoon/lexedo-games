@@ -1,0 +1,26 @@
+<?php
+
+namespace <namespace>;
+
+use lexedo\games\GameChannel;
+
+/**
+ * @method <slug>Game getGame()
+ */
+class <slug>Channel extends GameChannel
+{
+    public static function getConfigProtocol(): array
+    {
+        return array_merge(parent::getConfigProtocol(), [
+            'eventListener' => <slug>EventListener::class,
+            'game' => <slug>Game::class,
+        ]);
+    }
+
+    public function getGameReferences(): array
+    {
+        return [
+            //TODO
+        ];
+    }
+}

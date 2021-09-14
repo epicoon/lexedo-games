@@ -18,6 +18,10 @@
         "name": "lexedo.games.ChessOnline",
         "path": "plugin\/chesslike\/frontend\/modules\/ChessOnline.js"
     },
+    "lexedo.games.CofbLocal": {
+        "name": "lexedo.games.CofbLocal",
+        "path": "plugin\/cofb\/frontend\/local\/Game.js"
+    },
     "lexedo.games.HiveLocal": {
         "name": "lexedo.games.HiveLocal",
         "path": "plugin\/hive\/frontend\/HiveLocal.js"

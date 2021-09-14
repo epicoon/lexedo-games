@@ -3,12 +3,12 @@
 #lx:require src/;
 
 class Game extends lexedo.games.Game #lx:namespace lexedo.games.Chess {
-	constructor(plugin, env) {
-		super(plugin, env);
+	constructor(env) {
+		super(env);
 		#lx:require -F src/tool/__classInit;
 
-		this._environment.chessBoard = new lexedo.games.Chess.ChessBoard(plugin, env);
-		this._environment.chessPieces = new lexedo.games.Chess.ChessPieces(plugin, env);
+		this._environment.chessBoard = new lexedo.games.Chess.ChessBoard(this.getPlugin(), env);
+		this._environment.chessPieces = new lexedo.games.Chess.ChessPieces(this.getPlugin(), env);
 
 		this.pending = true;
 		this.gamers = ['white', 'black'];
