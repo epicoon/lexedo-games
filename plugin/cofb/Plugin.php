@@ -17,7 +17,12 @@ class Plugin extends GamePlugin
         return 'cofb.png';
     }
 
-    public function getGameChannelClass(): string
+    public function getGameConnectionType(): int
+    {
+        return self::ONLINE_AND_LOCAL;
+    }
+
+    public function getGameChannelClass(): ?string
     {
         return CofbChannel::class;
     }

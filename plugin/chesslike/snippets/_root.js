@@ -12,7 +12,7 @@ slot.border();
 var board = slot.add(lx.Box, {key:'board', geom: true});
 
 var cols = 8, rows = 8;
-board.grid({cols, rows});
+board.gridProportional({cols, rows});
 board.chessSize = {cols, rows};
 
 var styles = ['white', 'gray'];

@@ -1,39 +1,38 @@
 <?php
 
-namespace lexedo\games\chesslike;
+namespace lexedo\games\sapper;
 
-use lexedo\games\chesslike\backend\ChessChannel;
 use lexedo\games\GamePlugin;
 
 class Plugin extends GamePlugin
 {
     public function getGameSlug(): string
     {
-        return 'chess';
+        return 'sapper';
     }
 
     public function getTitleImage(): string
     {
-        return 'chess.png';
+        return 'sapper.png';
     }
 
     public function getGameConnectionType(): int
     {
-        return self::ONLINE_AND_LOCAL;
+        return self::LOCAL_ONLY;
     }
 
     public function getGameChannelClass(): ?string
     {
-        return ChessChannel::class;
+        return null;
     }
 
     public function getMinGamers(): string
     {
-        return 2;
+        return 1;
     }
 
     public function getMaxGamers(): string
     {
-        return 2;
+        return 1;
     }
 }

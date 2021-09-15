@@ -17,7 +17,12 @@ class Plugin extends GamePlugin
         return 'evolution.png';
     }
 
-    public function getGameChannelClass(): string
+    public function getGameConnectionType(): int
+    {
+        return self::ONLINE_ONLY;
+    }
+
+    public function getGameChannelClass(): ?string
     {
         return EvolutionChannel::class;
     }

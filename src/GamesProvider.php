@@ -37,6 +37,7 @@ class GamesProvider implements FusionComponentInterface
             
             $data[$gamePlugin->getGameSlug()] = [
                 'channel' => $gamePlugin->getGameChannelClass(),
+                'connectionType' => $gamePlugin->getGameConnectionType(),
                 'plugin' => $gamePluginName,
                 'image' => $gamePlugin->getTitleImage(),
                 'minGamers' => $gamePlugin->getMinGamers(),
@@ -52,6 +53,7 @@ class GamesProvider implements FusionComponentInterface
         foreach ($this->getGames() as $type => $game) {
             $result[] = [
                 'type' => $type,
+                'connectionType' => $game['connectionType'],
                 'image' => $game['image'],
                 'minGamers' => $game['minGamers'],
                 'maxGamers' => $game['maxGamers'],

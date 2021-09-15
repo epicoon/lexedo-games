@@ -694,7 +694,7 @@ function __prepareEventSupervisor(self) {
 
 	var plugin = self.getPlugin();
 	self.eventSupervisor.subscribe('cofb_game_over', function(gamer) {
-		plugin->>confirmPopup.open('Игра окончена. Хотите посмотреть таблицу очков?', ()=>{
+		plugin.root->confirmPopup.open('Игра окончена. Хотите посмотреть таблицу очков?', ()=>{
 			plugin->>scoreTable.open();
 		});
 	});

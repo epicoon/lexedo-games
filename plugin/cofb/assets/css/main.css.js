@@ -1,3 +1,6 @@
+//TODO некрасиво подключается файл
+#lx:require @core/js/classes/css/CssContext;
+
 var cssList = new lx.CssContext();
 
 cssList.addClass('cofbBut', {

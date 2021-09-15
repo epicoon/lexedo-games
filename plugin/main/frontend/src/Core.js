@@ -1,4 +1,9 @@
 class Core {
+	#lx:const
+		ONLINE_ONLY = #lx:php(\lexedo\games\GamePlugin::ONLINE_ONLY),
+		LOCAL_ONLY = #lx:php(\lexedo\games\GamePlugin::LOCAL_ONLY),
+		ONLINE_AND_LOCAL = #lx:php(\lexedo\games\GamePlugin::ONLINE_AND_LOCAL);
+
 	constructor(plugin) {
 		this.plugin = plugin;
 		this.connectData = {};
@@ -7,6 +12,7 @@ class Core {
 
 		#lx:model-collection gamePropotypes = {
 			type,
+			connectionType,
 			image,
 			minGamers,
 			maxGamers
@@ -109,27 +115,45 @@ class Core {
 				header: game.type,
 				geom: true, //[20, 15, 60, 60]
 				closeButton: {
-					click: ()=>plugin->>confirmPopup.open(#lx:i18n(ToLeave), ()=>box.del())
+					click: ()=>plugin.root->confirmPopup.open(#lx:i18n(ToLeave), ()=>box.del())
 				}
 			});
 			box.setPlugin(res.data, {connectData, gameType: game.type});
 			game.box = box;
 
-			var map = lx.Storage.get('lexedogames') || {};
-			if (!map.channels) map.channels = {};
-			map.channels[connectData.channelKey] = connectData;  //port protocol url channelKey
-			lx.Storage.set('lexedogames', map);
+			if (connectData) {
+				var map = lx.Storage.get('lexedogames') || {};
+				if (!map.channels) map.channels = {};
+				map.channels[connectData.channelKey] = connectData;  //port protocol url channelKey
+				lx.Storage.set('lexedogames', map);
+			}
 		}).catch(error=>{
 			lx.Tost.error(error.error_details[0]);
 		});
 	}
 
 	__createGame(gameData) {
+		switch (gameData.connectionType) {
+			case self::LOCAL_ONLY:
+				this.loadGamePlugin({type: gameData.type}, null);
+				break;
+			case self::ONLINE_ONLY:
+				this.__createOnlineGame(gameData);
+				break;
+			case self::ONLINE_AND_LOCAL:
+				this.plugin.root->confirmPopup.open(#lx:i18n(OnlineOrLocal))
+					.yes(()=>this.__createOnlineGame(gameData))
+					.no(()=>this.loadGamePlugin({type: gameData.type}, null));
+				break;
+		}
+	}
+
+	__createOnlineGame(gameData) {
 		var params = [#lx:i18n(NewGameName), #lx:i18n(Password)];
 		if (gameData.minGamers != gameData.maxGamers)
 			params.push(#lx:i18n(GamersCount, {min: gameData.minGamers, max: gameData.maxGamers}));
 
-		this.plugin->>inputPopup.open(params, (values)=>{
+		this.plugin.root->inputPopup.open(params, (values)=>{
 			let gamers = (gameData.minGamers != gameData.maxGamers)
 				? values[2]
 				: gameData.minGamers;
@@ -149,12 +173,12 @@ class Core {
 
 	__switchRelationToGame(game) {
 		if (game.follow) {
-			this.plugin->>confirmPopup.open(#lx:i18n(ToLeave), ()=>{
+			this.plugin.root->confirmPopup.open(#lx:i18n(ToLeave), ()=>{
 				game.box.del();
 			});
 		} else {
 			//TODO password
-			this.plugin->>confirmPopup.open(#lx:i18n(ToJoin), ()=>{
+			this.plugin.root->confirmPopup.open(#lx:i18n(ToJoin), ()=>{
 				this.__inConnecting = {
 					password: ''
 				};

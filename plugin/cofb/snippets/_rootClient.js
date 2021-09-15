@@ -46,10 +46,12 @@ statusIcon.start = function(pic, event) {
 	this.show();
 	if (event) this.locate(event);
 };
-lx.on('mousemove', function(event) {
+//lx.on
+Snippet->canvas.on('mousemove', function(event) {
 	if ( !statusIcon.visibility() ) return;
 	event = event ||  window.event;
 	statusIcon.locate(event);
+	statusIcon.returnToParentScreen();
 });
 
 

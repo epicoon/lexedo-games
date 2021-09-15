@@ -5,6 +5,7 @@ en-EN:
   Current_games: Current games
   SavedGames: Saved games
   GamersCount: Gamers count (${min}-${max})
+  OnlineOrLocal: Do you want to start online type of the game?
 
   NewGameName: New game name
   Password: Password
@@ -23,3 +24,4 @@ ru-RU:
   ToJoin: Вы хотите присоединиться к игре?
   SavedGames: Сохраненные игры
   GamersCount: Количество игроков (${min}-${max})
+  OnlineOrLocal: Хотите запустить игру в режиме online?
