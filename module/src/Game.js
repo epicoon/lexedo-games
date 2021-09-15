@@ -24,6 +24,14 @@ class Game #lx:namespace lexedo.games {
 		// abstract
 	}
 
+	actualizeAfterReconnect(data) {
+		// abstract
+	}
+
+	onBegin(data) {
+		// abstract
+	}
+
 	onChangeGamersList(list) {
 		let gamerClass = this.getGamerClass();
 		for (let i=0; i<list.len; i++) {
@@ -47,14 +55,6 @@ class Game #lx:namespace lexedo.games {
 
 		this.onChangeGamersList(data.gamersData);
 		this.actualizeAfterReconnect(data.gameData);
-	}
-
-	actualizeAfterReconnect(data) {
-		// abstract
-	}
-
-	onBegin(data) {
-		// abstract
 	}
 
 	onLoaded(data) {

@@ -74,9 +74,9 @@ Plugin.environment = new lexedo.games.Environment(Plugin, {
 
 // // имитация старта фазы
 // var f = Game.field,
-// 	l = f.locus['st1'];
+// 	l = f.tyles['st1'];
 // for (var i=1; i<6; i++) {
-// 	var tn = f.locus['tn' + i],
+// 	var tn = f.tyles['tn' + i],
 // 		ch = l.chips[0];
 // 	ch.turn();
 // 	tn.locate(ch);
@@ -84,14 +84,14 @@ Plugin.environment = new lexedo.games.Environment(Plugin, {
 // Game.nextPhase();
 
 
-// // Game.gamers['g1'].plan.locus['advWait0'].locate( bgPacks.brown.getOne().genChip() );
+// // Game.gamers['g1'].plan.tyles['advWait0'].locate( bgPacks.brown.getOne().genChip() );
 // var info = new bgChipInfo( GROUPE_BUILDING, VARIANT_BUILDING_TRADEPOST, bgPacks.brown );
-// Game.gamers['g1'].plan.locus['advWait0'].locate( info.genChip() );
+// Game.gamers['g1'].plan.tyles['advWait0'].locate( info.genChip() );
 // Game.gamers['g1'].cubes[0].applyValue(3);	
 
-// Game.gamers['g1'].plan.locus['goods0'].delChips();
-// Game.gamers['g1'].plan.locus['goods1'].delChips();
-// Game.gamers['g1'].plan.locus['goods2'].delChips();
+// Game.gamers['g1'].plan.tyles['goods0'].delChips();
+// Game.gamers['g1'].plan.tyles['goods1'].delChips();
+// Game.gamers['g1'].plan.tyles['goods2'].delChips();
 
 // // имитация старта раунда
 // // var cubes = [ Game.cube ];
@@ -100,7 +100,7 @@ Plugin.environment = new lexedo.games.Environment(Plugin, {
 // // 	cubes.push( Game.gamers[i].cubes[1] );
 // // }
 // // for (var i in cubes) cubes[i].genRandom();
-// f.locus['goods2'].locate( f.locus['tn1'].chips[0] );
+// f.tyles['goods2'].locate( f.tyles['tn1'].chips[0] );
 // Game.turnsBegin();
 // Game.status.setPending();
 

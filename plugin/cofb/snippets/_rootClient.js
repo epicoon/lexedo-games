@@ -62,14 +62,14 @@ pileContain->stream.stream({
 });
 pileContain->stream.add(lx.Box, {style:{fill:'red'}});
 
-pileContain.open = function(locus) {
-	if ( !locus.chips.length ) return;
-	if ( locus.chips[0].info === undefined ) return;
-	if ( locus.chips[0].info.face === undefined ) return;
+pileContain.open = function(tyle) {
+	if ( !tyle.chips.length ) return;
+	if ( tyle.chips[0].info === undefined ) return;
+	if ( tyle.chips[0].info.face === undefined ) return;
 
-	this.locusName = locus.name;
+	this.tyleName = tyle.name;
 
-	var count = __calcCount(locus);
+	var count = __calcCount(tyle);
 	if (count === false) return;
 
 	this->stream.clear();
@@ -99,15 +99,15 @@ pileContain.open = function(locus) {
 };
 
 pileContain.close = function() {
-	this.locusName = '';
+	this.tyleName = '';
 	this.hide();
 };
 
-function __calcCount(locus) {
+function __calcCount(tyle) {
 	var byType = [],
 		total = 0;
-	for (var i=0; i<locus.chips.length; i++) {
-		var chipI = locus.chips[i];
+	for (var i=0; i<tyle.chips.length; i++) {
+		var chipI = tyle.chips[i];
 		if (chipI.info === undefined) return false;
 		var key = 'v' + chipI.info.variant;
 		if ( key in byType ) byType[key].counter++;
@@ -125,21 +125,21 @@ Snippet->canvas.on('mousemove', function() {
 	if (!game) return;
 	
 	let staff = game.world.getIntersectedStaff();
-	if (!staff || !staff.locus) {
+	if (!staff || !staff.tyle) {
 		pileContain.close();
 		return;
 	}
 
-	if (pileContain.locusName == staff.locus.name) return;
+	if (pileContain.tyleName == staff.tyle.name) return;
 
 	pileContain.close();
 
 	if (staff.info == undefined) return;
-	if (staff.locus.chips.length == 1) return;
-	if (staff.locus.parent == game.field && staff.locus.name.substr(0, 2) == 'st')
+	if (staff.tyle.chips.length == 1) return;
+	if (staff.tyle.parent == game.field && staff.tyle.name.substr(0, 2) == 'st')
 		return;
 
-	pileContain.open(staff.locus);
+	pileContain.open(staff.tyle);
 });
 
 

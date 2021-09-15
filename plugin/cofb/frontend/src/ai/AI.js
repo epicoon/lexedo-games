@@ -61,7 +61,7 @@ class AI #lx:namespace lexedo.games.Cofb.AI {
 				switch ( act.type ) {
 					case >>>aiConst.GET_CHIP : {
 						useBy( newCond, act.by );
-						var info = _ai.game.field.locus[act.from].chips[0].info;
+						var info = _ai.game.field.tyles[act.from].chips[0].info;
 						newCond.advWait[act.to] = { groupe : info.groupe, variant : info.variant };
 
 						// console.log( newCond );
@@ -231,7 +231,7 @@ class AI #lx:namespace lexedo.games.Cofb.AI {
 
 			var area = new lexedo.games.Cofb.AI.Area();
 			area.cells = this.gamer.plan.areaNums(i);
-			area.groupe = this.gamer.plan.locus['advLoc' + i].groupe;
+			area.groupe = this.gamer.plan.tyles['advLoc' + i].groupe;
 
 			arr.push(area);
 		}
@@ -263,7 +263,7 @@ class AI #lx:namespace lexedo.games.Cofb.AI {
 			plan = this.gamer.plan;
 
 		for (var i=0; i<37; i++) {
-			var gr = plan.locus['advLoc' + i].groupe;
+			var gr = plan.tyles['advLoc' + i].groupe;
 			amt[gr]++;
 			if ( ('b' + i) in barony ) fill[gr]++;
 		}
@@ -350,19 +350,19 @@ class AI #lx:namespace lexedo.games.Cofb.AI {
 			// console.log( 'reason.type ', reason.type );
 			switch ( reason.type ) {
 				case self::GET_CHIP : {
-					if (reason.by == -1) { this.gamer.bye( this.game.field.locus[ reason.from ].chips[0] ); }
+					if (reason.by == -1) { this.gamer.bye( this.game.field.tyles[ reason.from ].chips[0] ); }
 					else {
 						if (reason.by != -2) {
 							if (reason.by == 2) this.game.activeCube = this.gamer.cubeJoker[0];
 							else this.game.activeCube = this.gamer.cubes[ reason.by ];
 						}
-						this.gamer.getChip( this.game.field.locus[ reason.from ].chips[0] );
+						this.gamer.getChip( this.game.field.tyles[ reason.from ].chips[0] );
 					}
 				} break;
 				
 				case self::SET_CHIP : {
-					var chip = this.gamer.plan.locus['advWait' + reason.from].chips[0],
-						loc = this.gamer.plan.locus['advLoc' + reason.to];
+					var chip = this.gamer.plan.tyles['advWait' + reason.from].chips[0],
+						loc = this.gamer.plan.tyles['advLoc' + reason.to];
 
 					if (reason.by != -2) {
 						if (reason.by == 2) this.game.activeCube = this.gamer.cubeJoker[0];
@@ -375,7 +375,7 @@ class AI #lx:namespace lexedo.games.Cofb.AI {
 					var from = reason.from.pop();
 					if ( reason.from.length ) this.actions.push( action );
 
-					this.gamer.getGoods( this.game.field.locus[ from ].chips[0] );
+					this.gamer.getGoods( this.game.field.tyles[ from ].chips[0] );
 				} break;
 				
 				case self::SELL_GOODS : {
@@ -387,8 +387,8 @@ class AI #lx:namespace lexedo.games.Cofb.AI {
 						else this.game.activeCube = this.gamer.cubes[ reason.by ];
 					}
 
-					var locus = this.gamer.plan.locus['goods' + reason.from];
-					this.gamer.sellGoods(locus, useCube)
+					var tyle = this.gamer.plan.tyles['goods' + reason.from];
+					this.gamer.sellGoods(tyle, useCube)
 				} break;
 				
 				case self::GET_WORKER : {
@@ -398,7 +398,7 @@ class AI #lx:namespace lexedo.games.Cofb.AI {
 				} break;
 				
 				case self::USE_WORKER : {
-					this.gamer.plan.locus['worker'].delChips(1);
+					this.gamer.plan.tyles['worker'].delChips(1);
 					this.gamer.cubes[ reason.cube ].incValue( reason.shift );
 					this.game.status.setAI();
 				} break;

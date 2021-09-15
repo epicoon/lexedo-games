@@ -5,7 +5,7 @@ class Chip #lx:namespace lexedo.games.Cofb {
 		this.game = game;
 		this.mesh = null;
 		this.info = info;
-		this.locus = null;
+		this.tyle = null;
 		this.game.world.registerStaff(this);
 	}
 
@@ -99,7 +99,7 @@ class Chip #lx:namespace lexedo.games.Cofb {
 	del() {
 		this.game.world.removeMesh( this.mesh );
 		this.info.chip = null;
-		if (this.locus !== null) this.locus.remove(this);
+		if (this.tyle !== null) this.tyle.remove(this);
 		this.game.world.unregisterStaff(this);
 	}
 }

@@ -19,7 +19,7 @@ class Plan #lx:namespace lexedo.games.Cofb {
 		this.gamer = gamer;
 		this.type = type;
 		this.name = 'field.' + gamer.id + '.' + type;
-		this.locus = [];
+		this.tyles = [];
 		__create(this);
 	}
 	
@@ -37,8 +37,8 @@ class Plan #lx:namespace lexedo.games.Cofb {
 
 		this.mesh.position.copy(newPos);
 
-		for (var i in this.locus) {
-			var l = this.locus[i];
+		for (var i in this.tyles) {
+			var l = this.tyles[i];
 			for (var j in l.chips) {
 				var ch = l.chips[j];
 				ch.mesh.position.add(shift);
@@ -84,15 +84,15 @@ class Plan #lx:namespace lexedo.games.Cofb {
 	}
 
 	advLocNeibor(loc) {
-		var num, locus;
+		var num, tyle;
 		if (loc.isNumber) {
 			num = +loc;
-			locus = this.locus['advLoc' + num];
+			tyle = this.tyles['advLoc' + num];
 		} else if ( loc.substr !== undefined && loc.substr(0, 6) == 'advLoc' ) {
 			num = +loc.split('c')[1];
-			locus = this.locus[loc];
+			tyle = this.tyles[loc];
 		} else if ( loc.filledHeight !== undefined && loc.name.substr(0, 6) == 'advLoc' ) {
-			locus = loc;
+			tyle = loc;
 			num = +loc.name.split('c')[1];
 		} else return [];
 
@@ -100,7 +100,7 @@ class Plan #lx:namespace lexedo.games.Cofb {
 			arr = [];
 
 		for (var i in nums) {
-			arr.push( this.locus['advLoc' + nums[i]] );
+			arr.push( this.tyles['advLoc' + nums[i]] );
 		}
 
 		return arr;
@@ -119,7 +119,7 @@ class Plan #lx:namespace lexedo.games.Cofb {
 
 			var neib = ctx.advLocNeiborNums(num);
 			for (var i in neib) {
-				if ( ctx.locus['advLoc' + neib[i]].groupe == ctx.locus['advLoc' + num].groupe )
+				if ( ctx.tyles['advLoc' + neib[i]].groupe == ctx.tyles['advLoc' + num].groupe )
 					rec( neib[i] );
 			}
 		}
@@ -130,22 +130,22 @@ class Plan #lx:namespace lexedo.games.Cofb {
 	}
 
 	area(loc) {
-		var num, locus;
+		var num, tyle;
 		if (loc.isNumber) {
 			num = +loc;
-			locus = this.locus['advLoc' + num];
+			tyle = this.tyles['advLoc' + num];
 		} else if ( loc.substr !== undefined && loc.substr(0, 6) == 'advLoc' ) {
 			num = +loc.split('c')[1];
-			locus = this.locus[loc];
+			tyle = this.tyles[loc];
 		} else if ( loc.filledHeight !== undefined && loc.name.substr(0, 6) == 'advLoc' ) {
-			locus = loc;
+			tyle = loc;
 			num = +loc.name.split('c')[1];
 		} else return [];
 
 		var arr = [];
 
 		var nums = this.areaNums(num);
-		for (var i in nums) arr.push( this.locus['advLoc' + nums[i]] );
+		for (var i in nums) arr.push( this.tyles['advLoc' + nums[i]] );
 
 		return arr;
 	}
@@ -177,9 +177,9 @@ function __create(self) {
 	self.getGame().world.registerStaff(self);
 
 	// ожидающие улучшения
-	__addLocus(self, 'advWait0', -0.215, 0.195, { type : >>>Const.LOCUS_ADVANTAGE_WAITING });
-	__addLocus(self, 'advWait1', -0.145, 0.195, { type : >>>Const.LOCUS_ADVANTAGE_WAITING });
-	__addLocus(self, 'advWait2', -0.075, 0.195, { type : >>>Const.LOCUS_ADVANTAGE_WAITING });
+	__addTyle(self, 'advWait0', -0.215, 0.195, { type : >>>Const.TYLE_ADVANTAGE_WAITING });
+	__addTyle(self, 'advWait1', -0.145, 0.195, { type : >>>Const.TYLE_ADVANTAGE_WAITING });
+	__addTyle(self, 'advWait2', -0.075, 0.195, { type : >>>Const.TYLE_ADVANTAGE_WAITING });
 
 	// размещенные улучшения
 	var amt = 4,
@@ -192,7 +192,7 @@ function __create(self) {
 		counter = 0;
 	for (var i=0; i<7; i++) {
 		for (var j=0; j<amt; j++) {
-			__addLocus(self, 'advLoc' + counter, baseX + stepX * j, baseZ, { type : >>>Const.LOCUS_ADVANTAGE_LOCATED, cube : 0, groupe : 0 });
+			__addTyle(self, 'advLoc' + counter, baseX + stepX * j, baseZ, { type : >>>Const.TYLE_ADVANTAGE_LOCATED, cube : 0, groupe : 0 });
 			counter++;
 		}
 		if (amt == 7) inc = -1;
@@ -201,40 +201,40 @@ function __create(self) {
 		baseZ += tabZ;
 	}
 	for (var i=0; i<37; i++) {
-		var locus = self.locus['advLoc' + i];
-		locus.cube = PLAN_CUBE_MAP[i];
-		locus.groupe = PLAN_GROUPE_MAP[self.type][i];
+		var tyle = self.tyles['advLoc' + i];
+		tyle.cube = PLAN_CUBE_MAP[i];
+		tyle.groupe = PLAN_GROUPE_MAP[self.type][i];
 	}
 
 	// товары для продажи
-	__addLocus(self, 'goods0', -0.2275, -0.2025, { type : >>>Const.LOCUS_GOODS_INGAMER, cube : 0 });
-	__addLocus(self, 'goods1', -0.2275, -0.135, { type : >>>Const.LOCUS_GOODS_INGAMER, cube : 0 });
-	__addLocus(self, 'goods2', -0.16, -0.135, { type : >>>Const.LOCUS_GOODS_INGAMER, cube : 0 });
+	__addTyle(self, 'goods0', -0.2275, -0.2025, { type : >>>Const.TYLE_GOODS_INGAMER, cube : 0 });
+	__addTyle(self, 'goods1', -0.2275, -0.135, { type : >>>Const.TYLE_GOODS_INGAMER, cube : 0 });
+	__addTyle(self, 'goods2', -0.16, -0.135, { type : >>>Const.TYLE_GOODS_INGAMER, cube : 0 });
 
 	// товары проданные
-	__addLocus(self, 'goods', -0.16, -0.2025, { type : >>>Const.LOCUS_GOODS_SALES });
+	__addTyle(self, 'goods', -0.16, -0.2025, { type : >>>Const.TYLE_GOODS_SALES });
 
 	// серебро
-	__addLocus(self, 'silver', -0.3, -0.1675, { type : >>>Const.LOCUS_SILVER });
+	__addTyle(self, 'silver', -0.3, -0.1675, { type : >>>Const.TYLE_SILVER });
 
 	// рабочие
-	__addLocus(self, 'worker', -0.2975, 0.195, { type : >>>Const.LOCUS_WORKER });
+	__addTyle(self, 'worker', -0.2975, 0.195, { type : >>>Const.TYLE_WORKER });
 
 	// кубики
-	__addLocus(self, 'cube0', 0.0775, -0.225, { type : >>>Const.LOCUS_CUBE_GAMER });
-	__addLocus(self, 'cube1', 0.1175, -0.225, { type : >>>Const.LOCUS_CUBE_GAMER });
-	__addLocus(self, 'cubeJoker', 0.0375, -0.225, { type : >>>Const.LOCUS_CUBE_GAMER });
-	__addLocus(self, 'cubeRest', 0.2925, -0.1875, { type : >>>Const.LOCUS_CUBE_GAMER });
+	__addTyle(self, 'cube0', 0.0775, -0.225, { type : >>>Const.TYLE_CUBE_GAMER });
+	__addTyle(self, 'cube1', 0.1175, -0.225, { type : >>>Const.TYLE_CUBE_GAMER });
+	__addTyle(self, 'cubeJoker', 0.0375, -0.225, { type : >>>Const.TYLE_CUBE_GAMER });
+	__addTyle(self, 'cubeRest', 0.2925, -0.1875, { type : >>>Const.TYLE_CUBE_GAMER });
 
 	// бонус
-	__addLocus(self, 'bonus', 0.3125, -0.1125, { type : >>>Const.LOCUS_BONUS_INGAMER });
+	__addTyle(self, 'bonus', 0.3125, -0.1125, { type : >>>Const.TYLE_BONUS_INGAMER });
 	
 	// счетчики +100
-	__addLocus(self, 'point100', -0.035, -0.22, { type : >>>Const.LOCUS_COUNTER });
+	__addTyle(self, 'point100', -0.035, -0.22, { type : >>>Const.TYLE_COUNTER });
 }
 
-function __addLocus(self, name, x, y, info) {
-	var locus = new lexedo.games.Cofb.Locus(name, x, y, self);
-	self.locus[name] = locus;
-	for (var i in info) locus[i] = info[i];
+function __addTyle(self, name, x, y, info) {
+	var tyle = new lexedo.games.Cofb.Tyle(name, x, y, self);
+	self.tyles[name] = tyle;
+	for (var i in info) tyle[i] = info[i];
 }

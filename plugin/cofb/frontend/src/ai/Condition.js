@@ -40,50 +40,50 @@ class Condition #lx:namespace lexedo.games.Cofb.AI {
 	initCore(gamer) {
 		this.silverUsed = gamer.silverUsed;
 
-		var locus = gamer.plan.locus;
+		var tyles = gamer.plan.tyles;
 
-		if (locus['cube0'].chips.length) this.cubes[0] = locus['cube0'].chips[0].value;
-		if (locus['cube1'].chips.length) this.cubes[1] = locus['cube1'].chips[0].value;
-		if (locus['cubeJoker'].chips.length)
-			for (var i in locus['cubeJoker'].chips) this.cubeJoker.push(7);
+		if (tyles['cube0'].chips.length) this.cubes[0] = tyles['cube0'].chips[0].value;
+		if (tyles['cube1'].chips.length) this.cubes[1] = tyles['cube1'].chips[0].value;
+		if (tyles['cubeJoker'].chips.length)
+			for (var i in tyles['cubeJoker'].chips) this.cubeJoker.push(7);
 
 		for (var i=0; i<37; i++) {
-			var l = locus['advLoc' + i];
-			if (l.chips.length) {
-				var info = l.chips[0].info;
+			var tyle = tyles['advLoc' + i];
+			if (tyle.chips.length) {
+				var info = tyle.chips[0].info;
 				this._barony['b' + i] = info.variant;
 			}
 		}
 
 		for (var i=0; i<3; i++)
-			if (locus['advWait' + i].chips.length) {
-				var info = locus['advWait' + i].chips[0].info;
+			if (tyles['advWait' + i].chips.length) {
+				var info = tyles['advWait' + i].chips[0].info;
 				this.advWait[i] = { groupe : info.groupe, variant : info.variant };
 			}
 
-		this.workers = locus['worker'].chips.length;
-		this.silver = locus['silver'].chips.length;
+		this.workers = tyles['worker'].chips.length;
+		this.silver = tyles['silver'].chips.length;
 
 		for (var i=0; i<3; i++)
-			if (locus['goods' + i].chips.length) { this.goods[i] = { amt : locus['goods' + i].chips.length, cube : locus['goods' + i].chips[0].info.variant } }
+			if (tyles['goods' + i].chips.length) { this.goods[i] = { amt : tyles['goods' + i].chips.length, cube : tyles['goods' + i].chips[0].info.variant } }
 
 		for (var i in gamer.knowledges) this._knows[i] = gamer.knowledges[i];
 
 		this._fieldGoods = [];
-		for (var i in this.getGame().field.locus) {
-			var l = this.getGame().field.locus[i],
-				name = l.name,
+		for (var i in this.getGame().field.tyles) {
+			var tyle = this.getGame().field.tyles[i],
+				name = tyle.name,
 				subname = name.substr(0, 5);
 
-			if (!l.chips.length) continue;
+			if (!tyle.chips.length) continue;
 
 			if (subname == 'advCu') {
-				this._advCube[ i ] = { groupe : l.chips[0].info.groupe, variant : l.chips[0].info.variant };
+				this._advCube[ i ] = { groupe : tyle.chips[0].info.groupe, variant : tyle.chips[0].info.variant };
 			} else if (subname == 'advSe') {
-				this._advSell[ i ] = { groupe : l.chips[0].info.groupe, variant : l.chips[0].info.variant };
+				this._advSell[ i ] = { groupe : tyle.chips[0].info.groupe, variant : tyle.chips[0].info.variant };
 			} else if (subname == 'goods') {
 				this._fieldGoods[ i ] = [];
-				for (var j in l.chips) this._fieldGoods[ i ].push( l.chips[j].info.variant );
+				for (var j in tyle.chips) this._fieldGoods[ i ].push( tyle.chips[j].info.variant );
 			}
 		}
 	}
@@ -97,7 +97,7 @@ class Condition #lx:namespace lexedo.games.Cofb.AI {
 	findPlace(barony, knows, groupe, variant, nums) {
 		var locs = [],
 			plan = this.getGame().gamers[ this.getGame().gamerKeys[0] ].plan,
-			baronyLocus = plan.locus;
+			baronyTyles = plan.tyles;
 
 		for (var i=0; i<37; i++) {
 			var name = 'advLoc' + i,
@@ -106,11 +106,11 @@ class Condition #lx:namespace lexedo.games.Cofb.AI {
 			if ( key in barony ) continue;
 
 			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-			//console.log( 'findPlace ', name, baronyLocus[name].groupe, groupe, variant );
+			//console.log( 'findPlace ', name, baronyTyles[name].groupe, groupe, variant );
 
 
-			if (baronyLocus[name].groupe != groupe) continue;
-			var index = nums.indexOf( baronyLocus[name].cube );
+			if (baronyTyles[name].groupe != groupe) continue;
+			var index = nums.indexOf( baronyTyles[name].cube );
 			if (index == -1) continue;
 
 			var neib = plan.advLocNeiborNums(i);
@@ -193,7 +193,7 @@ class Condition #lx:namespace lexedo.games.Cofb.AI {
 
 		var groupeNeibAmt = [0, 0, 0, 0, 0, 0];
 		for (var i in freeNeibors) {
-			groupeNeibAmt[ plan.locus[ 'advLoc' + freeNeibors[i] ].groupe ]++;
+			groupeNeibAmt[ plan.tyles[ 'advLoc' + freeNeibors[i] ].groupe ]++;
 		}
 
 		var ctx = this,
@@ -248,7 +248,7 @@ class Condition #lx:namespace lexedo.games.Cofb.AI {
 
 				for (var i in map) for (var j in map[i].cells) {
 					var num = map[i].cells[j],
-						gr = plan.locus['advLoc' + num].groupe;
+						gr = plan.tyles['advLoc' + num].groupe;
 					if ( gr == >>>Const.GROUPE_ANIMAL ) 
 						animals[ Math.floor((barony[ 'b' + num ] - 29) / 3) ]++;
 				}
@@ -278,7 +278,7 @@ class Condition #lx:namespace lexedo.games.Cofb.AI {
 
 				for (var i in map) for (var j in map[i].cells) {
 					var num = map[i].cells[j],
-						gr = plan.locus['advLoc' + num].groupe;
+						gr = plan.tyles['advLoc' + num].groupe;
 					if ( gr == >>>Const.GROUPE_BUILDING )
 						buildings[ barony[ 'b' + num ] - 41 ]++;
 					else if ( gr == >>>Const.GROUPE_ANIMAL ) 
@@ -346,8 +346,8 @@ class Condition #lx:namespace lexedo.games.Cofb.AI {
 
 			if (groupe == >>>Const.GROUPE_KNOWLEGE) {
 				switch (variant) {
-					case >>>Const.VARIANT_KNOWLEDGE_25 : k += 0.25 * _game.gamer().plan.locus['goods'].chips.length; break;
-					case >>>Const.VARIANT_KNOWLEDGE_15 : k += 0.3 * _game.gamer().plan.locus['goods'].chips.length; break;
+					case >>>Const.VARIANT_KNOWLEDGE_25 : k += 0.25 * _game.gamer().plan.tyles['goods'].chips.length; break;
+					case >>>Const.VARIANT_KNOWLEDGE_15 : k += 0.3 * _game.gamer().plan.tyles['goods'].chips.length; break;
 				}
 			}
 

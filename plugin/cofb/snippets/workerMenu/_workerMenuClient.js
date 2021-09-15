@@ -19,7 +19,7 @@ menuBox.open = function() {
 
 	var game = Plugin.environment.getGame(),
 		gamer = game.gamer();
-	if ( !gamer.plan.locus['worker'].chips.length ) {
+	if ( !gamer.plan.tyles['worker'].chips.length ) {
 		butM2.hide();
 		butM1.hide();
 		butP1.hide();
@@ -57,7 +57,7 @@ function __incCube(val) {
 	menuBox.hide();
 
 	let game = Plugin.environment.getGame();
-	game.gamer().plan.locus['worker'].delChips(1);
+	game.gamer().plan.tyles['worker'].delChips(1);
 	game.activeCube.incValue(val);
 	game.world.clearSpiritStaff();
 	game.triggerLocalEvent('cofb_active_cube_changed', game.activeCube.value);

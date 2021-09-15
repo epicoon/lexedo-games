@@ -27,12 +27,12 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 		this.cubes[0] = new lexedo.games.Cofb.Cube(this.game, id, 0);
 		this.cubes[1] = new lexedo.games.Cofb.Cube(this.game, id, 1);
 
-		this.plan.locus['cube0'].locate( this.cubes[0] );
-		this.plan.locus['cube1'].locate( this.cubes[1] );
+		this.plan.tyles['cube0'].locate( this.cubes[0] );
+		this.plan.tyles['cube1'].locate( this.cubes[1] );
 
 		var info = this.game.packs.darkgreen.getOne(),
 			chip = info.genChip();
-		this.plan.locus['advLoc18'].locate(chip);
+		this.plan.tyles['advLoc18'].locate(chip);
 
 		var goods = [];
 		for (var i=0; i<3; i++) goods.push( this.game.packs.goods.getOne() );
@@ -42,7 +42,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 				chip = g.genChip();
 
 			for (var j=0; j<3; j++) {
-				var loc = this.plan.locus['goods' + j];
+				var loc = this.plan.tyles['goods' + j];
 
 				if (!loc.chips.length || loc.chips[0].info.variant == g.variant) {
 					loc.locate(chip);
@@ -53,13 +53,13 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 
 		var silver = this.game.packs.silver.getOne(),
 			chip = silver.genChip();
-		this.plan.locus['silver'].locate(chip);
+		this.plan.tyles['silver'].locate(chip);
 
 		var workers = [];
 		for (var i=0; i<sequence; i++) workers.push( this.game.packs.worker.getOne() );
 		for (var i in workers) {
 			var chip = workers[i].genChip();
-			this.plan.locus['worker'].locate(chip);
+			this.plan.tyles['worker'].locate(chip);
 		}
 
 
@@ -67,8 +67,8 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 	}
 
 	clear() {
-		for (var i in this.plan.locus)
-			this.plan.locus[i].delChips();
+		for (var i in this.plan.tyles)
+			this.plan.tyles[i].delChips();
 
 		this.cubes = [null, null];
 		this.knowledges = [];
@@ -126,10 +126,10 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 	}
 
 	reset() {
-		this.plan.locus['cube0'].locate( this.cubes[0] );
-		this.plan.locus['cube1'].locate( this.cubes[1] );
-		this.plan.locus['cubeJoker'].delChips();
-		this.plan.locus['cubeRest'].delChips();
+		this.plan.tyles['cube0'].locate( this.cubes[0] );
+		this.plan.tyles['cube1'].locate( this.cubes[1] );
+		this.plan.tyles['cubeJoker'].delChips();
+		this.plan.tyles['cubeRest'].delChips();
 		this.cubeJoker = [];
 		this.cubesPlayed = false;
 
@@ -148,7 +148,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 	}
 
 	freeAdvSlot() {
-		var locs = this.plan.locus,
+		var locs = this.plan.tyles,
 			loc = null;
 		if ( !locs['advWait0'].chips.length ) loc = locs['advWait0'];
 		else if ( !locs['advWait1'].chips.length ) loc = locs['advWait1'];
@@ -159,41 +159,41 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 	bye(chip) {
 		var loc = this.freeAdvSlot();
 
-		this.plan.locus['silver'].delChips(2);
+		this.plan.tyles['silver'].delChips(2);
 		this.silverUsed = true;
 		this.game.chipMoveAnimator.on(chip, loc, ()=>this.game.status.setPending());
 	}
 
 	changeCubeToWorker() {
-		var loc0 = this.game.activeCube.locus;
+		var loc0 = this.game.activeCube.tyle;
 
 		var chips = [ this.game.activeCube ],
-			dests = [ this.plan.locus['cubeRest'] ];
+			dests = [ this.plan.tyles['cubeRest'] ];
 
 		var worker = this.game.packs.worker.getOne(),
 			chip = worker.genChip();
 		loc0.locate(chip);
 		chips.push( chip );
-		dests.push( this.plan.locus['worker'] );
+		dests.push( this.plan.tyles['worker'] );
 
 		worker = this.game.packs.worker.getOne();
 		chip = worker.genChip();
 		loc0.locate(chip);
 		chips.push( chip );
-		dests.push( this.plan.locus['worker'] );
+		dests.push( this.plan.tyles['worker'] );
 
 		if ( this.knows('k14') ) {
 			worker = this.game.packs.worker.getOne();
 			chip = worker.genChip();
 			loc0.locate(chip);
 			chips.push( chip );
-			dests.push( this.plan.locus['worker'] );
+			dests.push( this.plan.tyles['worker'] );
 
 			worker = this.game.packs.worker.getOne();
 			chip = worker.genChip();
 			loc0.locate(chip);
 			chips.push( chip );
-			dests.push( this.plan.locus['worker'] );
+			dests.push( this.plan.tyles['worker'] );
 		}
 
 		if ( this.knows('k13') ) {
@@ -201,7 +201,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 			chip = worker.genChip();
 			loc0.locate(chip);
 			chips.push( chip );
-			dests.push( this.plan.locus['silver'] );
+			dests.push( this.plan.tyles['silver'] );
 		}
 
 		var game = this.game;
@@ -211,58 +211,58 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 		});
 	}
 
-	sellGoods(locus, useCube, x, y) {
-		var points = this.game.gamerKeys.length * locus.chips.length,
-			pos = this.counterChip.locus.pos;
+	sellGoods(tyle, useCube, x, y) {
+		var points = this.game.gamerKeys.length * tyle.chips.length,
+			pos = this.counterChip.tyle.pos;
 		this.points += points;
-		this.pointsInfo.push({ cod : >>>Const.SCORE_GOODS, info : locus.chips.length, amt : points });
+		this.pointsInfo.push({ cod : >>>Const.SCORE_GOODS, info : tyle.chips.length, amt : points });
 
 		var chips = [], dests = [];
 
 		if (useCube) {
 			chips = [ this.game.activeCube ],
-			dests = [ this.plan.locus['cubeRest'] ];
+			dests = [ this.plan.tyles['cubeRest'] ];
 		}
 
-		for (var i in locus.chips) {
-			var chip = locus.chips[i];
+		for (var i in tyle.chips) {
+			var chip = tyle.chips[i];
 			chip.turn();
 			chips.push( chip );
-			dests.push( this.plan.locus['goods'] );
+			dests.push( this.plan.tyles['goods'] );
 		}
 
 		var silver = this.game.packs.silver.getOne(),
 			chip = silver.genChip();
-		locus.locate(chip);
+		tyle.locate(chip);
 		chips.push( chip );
-		dests.push( this.plan.locus['silver'] );
+		dests.push( this.plan.tyles['silver'] );
 
 		if ( this.knows('k3') ) {
 			silver = this.game.packs.silver.getOne();
 			chip = silver.genChip();
-			locus.locate(chip);
+			tyle.locate(chip);
 			chips.push( chip );
-			dests.push( this.plan.locus['silver'] );
+			dests.push( this.plan.tyles['silver'] );
 		}
 
 		if ( this.knows('k4') ) {
 			var worker = this.game.packs.worker.getOne();
 			chip = worker.genChip();
-			locus.locate(chip);
+			tyle.locate(chip);
 			chips.push( chip );
-			dests.push( this.plan.locus['worker'] );
+			dests.push( this.plan.tyles['worker'] );
 		}
 
 		var newPos = pos + points;
 		if (newPos >= 100) {
 			newPos -= 100;
 			var chip100 = this.game.packs.point100[this.id].getOne().genChip();
-			this.counterChip.locus.locate( chip100 );
+			this.counterChip.tyle.locate( chip100 );
 			chips.push( chip100 );
-			dests.push( this.plan.locus['point100'] );
+			dests.push( this.plan.tyles['point100'] );
 		}
 		chips.push( this.counterChip );
-		dests.push( this.game.field.locus['point' + newPos] );
+		dests.push( this.game.field.tyles['point' + newPos] );
 
 		var game = this.game;
 		game.chipMoveAnimator.on(chips, dests, ()=>{
@@ -275,7 +275,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 	getChip(chip) {
 		var loc = this.freeAdvSlot(),
 			game = this.game;
-		game.chipMoveAnimator.on([chip, this.game.activeCube], [loc, this.plan.locus['cubeRest']], function() {
+		game.chipMoveAnimator.on([chip, this.game.activeCube], [loc, this.plan.tyles['cubeRest']], function() {
 			game.activeCube = null;
 			game.status.setPending();
 		});
@@ -285,7 +285,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 		var locs = [];
 
 		for (var i=0; i<37; i++) {
-			var loc = this.plan.locus['advLoc' + i];
+			var loc = this.plan.tyles['advLoc' + i];
 
 			if (loc.chips.length) continue;
 			if (loc.groupe != chip.info.groupe) continue;
@@ -339,7 +339,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 
 	applyChip(chip, loc, x, y) {
 		var game = this.game;
-		game.chipMoveAnimator.on([chip, this.game.activeCube], [loc, this.plan.locus['cubeRest']], function() {
+		game.chipMoveAnimator.on([chip, this.game.activeCube], [loc, this.plan.tyles['cubeRest']], function() {
 			game.activeCube = null;
 			game.gamer().chipApplyPassiveResult(chip, x, y);
 		});
@@ -350,22 +350,22 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 		var chips = [], dests = [],
 			msgs = [],
 			points = 0,
-			loc = chip.locus,
+			loc = chip.tyle,
 			area = this.plan.area(loc),
 			fullGroupe = [];
 
 		for (var i=0; i<37; i++) {
-			var l = this.plan.locus['advLoc' + i];
+			var l = this.plan.tyles['advLoc' + i];
 			if (l.groupe == loc.groupe) fullGroupe.push(l);
 		}
 
 		// от корабля - перемещение фишки очередности хода
 		if ( chip.info.groupe == >>>Const.GROUPE_SHIP ) {
-			var curr = this.sequenceChip.locus,
+			var curr = this.sequenceChip.tyle,
 				pos = +curr.name[3];
 
 			chips.push( this.sequenceChip );
-			dests.push( this.game.field.locus['seq' + (pos+1)] );
+			dests.push( this.game.field.tyles['seq' + (pos+1)] );
 		}
 
 		// от животных - очки
@@ -396,7 +396,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 			var cube = this.getJokerCube();
 			loc.locate( cube );
 			chips.push( cube );
-			dests.push( this.plan.locus['cubeJoker'] );
+			dests.push( this.plan.tyles['cubeJoker'] );
 		}
 
 		// от гостиницы 4 рабочих
@@ -405,7 +405,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 				var ch = this.game.packs.worker.getOne().genChip();
 				loc.locate(ch);
 				chips.push( ch );
-				dests.push( this.plan.locus['worker'] );
+				dests.push( this.plan.tyles['worker'] );
 			}
 		}
 
@@ -415,7 +415,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 				var ch = this.game.packs.silver.getOne().genChip();
 				loc.locate(ch);
 				chips.push( ch );
-				dests.push( this.plan.locus['silver'] );
+				dests.push( this.plan.tyles['silver'] );
 			}
 		}
 
@@ -446,17 +446,17 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 		// итого очки
 		if (points) {
 			this.points += points;
-			var pos = this.counterChip.locus.pos,
+			var pos = this.counterChip.tyle.pos,
 				newPos = pos + points;
 			if (newPos >= 100) {
 				newPos -= 100;
 				var chip100 = this.game.packs.point100[this.id].getOne().genChip();
-				this.counterChip.locus.locate(chip100);
+				this.counterChip.tyle.locate(chip100);
 				chips.push( chip100 );
-				dests.push( this.plan.locus['point100'] );
+				dests.push( this.plan.tyles['point100'] );
 			}
 			chips.push( this.counterChip );			
-			dests.push( this.game.field.locus['point' + newPos] );
+			dests.push( this.game.field.tyles['point' + newPos] );
 		}
 
 		// заполнение всего цвета => бонус
@@ -466,12 +466,12 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 			if ( !l.chips.length ) { filled = false; break; }
 		}
 		if (filled) {
-			if ( this.game.field.locus['bmax' + chip.info.groupe].chips.length ) {
-				chips.push( this.game.field.locus['bmax' + chip.info.groupe].chips[0] );
-				dests.push( this.plan.locus['bonus'] );
-			} else if ( this.game.field.locus['bmin' + chip.info.groupe].chips.length ) {
-				chips.push( this.game.field.locus['bmin' + chip.info.groupe].chips[0] );
-				dests.push( this.plan.locus['bonus'] );
+			if ( this.game.field.tyles['bmax' + chip.info.groupe].chips.length ) {
+				chips.push( this.game.field.tyles['bmax' + chip.info.groupe].chips[0] );
+				dests.push( this.plan.tyles['bonus'] );
+			} else if ( this.game.field.tyles['bmin' + chip.info.groupe].chips.length ) {
+				chips.push( this.game.field.tyles['bmin' + chip.info.groupe].chips[0] );
+				dests.push( this.plan.tyles['bonus'] );
 			}
 		}
 
@@ -496,7 +496,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 	chipApplyActiveResult(chip) {
 		if ( chip.info.groupe == >>>Const.GROUPE_SHIP ) {
 			var goods = false;
-			for (var i=1; i<7; i++) if ( this.game.field.locus['goods' + i].chips.length ) { goods = true; break; }
+			for (var i=1; i<7; i++) if ( this.game.field.tyles['goods' + i].chips.length ) { goods = true; break; }
 			if (goods) {
 				this.game.status.setGetGoods({dowble:false});
 				return;
@@ -505,7 +505,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 
 		if ( chip.info.variant == >>>Const.VARIANT_BUILDING_TRADEPOST ) {
 			var goods = false;
-			for (var i=0; i<3; i++) if ( this.plan.locus['goods' + i].chips.length ) { goods = true; break; }
+			for (var i=0; i<3; i++) if ( this.plan.tyles['goods' + i].chips.length ) { goods = true; break; }
 
 			if (goods) {
 				this.game.status.setTrade();
@@ -517,7 +517,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 		if ( chip.info.variant == >>>Const.VARIANT_BUILDING_SAWMILL ) {
 			var chipExist = false;
 			for (var i in map) {
-				var loc = this.game.field.locus['advCube' + map[i]];
+				var loc = this.game.field.tyles['advCube' + map[i]];
 				if ( loc.chips.length && loc.chips[0].info.groupe == >>>Const.GROUPE_BUILDING ) { chipExist = true; break; }
 			}
 			if (chipExist) {
@@ -529,7 +529,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 		if ( chip.info.variant == >>>Const.VARIANT_BUILDING_CHURCH ) {
 			var chipExist = false;
 			for (var i in map) {
-				var loc = this.game.field.locus['advCube' + map[i]];
+				var loc = this.game.field.tyles['advCube' + map[i]];
 				if ( loc.chips.length 
 				&& (loc.chips[0].info.groupe == >>>Const.GROUPE_MINE
 				|| loc.chips[0].info.groupe == >>>Const.GROUPE_CASTLE
@@ -544,7 +544,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 		if ( chip.info.variant == >>>Const.VARIANT_BUILDING_MARKET ) {
 			var chipExist = false;
 			for (var i in map) {
-				var loc = this.game.field.locus['advCube' + map[i]];
+				var loc = this.game.field.tyles['advCube' + map[i]];
 				if ( loc.chips.length 
 				&& (loc.chips[0].info.groupe == >>>Const.GROUPE_ANIMAL
 				|| loc.chips[0].info.groupe == >>>Const.GROUPE_SHIP) ) { chipExist = true; break; }
@@ -558,7 +558,7 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 		if ( chip.info.variant == >>>Const.VARIANT_BUILDING_TOWNHALL ) {
 			var chipExist = false;
 			for (var i=0; i<3; i++) {
-				var loc = this.plan.locus['advWait' + i];
+				var loc = this.plan.tyles['advWait' + i];
 				if ( loc.chips.length ) { chipExist = true; break; }
 			}
 			if (chipExist) {
@@ -575,14 +575,14 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 	getGoods(chip) {
 		var map = [-1, -1, -1];
 		for (var i=0; i<3; i++) {
-			var loc = this.plan.locus['goods' + i];
+			var loc = this.plan.tyles['goods' + i];
 			if ( !loc.chips.length ) continue;
 
 			map[i] = loc.chips[0].info.variant;
 		}
 
 		var sortGoods = [[], [], []];
-		var goods = chip.locus.chips;
+		var goods = chip.tyle.chips;
 		for (var i in goods) {
 			var sorted = false;
 			for (var j in map) {
@@ -602,11 +602,11 @@ class Gamer #lx:namespace lexedo.games.Cofb {
 		for (var i in sortGoods) {
 			for (var j in sortGoods[i]) {
 				chips.push( sortGoods[i][j] );
-				dests.push( this.plan.locus['goods' + i] );
+				dests.push( this.plan.tyles['goods' + i] );
 			}
 		}
 
-		this.goodsUsed = +chip.locus.name[5];
+		this.goodsUsed = +chip.tyle.name[5];
 
 		if (chips.length) {
 			this.game.chipMoveAnimator.on(chips, dests, ()=>__check5(this));
@@ -634,7 +634,7 @@ function __check5(self) {
 	if (p > 6) p = 1;
 	if (m < 1) m = 6;
 
-	if ( !self.game.field.locus['goods' + p].chips.length && !self.game.field.locus['goods' + m].chips.length ) {
+	if ( !self.game.field.tyles['goods' + p].chips.length && !self.game.field.tyles['goods' + m].chips.length ) {
 		gamer.dowbleGoods = 0;
 		gamer.goodsUsed = 0;
 		self.game.status.setPending();

@@ -10,7 +10,7 @@ class Cube #lx:namespace lexedo.games.Cofb {
 		this.mesh = null;
 		this.id = id;
 		this.name = 'cube.' + num + '.' + id;
-		this.locus = null;
+		this.tyle = null;
 		this.value = 1;
 
 		__create(this);
@@ -65,11 +65,8 @@ class Cube #lx:namespace lexedo.games.Cofb {
 	del() {
 		this.game.world.removeMesh( this.mesh );
 
-		if (this.locus !== null) {
-			this.locus.chips.remove(this);
-			// var index = this.locus.chips.indexOf(this);
-			// if (index != -1) this.locus.chips.splice(index, 1);
-		}
+		if (this.tyle !== null)
+			this.tyle.chips.remove(this);
 
 		this.game.world.unregisterStaff(this);
 	}

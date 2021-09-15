@@ -9,7 +9,7 @@ const __STATUS_FOLLOW = 1;
 const __STATUS_ACTIVE = 2;
 
 let __status = __STATUS_NONE;
-let __locusName = '';
+let __tyleName = '';
 let __text = [
 /*0*/'<b>Рабочий:</b> в любой момент своего хода изменяйте результат кубика на +1 или -1. Важно: 6 + 1 даст 1, 1 - 1 даст 6.',
 /*1*/'<b>Серебряный самородок:</b> за два самородка можно купить жетон в центральном хранилище.',
@@ -76,7 +76,7 @@ __timer.on = function(chip, event) {
 };
 __timer.whileCycle(function() {
 	if (this.periodEnds()) {
-		if (__locusName == this.chip.locus.name)
+		if (__tyleName == this.chip.tyle.name)
 			__start(this.chip, this.x, this.y);
 		else __finish();
 		this.stop();
@@ -89,7 +89,7 @@ Plugin->canvas.on('mousemove', function(event) {
 	
 	let staff = game.world.getIntersectedStaff();
 
-	if (!staff || !staff.locus) {
+	if (!staff || !staff.tyle) {
 		__finish();
 		return;
 	}
@@ -104,13 +104,13 @@ function __follow(chip, event) {
 	}
 
 	if (__status == __STATUS_ACTIVE) {
-		if (__locusName == chip.locus.name) {
+		if (__tyleName == chip.tyle.name) {
 			__locate( event.clientX, event.clientY );
 			return;
 		} else __finish();
 	}
 
-	__locusName = chip.locus.name;
+	__tyleName = chip.tyle.name;
 	if (__status == __STATUS_FOLLOW) return;
 	
 	if (__status == __STATUS_NONE) {
@@ -142,25 +142,25 @@ function __start(chip, x, y) {
 
 function __finish() {
 	__status = __STATUS_NONE;
-	__locusName = '';
+	__tyleName = '';
 	floatHint.hide();
 }
 
 function __textIndex(chip) {
-	if ( chip.locus.name.substr(0, 5) == 'point' ) return 2;
-	if ( chip.locus.name.substr(0, 3) == 'seq' ) return 3;
+	if ( chip.tyle.name.substr(0, 5) == 'point' ) return 2;
+	if ( chip.tyle.name.substr(0, 3) == 'seq' ) return 3;
 
 	var game = Plugin.environment.getGame();
 	if ( chip.value !== undefined ) {
-		if ( chip.locus.parent === game.field ) return 4;
+		if ( chip.tyle.parent === game.field ) return 4;
 		return 5;
 	}
 
 	if ( chip.info.groupe == >>>Const.GROUPE_GOODS ) {
-		if ( chip.locus.name.substr(0, 2) == 'st' ) return 6;
-		if ( chip.locus.name.substr(0, 2) == 'tn' ) return 7;
-		if ( chip.locus.parent === game.field ) return 8;
-		if ( chip.locus.name == 'goods' ) return 10;
+		if ( chip.tyle.name.substr(0, 2) == 'st' ) return 6;
+		if ( chip.tyle.name.substr(0, 2) == 'tn' ) return 7;
+		if ( chip.tyle.parent === game.field ) return 8;
+		if ( chip.tyle.name == 'goods' ) return 10;
 		return 9;
 	}
 

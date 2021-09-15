@@ -90,7 +90,7 @@ class Pulsator #lx:namespace lexedo.games.Cofb {
 
 		switch (true) {
 			case this.game.status.isPhaseActivate():
-				var loc = this.game.field.locus['st' + (this.game.phase+1)];
+				var loc = this.game.field.tyles['st' + (this.game.phase+1)];
 
 				var chips = [];
 				for ( var i in loc.chips ) chips.push( loc.chips[i] );
@@ -112,11 +112,11 @@ class Pulsator #lx:namespace lexedo.games.Cofb {
 				var chips = [],
 					gamer = this.game.gamer();
 
-				for (var i in gamer.plan.locus['cube0'].chips) chips.push( gamer.plan.locus['cube0'].chips[i] );
-				for (var i in gamer.plan.locus['cube1'].chips) chips.push( gamer.plan.locus['cube1'].chips[i] );
-				for (var i in gamer.plan.locus['cubeJoker'].chips) chips.push( gamer.plan.locus['cubeJoker'].chips[i] );
-				if ( !gamer.silverUsed && gamer.plan.locus['silver'].chips.length > 1 )
-					for (var i in gamer.plan.locus['silver'].chips) chips.push( gamer.plan.locus['silver'].chips[i] );
+				for (var i in gamer.plan.tyles['cube0'].chips) chips.push( gamer.plan.tyles['cube0'].chips[i] );
+				for (var i in gamer.plan.tyles['cube1'].chips) chips.push( gamer.plan.tyles['cube1'].chips[i] );
+				for (var i in gamer.plan.tyles['cubeJoker'].chips) chips.push( gamer.plan.tyles['cubeJoker'].chips[i] );
+				if ( !gamer.silverUsed && gamer.plan.tyles['silver'].chips.length > 1 )
+					for (var i in gamer.plan.tyles['silver'].chips) chips.push( gamer.plan.tyles['silver'].chips[i] );
 
 				this.start( chips );
 			break;
@@ -129,23 +129,23 @@ class Pulsator #lx:namespace lexedo.games.Cofb {
 				if ( gamer.knows('k12') ) nums = this.cubePM( num );
 				else nums = [ num ];
 
-				for (var i in this.game.field.locus) {
+				for (var i in this.game.field.tyles) {
 					if ( i.substr(0, 7) != 'advCube' ) continue;
-					var loc = this.game.field.locus[i];
+					var loc = this.game.field.tyles[i];
 					if ( nums.indexOf( loc.cube ) == -1 ) continue;
 
 					for (var j in loc.chips)
 						chips.push( loc.chips[j] );
 				}
 
-				for (var i in gamer.plan.locus['worker'].chips) chips.push( gamer.plan.locus['worker'].chips[i] );
+				for (var i in gamer.plan.tyles['worker'].chips) chips.push( gamer.plan.tyles['worker'].chips[i] );
 
 				for (var i=0; i<3; i++) {
-					if ( gamer.plan.locus['goods' + i].chips.length && gamer.plan.locus['goods' + i].chips[0].info.variant == num )
-						for (var j in gamer.plan.locus['goods' + i].chips) chips.push( gamer.plan.locus['goods' + i].chips[j] );
+					if ( gamer.plan.tyles['goods' + i].chips.length && gamer.plan.tyles['goods' + i].chips[0].info.variant == num )
+						for (var j in gamer.plan.tyles['goods' + i].chips) chips.push( gamer.plan.tyles['goods' + i].chips[j] );
 
-					if ( gamer.plan.locus['advWait' + i].chips.length )
-						for (var j in gamer.plan.locus['advWait' + i].chips) chips.push( gamer.plan.locus['advWait' + i].chips[j] );
+					if ( gamer.plan.tyles['advWait' + i].chips.length )
+						for (var j in gamer.plan.tyles['advWait' + i].chips) chips.push( gamer.plan.tyles['advWait' + i].chips[j] );
 				}
 
 				this.start( chips );
@@ -154,12 +154,12 @@ class Pulsator #lx:namespace lexedo.games.Cofb {
 			case this.game.status.isUseSilver():
 				var chips = [];
 
-				for (var i in this.game.field.locus) {
-					if ( !this.game.field.locus[i].chips.length ) continue;
+				for (var i in this.game.field.tyles) {
+					if ( !this.game.field.tyles[i].chips.length ) continue;
 
 					var str = i.substr(0, 7);
-					if ( str == 'advSell' ) chips.push( this.game.field.locus[i].chips[0] );
-					if ( this.game.gamer().knows('k6') && str == 'advCube' ) chips.push( this.game.field.locus[i].chips[0] );
+					if ( str == 'advSell' ) chips.push( this.game.field.tyles[i].chips[0] );
+					if ( this.game.gamer().knows('k6') && str == 'advCube' ) chips.push( this.game.field.tyles[i].chips[0] );
 				}
 
 				this.start( chips );
@@ -167,12 +167,12 @@ class Pulsator #lx:namespace lexedo.games.Cofb {
 
 			case this.game.status.isTrade():
 				var chips = [],
-					locus = this.game.gamer().plan.locus;
+					tyles = this.game.gamer().plan.tyles;
 
 				for (var i=0; i<3; i++)
-					if ( locus['goods' + i].chips.length )
-						for (var j in locus['goods' + i].chips)
-							chips.push( locus['goods' + i].chips[j] );
+					if ( tyles['goods' + i].chips.length )
+						for (var j in tyles['goods' + i].chips)
+							chips.push( tyles['goods' + i].chips[j] );
 
 				this.start( chips );
 			break;
@@ -180,8 +180,8 @@ class Pulsator #lx:namespace lexedo.games.Cofb {
 			case this.game.status.isGetBuilding():
 				var chips = [];
 
-				for (var i in this.game.field.locus) {
-					var loc = this.game.field.locus[i];
+				for (var i in this.game.field.tyles) {
+					var loc = this.game.field.tyles[i];
 					if ( !loc.chips.length ) continue;
 					if ( i.substr(0, 7) != 'advCube' ) continue;
 					if ( loc.groupe != >>>Const.GROUPE_BUILDING ) continue;
@@ -195,8 +195,8 @@ class Pulsator #lx:namespace lexedo.games.Cofb {
 			case this.game.status.isGetMCK():
 				var chips = [];
 
-				for (var i in this.game.field.locus) {
-					var loc = this.game.field.locus[i];
+				for (var i in this.game.field.tyles) {
+					var loc = this.game.field.tyles[i];
 					if ( !loc.chips.length ) continue;
 					if ( i.substr(0, 7) != 'advCube' ) continue;
 					if ( loc.groupe != >>>Const.GROUPE_MINE && loc.groupe != >>>Const.GROUPE_CASTLE && loc.groupe != >>>Const.GROUPE_KNOWLEGE ) continue;
@@ -210,8 +210,8 @@ class Pulsator #lx:namespace lexedo.games.Cofb {
 			case this.game.status.isGetAS():
 				var chips = [];
 
-				for (var i in this.game.field.locus) {
-					var loc = this.game.field.locus[i];
+				for (var i in this.game.field.tyles) {
+					var loc = this.game.field.tyles[i];
 					if ( !loc.chips.length ) continue;
 					if ( i.substr(0, 7) != 'advCube' ) continue;
 					if ( loc.groupe != >>>Const.GROUPE_ANIMAL && loc.groupe != >>>Const.GROUPE_SHIP ) continue;
@@ -224,12 +224,12 @@ class Pulsator #lx:namespace lexedo.games.Cofb {
 
 			case this.game.status.isSetChip():
 				var chips = [],
-					locus = this.game.gamer().plan.locus;
+					tyles = this.game.gamer().plan.tyles;
 
 				for (var i=0; i<3; i++)
-					if ( locus['advWait' + i].chips.length )
-						for (var j in locus['advWait' + i].chips)
-							chips.push( locus['advWait' + i].chips[j] );
+					if ( tyles['advWait' + i].chips.length )
+						for (var j in tyles['advWait' + i].chips)
+							chips.push( tyles['advWait' + i].chips[j] );
 
 				this.start( chips );
 			break;
@@ -237,19 +237,19 @@ class Pulsator #lx:namespace lexedo.games.Cofb {
 			case this.game.status.isGetGoods():
 				var chips = [],
 					gamer = this.game.gamer(),
-					locus = this.game.field.locus;
+					tyles = this.game.field.tyles;
 
 				if ( gamer.knows('k5') && gamer.dowbleGoods == 1 ) {
 					var nums = this.cubePM( gamer.goodsUsed );
 
-					for (var i in locus['goods' + nums[0]].chips)
-						chips.push( locus['goods' + nums[0]].chips[i] );
-					for (var i in locus['goods' + nums[2]].chips)
-						chips.push( locus['goods' + nums[2]].chips[i] );
+					for (var i in tyles['goods' + nums[0]].chips)
+						chips.push( tyles['goods' + nums[0]].chips[i] );
+					for (var i in tyles['goods' + nums[2]].chips)
+						chips.push( tyles['goods' + nums[2]].chips[i] );
 				} else {
 					for (var j=1; j<7; j++) {
-						for (var i in locus['goods' + j].chips)
-							chips.push( locus['goods' + j].chips[i] );
+						for (var i in tyles['goods' + j].chips)
+							chips.push( tyles['goods' + j].chips[i] );
 					}
 				}
 

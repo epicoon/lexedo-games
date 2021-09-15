@@ -1,6 +1,6 @@
 #lx:macros Const {lexedo.games.Cofb.Constants};
 
-class Locus #lx:namespace lexedo.games.Cofb {
+class Tyle #lx:namespace lexedo.games.Cofb {
 	constructor(name, x, z, parent) {
 		this.name = name;
 		this.x = x;
@@ -28,9 +28,9 @@ class Locus #lx:namespace lexedo.games.Cofb {
 	}
 
 	locate(chip) {
-		if (chip.locus != null) chip.locus.remove(chip);
+		if (chip.tyle !== null) chip.tyle.remove(chip);
 
-		chip.locus = this;
+		chip.tyle = this;
 
 		var x = this.x * >>>Const.FIELD_SIZE,
 			z = this.z * >>>Const.FIELD_SIZE;

@@ -5,18 +5,18 @@ class PhaseAnimator extends lx.Timer #lx:namespace lexedo.games.Cofb {
 		super(500);
 
 		this.game = game;
-		this.locus = null;
+		this.tyle = null;
 		this.pos0 = null;
 
 		this.whileCycle(function() {
 			var k = this.shift(),
 				angle = -Math.PI * (1 - k);
 
-			var y1 = this.game.field.surface() + this.locus.chips[0].sizes[1] * 0.5;
+			var y1 = this.game.field.surface() + this.tyle.chips[0].sizes[1] * 0.5;
 
 			for (var i=0; i<5; i++) {
-				var chip = this.locus.chips[i],
-					dest = this.game.field.locus['tn' + (i+1)],
+				var chip = this.tyle.chips[i],
+					dest = this.game.field.tyles['tn' + (i+1)],
 					
 					x1 = dest.parent.mesh.position.x + dest.x * >>>Const.FIELD_SIZE,
 					z1 = dest.parent.mesh.position.z + dest.z * >>>Const.FIELD_SIZE,
@@ -39,14 +39,14 @@ class PhaseAnimator extends lx.Timer #lx:namespace lexedo.games.Cofb {
 			if (this.periodEnds()) {
 
 				var chips = [];
-				for (var i in this.locus.chips) chips.push( this.locus.chips[i] );
+				for (var i in this.tyle.chips) chips.push( this.tyle.chips[i] );
 
 				for (var i in chips) {
-					var loc = this.game.field.locus['tn' + (+i+1)];
+					var loc = this.game.field.tyles['tn' + (+i+1)];
 					loc.locate(chips[i]);
 				}
 
-				this.locus = null;
+				this.tyle = null;
 				this.stop();
 
 				this.game.nextPhase();
@@ -54,14 +54,14 @@ class PhaseAnimator extends lx.Timer #lx:namespace lexedo.games.Cofb {
 		});
 	}
 
-	on(locus) {
+	on(tyle) {
 		if (this.inAction) return;
 
-		this.locus = locus;
+		this.tyle = tyle;
 		this.pos0 = [];
 
-		for (var i in locus.chips) {
-			var chip = locus.chips[i];
+		for (var i in tyle.chips) {
+			var chip = tyle.chips[i];
 
 			this.pos0.push({
 				x : chip.mesh.position.x,
