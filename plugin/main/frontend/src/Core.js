@@ -115,7 +115,7 @@ class Core {
 				header: game.type,
 				geom: true, //[20, 15, 60, 60]
 				closeButton: {
-					click: ()=>plugin.root->confirmPopup.open(#lx:i18n(ToLeave), ()=>box.del())
+					click: ()=>plugin.root->confirmPopup.open(#lx:i18n(ToLeave)).yes(()=>box.del())
 				}
 			});
 			box.setPlugin(res.data, {connectData, gameType: game.type});
@@ -173,12 +173,10 @@ class Core {
 
 	__switchRelationToGame(game) {
 		if (game.follow) {
-			this.plugin.root->confirmPopup.open(#lx:i18n(ToLeave), ()=>{
-				game.box.del();
-			});
+			this.plugin.root->confirmPopup.open(#lx:i18n(ToLeave)).yes(()=>game.box.del());
 		} else {
 			//TODO password
-			this.plugin.root->confirmPopup.open(#lx:i18n(ToJoin), ()=>{
+			this.plugin.root->confirmPopup.open(#lx:i18n(ToJoin)).yes(()=>{
 				this.__inConnecting = {
 					password: ''
 				};

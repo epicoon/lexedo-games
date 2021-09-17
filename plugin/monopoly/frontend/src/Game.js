@@ -6,9 +6,9 @@ class Game #lx:namespace lxMonopoly {
 
 	newGame() {
 		if (this.isActive) {
-			Plugin.root->confirmPopup.open('Уверены, что хотите прервать текущую игру', ()=>{
-				Plugin->>popupNewGame.open();
-			});
+			Plugin.root->confirmPopup.open('Уверены, что хотите прервать текущую игру')
+				.yes(()=>Plugin->>popupNewGame.open());
+			return;
 		}
 		Plugin->>popupNewGame.open();
 	}
