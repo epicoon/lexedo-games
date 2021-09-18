@@ -18,7 +18,7 @@ Snippet->butNewGame.click(()=>{
 	let game = Plugin.environment.getGame();
 	if (!game.status.isNone() && !game.status.isOver())
 		Snippet->confirmPopup.open('Вы уверены, что хотите начать новую игру? Текущая будет сброшена.')
-			.yes(()=>{
+			.confirm(()=>{
 				game.reset();
 				menu.open()
 			});

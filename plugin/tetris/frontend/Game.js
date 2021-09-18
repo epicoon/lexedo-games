@@ -42,7 +42,7 @@ class Game extends lx.BindableModel #lx:namespace tetris {
 		^Respondent.checkLeaderPlace(this.score).then((place)=>{
 			if (place === false) return;
 
-			Plugin->inputPopup.open('You took place ' + place + '. Enter your name', (name)=>{
+			Plugin.root->inputPopup.open('You took place ' + place + '. Enter your name').confirm((name)=>{
 				^Respondent.updateLeaders({
 					name,
 					score: this.score,

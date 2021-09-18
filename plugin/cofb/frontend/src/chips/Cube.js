@@ -66,7 +66,7 @@ class Cube #lx:namespace lexedo.games.Cofb {
 		this.game.world.removeMesh( this.mesh );
 
 		if (this.tyle !== null)
-			this.tyle.chips.remove(this);
+			this.tyle.chips.lxRemove(this);
 
 		this.game.world.unregisterStaff(this);
 	}

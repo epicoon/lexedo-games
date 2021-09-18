@@ -498,7 +498,7 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Cofb {
 
 		if ( chip.tyle.name.substr(0, 7) == 'advWait' && chip.tyle.parent.gamer.id == this.activeGamer ) {
 			this.getPlugin().root->confirmPopup.open('Уверены, что хотите сбросить эту фишку из игры?')
-				.yes(()=>chip.del());
+				.confirm(()=>chip.del());
 		}
 	}
 
@@ -694,7 +694,7 @@ function __prepareEventSupervisor(self) {
 	var plugin = self.getPlugin();
 	self.eventSupervisor.subscribe('cofb_game_over', function(gamer) {
 		plugin.root->confirmPopup.open('Игра окончена. Хотите посмотреть таблицу очков?')
-			.yes(()=>plugin->>scoreTable.open());
+			.confirm(()=>plugin->>scoreTable.open());
 	});
 
 	// Подсказка что делать в данный момент
