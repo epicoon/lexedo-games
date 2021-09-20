@@ -82,7 +82,7 @@ class AttakCore #lx:namespace lexedo.games.Evolution {
 		this.__unholdAttak();
 
 		this.game.applyFeedReport(data.feedReport);
-		data.tailReport.each(item=>{
+		data.tailReport.forEach(item=>{
 			let gamer = this.game.getGamerById(item[0]);
 			gamer.getCreatureById(item[1]).dropProperty(item[2]);
 			gamer.dropping += item[3];

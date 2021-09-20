@@ -85,7 +85,7 @@ class Plan #lx:namespace lexedo.games.Cofb {
 
 	advLocNeibor(loc) {
 		var num, tyle;
-		if (loc.isNumber) {
+		if (lx.isNumber(loc)) {
 			num = +loc;
 			tyle = this.tyles['advLoc' + num];
 		} else if ( loc.substr !== undefined && loc.substr(0, 6) == 'advLoc' ) {
@@ -131,7 +131,7 @@ class Plan #lx:namespace lexedo.games.Cofb {
 
 	area(loc) {
 		var num, tyle;
-		if (loc.isNumber) {
+		if (lx.isNumber(loc)) {
 			num = +loc;
 			tyle = this.tyles['advLoc' + num];
 		} else if ( loc.substr !== undefined && loc.substr(0, 6) == 'advLoc' ) {

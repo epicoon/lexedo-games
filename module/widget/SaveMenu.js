@@ -53,7 +53,7 @@ class SaveMenu extends lx.ActiveBox #lx:namespace lexedo.games {
     			new lx.Box({field:'date', width:3, css:'lx-Box'});
     			new lx.Box({field:'gamers', width:5, css:'lx-Box'});
 
-    			box.getChildren().each(c=>c.align(lx.CENTER, lx.MIDDLE));
+    			box.getChildren().forEach(c=>c.align(lx.CENTER, lx.MIDDLE));
     			box.style('cursor', 'pointer');
     			box.click(()=>__setActiveSave(this, model));
     			box.setField('isActive', function(value) {

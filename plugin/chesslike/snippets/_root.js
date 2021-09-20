@@ -44,7 +44,7 @@ var blackSet = [
 var piecesSpace = slot.add(lx.Box, {key: 'piecesSpace', geom: true});
 piecesSpace.begin();
 
-whiteSet.each(piece=>{
+whiteSet.forEach(piece=>{
 	for (var i=0, l=piece.positions.len; i<l; i++) {
 		var box = new lx.Box({
 			key: piece.name + '_' + piece.positions[i],
@@ -55,7 +55,7 @@ whiteSet.each(piece=>{
 		box.hide();
 	}
 });
-blackSet.each(piece=>{
+blackSet.forEach(piece=>{
 	for (var i=0, l=piece.positions.len; i<l; i++) {
 		var box = new lx.Box({
 			key: piece.name + '_' + piece.positions[i],

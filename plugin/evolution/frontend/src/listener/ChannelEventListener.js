@@ -29,7 +29,7 @@ class ChannelEventListener extends lexedo.games.ChannelEventListener #lx:namespa
 		gamer.dropCart(cart);
 		var color = null;
 		var newProperties = [];
-		data.creatures.each((creatureData)=>{
+		data.creatures.forEach((creatureData)=>{
 			let creatureOwner = this.getEnvironment().game.getGamerById(creatureData.creatureGamer);
 			if (data.creatures.len == 2 && color === null)
 				color = creatureOwner.getColor();

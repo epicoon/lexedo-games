@@ -13,7 +13,7 @@ Plugin.instances.game = new lxMonopoly.Game();
 let game = Plugin.instances.game;
 
 const gameBox = Plugin->main.child(0);
-gameBox.getChildren().each((box)=>{
+gameBox.getChildren().forEach((box)=>{
 	if (box.key[0] != 'c') return;
 
 	var image = box->>image;	

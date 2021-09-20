@@ -7,7 +7,7 @@ var gameField = Plugin->>gameField,
 	face = Plugin->>face,
 	counter = Plugin->>counter;
 
-gameField.cells().each((a)=> {
+gameField.cells().forEach((a)=> {
 	a.align(lx.CENTER, lx.MIDDLE);
 	a.on('mouseup', function(event) {
 		cellClick(event, this);

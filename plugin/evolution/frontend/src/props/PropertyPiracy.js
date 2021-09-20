@@ -46,7 +46,7 @@ class PropertyPiracy extends lexedo.games.Evolution.Property #lx:namespace lexed
 	getTargets() {
 		var result = [];
 		this.getGame().eachGamer(gamer=>{
-			gamer.getCreatures().each(creature=>{
+			gamer.getCreatures().forEach(creature=>{
 				if (creature == this.getCreature()) return;
 				if (creature.getEatenFood() > 0 && creature.isUnderfed())
 					result.push(creature.getExistProperty());

@@ -10,7 +10,7 @@ Plugin->>leadersTable.matrix({
 			score: [lx.Box, {width: 3}],
 			level: [lx.Box, {width: 3}]
 		});
-		form.getChildren().each(child=>child.align(lx.CENTER, lx.MIDDLE));
+		form.getChildren().forEach(child=>child.align(lx.CENTER, lx.MIDDLE));
 	}
 });
 

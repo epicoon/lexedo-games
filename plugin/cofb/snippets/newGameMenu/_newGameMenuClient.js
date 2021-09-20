@@ -24,7 +24,7 @@ snippetBox.open = function() {
 	this->secondStep.hide();
 	this->firstStep.show();
 	this.show();
-	this->>check.each((ch)=>ch.value(false));
+	this->>check.forEach((ch)=>ch.value(false));
 };
 
 snippetBox.close = function() {
@@ -59,7 +59,7 @@ firstStep->>butOk.click(function() {
 	Snippet.gamersData = [];
 	var checks = firstStep->>check;
 
-	checks.each((a)=>{
+	checks.forEach((a)=>{
 		if (a.value()) Snippet.gamersData.push({num:a.num, seq:null, ai:false});
 	});
 
@@ -85,7 +85,7 @@ secondStep->>cube.click(()=>__genSequens());
 
 secondStep->>butOk.click(()=>{
 	var seqReady = true;
-	Snippet.gamersData.each((a)=>{
+	Snippet.gamersData.forEach((a)=>{
 		if (a.seq === null) seqReady = false;
 	});
 	if (!seqReady) {

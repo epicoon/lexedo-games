@@ -6,7 +6,7 @@ class ChessPieces #lx:namespace lexedo.games.Chess {
 
 		this.map = {};
 		var pieceBoxes = this._plugin->>piecesSpace.getChildren({hasProperty:'chessPiece'});
-		pieceBoxes.each(pieceBox=>{
+		pieceBoxes.forEach(pieceBox=>{
 			this.map[pieceBox.chessPiece.position] = new lexedo.games.Chess.ChessPiece(this._plugin, env, pieceBox);
 		});
 
@@ -17,15 +17,15 @@ class ChessPieces #lx:namespace lexedo.games.Chess {
 		return this.map[id];
 	}
 
-	each(func) {
+	forEach(func) {
 		for (var i in this.map) func(this.map[i]);
 	}
 
 	toStartPosition() {
-		this.each(piece=>piece.toStartPosition());
+		this.forEach(piece=>piece.toStartPosition());
 	}
 
 	returnToPosition() {
-		this.each(piece=>piece.returnToPosition());
+		this.forEach(piece=>piece.returnToPosition());
 	}
 }

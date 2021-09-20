@@ -9,13 +9,13 @@ class Map #lx:namespace tetris {
 
 	reset() {
 		this.rows = [];
-		this.widget.cells().each((cell)=> this.clearCell(cell));
+		this.widget.cells().forEach((cell)=> this.clearCell(cell));
 	}
 
 	cellIsFilled(row, col) {
 		return (this.rows[row]
-			&& this.rows[row].isArray
-			&& this.rows[row].contains(col)
+			&& lx.isArray(this.rows[row])
+			&& this.rows[row].includes(col)
 		);
 	}
 
@@ -58,7 +58,7 @@ class Map #lx:namespace tetris {
 			if (!this.rows[i]) break;
 
 			if (this.rows[i].len == cols) {
-				this.widget.row(i).cells().each((cell)=> this.clearCell(cell));
+				this.widget.row(i).cells().forEach((cell)=> this.clearCell(cell));
 				this.rows[i] = null;
 				filled++;
 			} else if (filled) {
@@ -83,13 +83,13 @@ class Map #lx:namespace tetris {
 	clearFigure(figure) {
 		var cells = this.getFreeCells(figure.mask());
 		if (!cells) return;
-		cells.each((cell)=> this.clearCell(cell));
+		cells.forEach((cell)=> this.clearCell(cell));
 	}
 
 	highlightFigure(figure) {
 		var cells = this.getFreeCells(figure.mask());
 		if (!cells) return;
-		cells.each((cell)=> this.highlightCell(cell, figure.color));
+		cells.forEach((cell)=> this.highlightCell(cell, figure.color));
 	}
 
 	clearCell(cell) {

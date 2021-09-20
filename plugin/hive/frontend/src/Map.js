@@ -48,7 +48,7 @@ class Map #lx:namespace lexedo.games.Hive {
 
 	addChipRelatedTyles(chip) {
 		let coords = chip.getRelatedCoords();
-		coords.each(point=>this.addTyleByPoint(point));
+		coords.forEach(point=>this.addTyleByPoint(point));
 	}
 
 	highlightEmptyTyles(bool = true) {

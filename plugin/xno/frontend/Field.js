@@ -84,6 +84,6 @@ class Field #lx:namespace im {
     }
 
     eachCell(func) {
-    	this.context.plugin->>fieldBox.child(0).getChildren().each(func);
+    	this.context.plugin->>fieldBox.child(0).getChildren().forEach(func);
     }
 }

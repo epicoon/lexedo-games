@@ -15,7 +15,7 @@
     <lx.Box:@chips._vol>
 #lx:tpl-end;
 
-list.mainBox.getChildren().each(box=>box.border());
+list.mainBox.getChildren().forEach(box=>box.border());
 
 //let mainBox = new lx.Box({key: 'mainBox', geom: true});
 //let canvas = mainBox.add(lx.Box, {key:'canvas', geom: [0, 10, 100, 80]});

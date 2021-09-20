@@ -49,7 +49,7 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 	}
 	
 	unpauseProperties() {
-		this._creatures.each(creature=>creature.unpauseProperties());
+		this._creatures.forEach(creature=>creature.unpauseProperties());
 	}
 
 	mustEat() {
@@ -62,7 +62,7 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 
 	hasHungryCreature() {
 		var result = false;
-		this._creatures.each(creature=>{
+		this._creatures.forEach(creature=>{
 			if (creature.isHungry()) result = true;
 		});
 		return result;
@@ -73,7 +73,7 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 	}
 
 	receiveCarts(carts) {
-		carts.each(cartData=>{
+		carts.forEach(cartData=>{
 			let cart = new >>>ev.Cart(
 				this.getEnvironment(),
 				cartData[0],
@@ -119,14 +119,14 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 	}
 
 	setCreaturesFeedMode(bool) {
-		this._creatures.each(c=>c.setFeedMode(bool));
+		this._creatures.forEach(c=>c.setFeedMode(bool));
 	}
 
 	dropCreature(data) {
 		// data - {dropping:int, creatureId:int, ?relIds:[creatureId, propertyId]}
 		this.dropping += data.dropping;
 		this._creatures.remove(this.getCreatureById(data.creatureId));
-		if (data.relProps) data.relProps.each(ids=>{
+		if (data.relProps) data.relProps.forEach(ids=>{
 			let creature = this.getCreatureById(ids[0]);
 			if (creature) creature.dropProperty(ids[1]);
 		});
@@ -135,8 +135,8 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 	runExtinction(data) {
 		// data - {creatures:[creatureId], properties:[creatureId, propertyId], dropping:int}
 		this.dropping += data.dropping;
-		data.creatures.each(creatureId=>this._creatures.remove(this.getCreatureById(creatureId)));
-		data.properties.each(ids=>{
+		data.creatures.forEach(creatureId=>this._creatures.remove(this.getCreatureById(creatureId)));
+		data.properties.forEach(ids=>{
 			let creature = this.getCreatureById(ids[0]);
 			if (creature) creature.dropProperty(ids[1]);
 		});
@@ -148,7 +148,7 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 	}
 
 	prepareToGrow() {
-		this._creatures.each(creature=>creature.prepareToGrow());
+		this._creatures.forEach(creature=>creature.prepareToGrow());
 	}
 
 	getColor() {
@@ -204,7 +204,7 @@ function __bindHand(self) {
 	});
 
 	cartsBox.on('resize', function() {
-		this.getChildren().each(a=>a.width(a.height('px')*0.618+'px'));
+		this.getChildren().forEach(a=>a.width(a.height('px')*0.618+'px'));
 	});
 }
 

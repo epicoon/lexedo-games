@@ -93,7 +93,7 @@ gameInfoBox.begin();
 		var phaseMenu = new lx.Box({key:'phaseMenu', height:1});
 		var phaseGrowMenu = phaseMenu.add(lx.Box, {geom:true, key:'phaseGrowMenu'});
 		var phaseFeedMenu = phaseMenu.add(lx.Box, {geom:true, key:'phaseFeedMenu'});
-		phaseMenu.getChildren().each(child=>child.hide());
+		phaseMenu.getChildren().forEach(child=>child.hide());
 		phaseGrowMenu.add(lx.Button, {size:[100, '40px'], key:'growPassBut', text:#lx:i18n(pass)});
 		phaseGrowMenu.align(lx.CENTER, lx.MIDDLE);
 		var foodInfoBox = phaseFeedMenu.add(lx.Box, {geom:[0, 0, 100, '40px'], key:'foodInfoBox', text:#lx:i18n(food) + ': 0'});

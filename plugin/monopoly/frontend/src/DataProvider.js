@@ -19,7 +19,7 @@ class DataProvider #lx:namespace lxMonopoly {
 			this.anglesData = res.angles;
 			this.waitBox.del();
 
-			this.companiesData.each((data, key)=>{
+			this.companiesData.forEach((data, key)=>{
 				this.companies[key] = new lxMonopoly.Company(data);
 			});
 		});

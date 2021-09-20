@@ -39,7 +39,7 @@ class PropertyDropTail extends lexedo.games.Evolution.Property #lx:namespace lex
 	getTargets() {
 		var result = [];
 
-		this.getCreature().getProperties().each(property=>{
+		this.getCreature().getProperties().forEach(property=>{
 			if (property.getType() == >>>evConst.PROPERTY_EXIST) return;
 			result.push(property);
 		});

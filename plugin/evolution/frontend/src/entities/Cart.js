@@ -123,7 +123,7 @@ class CartToPropertyData {
 
 		var props = creature.getPropertiesByType(this.cart.getTitleProperty());
 		var result = true;
-		props.each(prop=>{
+		props.forEach(prop=>{
 			if (prop.getRelatedCreature() == this.stepLog[0].creature)
 				result = false;
 		});
@@ -137,7 +137,7 @@ class CartToPropertyData {
 	}
 
 	reset() {
-		this.stepLog.each(record=>record.creature.dropVirtualProperties());
+		this.stepLog.forEach(record=>record.creature.dropVirtualProperties());
 	}
 
 	isReadyForTrigger() {
@@ -150,7 +150,7 @@ class CartToPropertyData {
 	prepareEventData() {
 		var cart = this.cart;
 		var creatures = [];
-		this.stepLog.each(record=>{
+		this.stepLog.forEach(record=>{
 			creatures.push({
 				creatureGamer: record.creature.getGamer().getId(),
 				creature: record.creature.id,

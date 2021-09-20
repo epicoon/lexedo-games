@@ -21,7 +21,7 @@ class ChessBoard #lx:namespace lexedo.games.Chess {
 		this.whiteOrientation = !this.whiteOrientation;
 		var index = 0;
 		var cells = {};
-		this.each(cell=>{
+		this.forEach(cell=>{
 			var horIndex = index % this.box.chessSize.rows;
 			var vert = this.box.chessSize.rows - Math.floor((index - horIndex) / this.box.chessSize.rows);
 			if (!this.whiteOrientation) {
@@ -38,12 +38,12 @@ class ChessBoard #lx:namespace lexedo.games.Chess {
 		this.getChessPieces().returnToPosition();
 	}
 
-	each(func) {
+	forEach(func) {
 		for (var i in this.cells) func(this.cells[i]);
 	}
 
 	reset() {
-		this.each(cell=>cell.piece = null);
+		this.forEach(cell=>cell.piece = null);
 	}
 
 	getBoardBox() {

@@ -46,7 +46,7 @@ class PropertyMimicry extends lexedo.games.Evolution.Property #lx:namespace lexe
 		var result = [];
 
 		let carnival = this.getEnvironment().attakCore.getCarnival();
-		this.getGamer().getCreatures().each(creature=>{
+		this.getGamer().getCreatures().forEach(creature=>{
 			if (creature == this.getCreature()) return;
 
 			if (this.getEnvironment().attakCore.checkAttakAvailability(carnival, creature))

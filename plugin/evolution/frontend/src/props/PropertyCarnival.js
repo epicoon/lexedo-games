@@ -53,7 +53,7 @@ class PropertyCarnival extends lexedo.games.Evolution.Property #lx:namespace lex
 
 		var result = [];
 		this.getGame().eachGamer(gamer=>{
-			gamer.getCreatures().each(creature=>{
+			gamer.getCreatures().forEach(creature=>{
 				if (this.getEnvironment().attakCore.checkAttakAvailability(carnival, creature))
 					result.push(creature.getExistProperty());
 			});

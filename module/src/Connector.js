@@ -19,9 +19,9 @@ class Connector {
 	}
 
 	run() {
-		if (this._gameConfig.isString) {
+		if (lx.isString(this._gameConfig)) {
 			this.initGame(this._gameConfig);
-		} else if (this._gameConfig.isObject) {
+		} else if (lx.isObject(this._gameConfig)) {
 			var className = this._gameConfig.class;
 			if (this.isOnline() && this._gameConfig.online) {
 				if (this._gameConfig.online.class)

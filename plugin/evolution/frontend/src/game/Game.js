@@ -51,7 +51,7 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 				gamersCount: data.gamersCount
 			};
 			this.showResult();
-			this.onRevengeApproved(params, data.revengeApprovements.contains(this.getLocalGamer().getId()));
+			this.onRevengeApproved(params, data.revengeApprovements.includes(this.getLocalGamer().getId()));
 			return;
 		}
 
@@ -103,7 +103,7 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 	setTurnSequence(turnSequence) {
 		this.turnSequence = turnSequence;
 		this.gamersBySequence.clear();
-		this.turnSequence.each(id=>this.gamersBySequence.add(this.getGamerById(id)));
+		this.turnSequence.forEach(id=>this.gamersBySequence.add(this.getGamerById(id)));
 	}
 
 	phaseIs(type) {
@@ -120,12 +120,12 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 	}
 
 	applyFeedReport(feedReport) {
-		feedReport.each(data=>{
+		feedReport.forEach(data=>{
 			let gamer = this.getGamerById(data.gamerId);
 			let creature = gamer.getCreatureById(data.creatureId);
 			creature.feed(data.propertyId, data.foodType);
 			if (data.pareState) {
-				data.pareState.each(pareData=>{
+				data.pareState.forEach(pareData=>{
 					creature.getPropertyById(pareData.propertyId)
 						.actualizeState(pareData.state);
 					gamer.getCreatureById(pareData.relCreatureId)
@@ -240,7 +240,7 @@ function __setGui(self) {
 	plugin->>phaseMenu.setField('type', function(val) {
 		if (!val) return;
 
-		plugin->>phaseMenu.getChildren().each(child=>child.hide());
+		plugin->>phaseMenu.getChildren().forEach(child=>child.hide());
 		if (val == >>>evConst.PHASE_GROW) {
 			plugin->>phaseGrowMenu.show();
 		} else if (val == >>>evConst.PHASE_FEED) {

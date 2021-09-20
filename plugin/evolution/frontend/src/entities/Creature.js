@@ -58,7 +58,7 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 
 	dropVirtualProperties() {
 		var virtualProperties = this.properties.select(prop=>prop.isVirtual);
-		virtualProperties.each(prop=>this.properties.remove(prop));
+		virtualProperties.forEach(prop=>this.properties.remove(prop));
 	}
 
 	getPicture() {
@@ -92,11 +92,11 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	}
 
 	unpauseProperties() {
-		this.properties.each(property=>property.unpause());
+		this.properties.forEach(property=>property.unpause());
 	}
 
 	setFeedMode(bool) {
-		this.properties.each(property=>property.setFeedMode(bool));
+		this.properties.forEach(property=>property.setFeedMode(bool));
 	}
 
 	isUnderfed() {
@@ -114,13 +114,13 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 
 	getTotalNeedFood() {
 		var result = 0;
-		this.properties.each(property=>result+=property.getNeedFood());
+		this.properties.forEach(property=>result+=property.getNeedFood());
 		return result;
 	}
 
 	getEatenFood() {
 		var result = 0;
-		this.properties.each(property=>result+=property.getEatenFood());
+		this.properties.forEach(property=>result+=property.getEatenFood());
 		return result;
 	}
 
@@ -132,7 +132,7 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	getCurrentFat() {
 		var selected = this.properties.select(prop=>prop.type==>>>evConst.PROPERTY_FAT);
 		var totalFat = 0;
-		selected.each(fat=>totalFat+=fat.hasFat());
+		selected.forEach(fat=>totalFat+=fat.hasFat());
 		return totalFat;
 	}
 
@@ -144,7 +144,7 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	}
 
 	prepareToGrow() {
-		this.properties.each(property=>{
+		this.properties.forEach(property=>{
 			property.setFeedMode(false);
 		});
 	}
@@ -181,7 +181,7 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 
 	isSymbiont() {
 		let match = false;
-		this.properties.each(property=>{
+		this.properties.forEach(property=>{
 			if (property.getType() == >>>evConst.PROPERTY_SYMBIOSIS && property.asymm == 0)
 				match = true;
 		});
@@ -190,7 +190,7 @@ class Creature extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 
 	hasProperty(type) {
 		let match = false;
-		this.properties.each(property=>{
+		this.properties.forEach(property=>{
 			if (property.getType() == type)
 				match = true;
 		});

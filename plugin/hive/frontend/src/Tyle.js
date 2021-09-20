@@ -53,7 +53,7 @@ class Tyle #lx:namespace lexedo.games.Hive {
 			return;
 		}
 
-		if (this.chips.contains(chip)) return false;
+		if (this.chips.includes(chip)) return false;
 
 		this.highlightOff();
 		chip.setPosition(this.calcChipPosition());

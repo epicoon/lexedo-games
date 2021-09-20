@@ -21,8 +21,10 @@ Snippet->>gamers.matrix({
 		var color = new lx.Box({ width: 2 });
 		color.setField('color', (val)=>color.fill(val));
 
-		var options = new Array(Snippet->>gamersAmount.value() + 2);
-		options.each((a, i)=>options[i]=i+1);
+		var len = Snippet->>gamersAmount.value() + 2;
+		var options = new Array(len);
+		for (let i=0; i<len; i++)
+			options[i] = i + 1;
 		form.field('team', lx.Dropbox, {width: 3, options});
 
 		var comp = new lx.Box({width: 3});

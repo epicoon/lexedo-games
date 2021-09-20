@@ -44,9 +44,9 @@ class MouseMode {
 	 ******************************************************************************************************************/
 
 	__highlightProps() {
-		this.highlightedProps.each(prop=>prop.setHighlighted(false));
+		this.highlightedProps.forEach(prop=>prop.setHighlighted(false));
 		this.highlightedProps = this.__getPropsForHightlight();
-		this.highlightedProps.each(prop=>prop.setHighlighted(true));
+		this.highlightedProps.forEach(prop=>prop.setHighlighted(true));
 	}
 
 	__getPropsForHightlight() {
@@ -75,8 +75,8 @@ class MouseMode {
 		}
 
 		var props = [];
-		gamers.each(gamer=>{
-			gamer.getCreatures().each(creature=>{
+		gamers.forEach(gamer=>{
+			gamer.getCreatures().forEach(creature=>{
 				if (this.data.checkDueCreature(creature))
 					props.push(creature.getExistProperty());
 			});
@@ -88,7 +88,7 @@ class MouseMode {
 		var gamer = this.game.getLocalGamer();
 
 		var props = [];
-		gamer.getCreatures().each(creature=>{
+		gamer.getCreatures().forEach(creature=>{
 			if (creature.isHungry())
 				props.push(creature.getExistProperty());
 		});

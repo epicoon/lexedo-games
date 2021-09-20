@@ -35,7 +35,7 @@ class Game #lx:namespace im {
     checkFinish() {
         var line = this.context.field.findLine();
         if (line) {
-            line.each(item=>item.fill('lightgreen'));
+            line.forEach(item=>item.fill('lightgreen'));
             this.context.plugin->>activeGamerLabel.text(
                 'Победа ' + (line[0].isUsedBy == self::GAMER_X ? 'крестиков!' : 'ноликов!')
             );

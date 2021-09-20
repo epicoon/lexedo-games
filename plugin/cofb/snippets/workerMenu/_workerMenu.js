@@ -19,7 +19,7 @@ tread.begin();
 	new lx.Box({key:'p2', text:'+2'});
 	new lx.Box({width:4, key:'add', text:'Обменять кубик на двух рабочих'});
 tread.end();
-tread.getChildren().each((a)=>{
+tread.getChildren().forEach((a)=>{
 	a.align(lx.CENTER, lx.MIDDLE);
 	a.addClass('cofbBut');
 });

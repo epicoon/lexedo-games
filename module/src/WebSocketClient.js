@@ -3,14 +3,14 @@ class WebSocketClient extends lx.socket.WebSocketClient {
 		var env = config.env;
 		var superConfig = {};
 		if (config.channelEventListener)
-			superConfig.onChannelEvent = config.channelEventListener.isString
+			superConfig.onChannelEvent = lx.isString(config.channelEventListener)
 				? lx.createObject(config.channelEventListener, [env])
 				: new config.channelEventListener(env);
 
 		if (!config.connectionEventListener)
 			config.connectionEventListener = lexedo.games.ConnectionEventListener;
 
-		var listener = config.connectionEventListener.isString
+		var listener = lx.isString(config.connectionEventListener)
 			? lx.createObject(config.connectionEventListener, [env])
 			: new config.connectionEventListener(env);
 		if (listener.onConnected)
