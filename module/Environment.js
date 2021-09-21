@@ -78,6 +78,10 @@ class Environment #lx:namespace lexedo.games {
 		this.game.onChangeGamersList(data);
 	}
 
+	onNewObserver(data) {
+		this.game.onObserverJoined(data);
+	}
+
 	onSetGameReferences(data) {
 		this.game.setGameReferences(data);
 	}

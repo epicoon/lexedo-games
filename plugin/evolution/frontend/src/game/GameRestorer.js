@@ -11,8 +11,9 @@ class GameRestorer #lx:namespace lexedo.games.Evolution {
 		var game = this.game,
 			condition = this.condition,
 			localGamer = game.getLocalGamer(),
-			gamerData = condition.gamers[localGamer.getId()];
-		localGamer.receiveCarts(gamerData.carts);
+			gamerData = localGamer ? condition.gamers[localGamer.getId()] : null;
+		if (localGamer && gamerData && gamerData.carts)
+			localGamer.receiveCarts(gamerData.carts);
 
 		// Creatures
 		var creaturesMap = {};

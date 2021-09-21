@@ -13,7 +13,7 @@ class ActionCheckReconnections extends AbstractAction
         $user = $this->channel->getUser($connection);
         $list = [];
         foreach ($this->channel->getStuffedGames() as $gameChannel) {
-            if ($gameChannel->hasDisconnectedUser($user)) {
+            if ($gameChannel->userIsDisconnected($user)) {
                 $list[] = [
                     'channelKey' => $gameChannel->getName(),
                     'type' => $gameChannel->getParameter('type'),

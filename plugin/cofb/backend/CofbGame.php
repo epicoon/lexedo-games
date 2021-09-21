@@ -54,7 +54,7 @@ class CofbGame extends AbstractGame
         //TODO
     }
 
-    public function fillEventGameDataForGamer(ChannelEvent $event, AbstractGamer $gamer): void
+    public function getGameDataForGamer(?AbstractGamer $gamer = null): array
     {
         //TODO
     }

@@ -175,16 +175,17 @@ class Core {
 		if (game.follow) {
 			this.plugin.root->confirmPopup.open(#lx:i18n(ToLeave)).confirm(()=>game.box.del());
 		} else {
-			//TODO password
-			this.plugin.root->confirmPopup.open(#lx:i18n(ToJoin)).confirm(()=>{
-				this.__inConnecting = {
-					password: ''
-				};
-
-				this.socket.trigger('askForJoin', {
-					key: game.channelKey
+			this.plugin.root->confirmPopup.open(#lx:i18n(ToJoin), {asObserver:#lx:i18n(AsObserver)})
+				.confirm(()=>{
+					//TODO password
+					this.__inConnecting = {password: ''};
+					this.socket.trigger('askForJoin', {key:game.channelKey});
+				})
+				.asObserver(()=>{
+					//TODO password
+					this.__inConnecting = {password: ''};
+					this.socket.trigger('askForJoin', {key:game.channelKey, isObserver:true});
 				});
-			});
 		}
 	}
 

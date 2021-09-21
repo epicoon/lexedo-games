@@ -57,6 +57,10 @@ class Game #lx:namespace lexedo.games {
 		this.actualizeAfterReconnect(data.gameData);
 	}
 
+	onObserverJoined(data) {
+		this.actualizeAfterReconnect(data.gameData);
+	}
+
 	onLoaded(data) {
 		this.actualizeAfterReconnect(data.gameData);
 	}

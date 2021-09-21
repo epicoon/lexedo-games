@@ -61,7 +61,9 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 
 	onBegin(data) {
 		this.reset();
-		this.getLocalGamer().receiveCarts(data.carts);
+		let gamer = this.getLocalGamer();
+		if (gamer && data.carts)
+			gamer.receiveCarts(data.carts);
 		this.resetPhase(data);
 	}
 

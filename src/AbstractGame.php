@@ -36,7 +36,7 @@ abstract class AbstractGame
     abstract public function getClassesMap(): array;
     abstract public function getCondition(): AbstractGameCondition;
     abstract public function fillEventBeginGame(ChannelEvent $event): void;
-    abstract public function fillEventGameDataForGamer(ChannelEvent $event, AbstractGamer $gamer): void;
+    abstract public function getGameDataForGamer(?AbstractGamer $gamer = null): array;
 
     public function getBasicCondition(): AbstractGameCondition
     {

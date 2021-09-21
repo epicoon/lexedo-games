@@ -6,27 +6,6 @@
 #lx:macros Const {lexedo.games.Cofb.Constants};
 
 //======================================================================================================================
-// Кнопка открытия меню создания игры
-Snippet->butNewGame.click(()=>{
-	var menu = Snippet->newGameMenu;
-
-	if (menu.visibility()) {
-		menu.close();
-		return;
-	}
-
-	let game = Plugin.environment.getGame();
-	if (!game.status.isNone() && !game.status.isOver())
-		Snippet->confirmPopup.open('Вы уверены, что хотите начать новую игру? Текущая будет сброшена.')
-			.confirm(()=>{
-				game.reset();
-				menu.open()
-			});
-	else menu.open();
-});
-
-
-//======================================================================================================================
 // Сообщение о том, что ход закончился, кликабелен для передачи хода другому игроку
 const turnEndsBox = Snippet->lblTurnEnds;
 turnEndsBox.click(function() {

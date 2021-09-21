@@ -230,31 +230,27 @@ class Game extends AbstractGame
         $this->prepareLogEvent('logMsg.begin', [], $event);
     }
 
-    public function fillEventGameDataForGamer(ChannelEvent $event, AbstractGamer $gamer): void
+    public function getGameDataForGamer(?AbstractGamer $gamer = null): array
     {
-        $gamerConnection = $gamer->getConnection();
-        
         if ($this->isPending()) {
-            $event->addDataForConnection($gamerConnection, ['gameData' => [
-                'type' => self::RECONNECTION_STATUS_PENDING
-            ]]);
-            return;
+            return [
+                'type' => self::RECONNECTION_STATUS_PENDING,
+            ];
         }
 
         if ($this->isWaitingForRevenge) {
-            $event->addDataForConnection($gamerConnection, ['gameData' => [
+            return [
                 'type' => self::RECONNECTION_STATUS_REVANGE,
                 'approvesCount' => count($this->revengeApprovements),
                 'gamersCount' => $this->getNeedleGamersCount(),
                 'revengeApprovements' => $this->revengeApprovements,
-            ]]);
-            return;
+            ];
         }
 
-        $data = ['type' => self::RECONNECTION_STATUS_ACTIVE];
-
-        $data['condition'] = $this->prepareConditionForGamer($gamer, $this->getCondition());
-        $event->addDataForConnection($gamerConnection, ['gameData' => $data]);
+        return [
+            'type' => self::RECONNECTION_STATUS_ACTIVE,
+            'condition' => $this->prepareConditionForGamer($gamer, $this->getCondition()),
+        ];
     }
 
     public function fillNewPhaseEvent(ChannelEvent $event, string $phase = self::PHASE_GROW): void
@@ -673,12 +669,12 @@ class Game extends AbstractGame
         }
     }
 
-    private function prepareConditionForGamer(Gamer $gamer, GameCondition $condition): array
+    private function prepareConditionForGamer(?Gamer $gamer, GameCondition $condition): array
     {
         $result = $condition->toArray();
         unset($result['cartPack']);
         foreach ($result['gamers'] as $id => &$iGamer) {
-            if ($id == $gamer->getId()) {
+            if ($gamer && $id == $gamer->getId()) {
                 $carts = [];
                 foreach ($iGamer['carts'] as $cartId) {
                     $carts[] = $this->cartPack->getCart($cartId)->toArray();

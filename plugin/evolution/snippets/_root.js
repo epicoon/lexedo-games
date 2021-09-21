@@ -15,14 +15,17 @@ var mainBox = new lx.Box({
 	key: 'mainBox',
 	geom: [0, 0, 80, 70]
 });
-var localGameField = mainBox.add(lx.Box, {key:'localGameField', geom:[0, 0, 50, 100]});
-var oppGameField = mainBox.add(lx.Box, {key:'oppGameField', geom:[50, 0, 50, 100]});
+mainBox.gridStream({cols: 2});
+mainBox.height('70%');
 
-localGameField.overflow('auto');
-var localCreaturesBox = localGameField.add(lx.Box, {key:'localCreaturesBox'});
+// var localGameField = mainBox.add(lx.Box, {key:'localGameField', geom:[0, 0, 50, 100]});
+// var oppGameField = mainBox.add(lx.Box, {key:'oppGameField', geom:[50, 0, 50, 100]});
 
-oppGameField.overflow('auto');
-var oppCreaturesBox = oppGameField.add(lx.Box, {key:'oppCreaturesBox'});
+// localGameField.overflow('auto');
+// var localCreaturesBox = localGameField.add(lx.Box, {key:'localCreaturesBox'});
+
+// oppGameField.overflow('auto');
+// var oppCreaturesBox = oppGameField.add(lx.Box, {key:'oppCreaturesBox'});
 
 
 //======================================================================================================================

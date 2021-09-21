@@ -110,9 +110,10 @@ class EventListener extends ChannelEventListener
         }
 
         $token = Math::randHash();
-        $channel->addUserWaiting(
+        $channel->addWaitingUser(
             $token,
-            $app->getCommonChannel()->getUser($event->getInitiator())
+            $app->getCommonChannel()->getUser($event->getInitiator()),
+            $eventData['isObserver'] ?? false
         );
 
         $subEvent = $event->replaceEvent('gameJoining', [
@@ -145,7 +146,7 @@ class EventListener extends ChannelEventListener
         $this->getChannel()->openPendingGame($channel, $users);
 
         $token = Math::randHash();
-        $channel->addUserWaiting(
+        $channel->addWaitingUser(
             $token,
             $this->getChannel()->getUser($event->getInitiator())
         );

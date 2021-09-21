@@ -15,14 +15,6 @@ Plugin.title = 'The castles of Burgundy';
 new lx.Box({key:'canvas', geom:true, style:{fill:'#555555'}});
 
 
-// Кнопка открытия меню создания игры
-decorateBox(new lx.Box({
-	key: 'butNewGame',	
-	geom: [1, 1, 10, 5],
-	text: 'Новая игра'
-}));
-
-
 //TODO переделать в полноценное меню
 // Кнопка открытия таблицы очков
 decorateBox(new lx.Box({
@@ -30,10 +22,6 @@ decorateBox(new lx.Box({
 	geom: [89, 1, 10, 5],
 	text: 'Таблица очков'
 }));
-
-
-// Меню создания игры
-Snippet.addSnippet('newGameMenu', {geom:[1, 6, '400px', '400px']});
 
 
 // Подсказка что делать в данный момент

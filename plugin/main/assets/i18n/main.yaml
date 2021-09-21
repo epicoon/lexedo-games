@@ -11,6 +11,7 @@ en-EN:
   Password: Password
   ToLeave: Do you want to leave the game?
   ToJoin: Do you want to join the game?
+  AsObserver: As observer
 
 ru-RU:
   i18nKey_title: Lexedo игры
@@ -25,3 +26,4 @@ ru-RU:
   SavedGames: Сохраненные игры
   GamersCount: Количество игроков (${min}-${max})
   OnlineOrLocal: Хотите запустить игру в режиме online?
+  AsObserver: Как наблюдатель

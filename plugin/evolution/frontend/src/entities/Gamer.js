@@ -20,7 +20,7 @@ class Gamer extends lexedo.games.Gamer #lx:namespace lexedo.games.Evolution {
 		if (this._isLocal) __setGui(this);
 
 		this._creatures = new lx.Collection();
-		__setBinds(this);
+		__initGui(this);
 	}
 
 	reset() {
@@ -247,9 +247,20 @@ function __bindButtons(self) {
 }
 
 // Привязываем управление существами и их свойствами
-function __setBinds(self) {
+function __initGui(self) {
 	let plugin = self._game.getPlugin();
-	let box = self.isLocal() ? plugin->>localCreaturesBox : plugin->>oppCreaturesBox;
+	let mainBox = plugin->>mainBox;
+
+	let box;
+	if (self.isLocal()) {
+		let first = mainBox.child(0);
+		box = first
+			? new lx.Box({before: first})
+			: mainBox.add(lx.Box);
+	} else box = mainBox.add(lx.Box);
+	box.overflow('auto');
+
+	// let box = self.isLocal() ? plugin->>localCreaturesBox : plugin->>oppCreaturesBox;
 
 	let h = Math.floor(plugin->>mainBox.height('px') / 8);
 	let w = Math.round(h * 0.83);

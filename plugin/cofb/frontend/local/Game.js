@@ -9,10 +9,17 @@
 #lx:require Gamer;
 #lx:require -R ../src/;
 
+
+#lx:require -R gui/;
+
+
 #lx:private;
 
 class Game extends lexedo.games.Game #lx:namespace lexedo.games.Cofb {
-	init() {			
+	init() {
+
+		new lexedo.games.local.gui.NewGameMenu(this);
+
 		this.field = null;
 		this.gamers = [];
 		this.gamerKeys = [];
@@ -63,17 +70,11 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Cofb {
 
 	/**
 	 * data: [
-	 *	{num:0, seg:1, ai:false},
-	 *	{{num:1, seg:2, ai:false}}
+	 *	{num:0, ai:false},
+	 *	{{num:1, ai:false}}
 	 * ]
 	 * */
 	start(data) {
-		data.sort(function(a, b) {
-			if (a.seg > b.seg) return 1;
-			if (a.seg < b.seg) return -1;
-			return 0;
-		});
-
 		var indent = >>>Const.FIELD_SIZE * 0.02,
 			planW = >>>Const.FIELD_SIZE * 0.7,
 			planD = planW * 0.723,

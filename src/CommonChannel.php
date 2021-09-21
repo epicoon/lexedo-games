@@ -96,7 +96,7 @@ class CommonChannel extends Channel
     {
         $event = $this->createEvent('game-state-change', [
             'channel' => $gameChannel->getName(),
-            'count' => $gameChannel->getConnectionsCount(),
+            'count' => $gameChannel->getGamersCount(),
         ]);
 
         $connection = $this->getConnectionForUser($user);
@@ -110,7 +110,7 @@ class CommonChannel extends Channel
     {
         $event = $this->createEvent('game-state-change', [
             'channel' => $gameChannel->getName(),
-            'count' => $gameChannel->getConnectionsCount(),
+            'count' => $gameChannel->getGamersCount(),
         ]);
 
         $connection = $this->getConnectionForUser($user);
@@ -232,6 +232,7 @@ class CommonChannel extends Channel
                 }
             }
 
+            /** @var GameChannel $game */
             $game = $gameData['channel'];
             $parameters = $game->getParameters();
             $gameData = $gamesProvider->getGameData($parameters['type']);
@@ -240,7 +241,7 @@ class CommonChannel extends Channel
                 'type' => $parameters['type'],
                 'name' => $parameters['name'],
                 'image' => $gameData['image'],
-                'gamersCurrent' => $game->getConnectionsCount(),
+                'gamersCurrent' => $game->getGamersCount(),
                 'gamersRequired' => $game->getNeedleGamersCount(),
             ];
         }
