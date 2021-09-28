@@ -7,12 +7,14 @@ use lx\socket\SocketServer;
 
 class GamesServer extends SocketServer
 {
+    const COMMON_CHANNEL_KEY = 'common';
+
     private array $i18nReestr = [];
 
     public function getCommonChannel(): CommonChannel
     {
         /** @var CommonChannel $result */
-        $result = $this->channels->get('common');
+        $result = $this->channels->get(self::COMMON_CHANNEL_KEY);
         return $result;
     }
     
@@ -57,7 +59,7 @@ class GamesServer extends SocketServer
 
     protected function beforeProcess(): void
     {
-        $this->channels->create('common', CommonChannel::class, [
+        $this->channels->create(self::COMMON_CHANNEL_KEY, CommonChannel::class, [
             'reconnectionPeriod' => $this->getConfig('reconnectionPeriod') ?: 0,
         ]);
     }

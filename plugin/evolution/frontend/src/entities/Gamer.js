@@ -260,8 +260,6 @@ function __initGui(self) {
 	} else box = mainBox.add(lx.Box);
 	box.overflow('auto');
 
-	// let box = self.isLocal() ? plugin->>localCreaturesBox : plugin->>oppCreaturesBox;
-
 	let h = Math.floor(plugin->>mainBox.height('px') / 8);
 	let w = Math.round(h * 0.83);
 	box.stream({indent:'10px', rowDefaultHeight:h+'px'});

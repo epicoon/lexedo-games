@@ -38,7 +38,9 @@ class NewGameMenu #lx:namespace lexedo.games.local.gui {
 			});
 		});
 
+		this.game.getPlugin().root.begin();
 		this.boxes = __render();
+		this.game.getPlugin().root.end();
 		__initOpenButton(this);
 		__initMenu(this);
 	}

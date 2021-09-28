@@ -5,6 +5,7 @@
 
 #lx:require -R src/;
 
+Plugin.instances = {};
 let dataProvider = Plugin.instances.dataProvider;
 dataProvider = new lxMonopoly.DataProvider();
 dataProvider.loadData();

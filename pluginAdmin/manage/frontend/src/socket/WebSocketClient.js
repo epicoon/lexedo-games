@@ -1,12 +1,12 @@
-class WebSocketClient extends lx.socket.WebSocketClient {
-	constructor(plugin) {
+class WebSocketClient extends lx.socket.WebSocketClient #lx:namespace lexedo.games.manage {
+	constructor(core, connectData) {
 		super({
-			protocol: plugin.core.connectData.protocol,
-			port: plugin.core.connectData.port,
-			url: plugin.core.connectData.url,
-			channel: plugin.core.connectData.channelName,
+			protocol: connectData.protocol,
+			port: connectData.port,
+			url: connectData.url,
+			channel: connectData.channelName,
 			handlers: {
-				onChannelEvent: plugin.core.socketEventListener,
+				onChannelEvent: new lexedo.games.manage.SocketEventListener(core),
 				onConnected:   __WebSocketHandlers.onConnected,
 				onMessage:     __WebSocketHandlers.onMessage,
 				onClientJoin:  __WebSocketHandlers.onClientJoin,
@@ -17,8 +17,7 @@ class WebSocketClient extends lx.socket.WebSocketClient {
 			}
 		});
 
-		this._plugin = plugin;
-		this._core = plugin.core;
+		this.core = core;
 	}
 }
 
@@ -26,6 +25,11 @@ const __WebSocketHandlers = {
 	onConnected: function() {
 	    console.log('ON CLIENT CONNECTED');
 		console.log(this);
+
+
+		// this.request('test').then(res=>{
+		// 	console.log(res);
+		// });
 	},
 
 	onMessage: function(msg) {
@@ -36,9 +40,6 @@ const __WebSocketHandlers = {
 	onClientJoin: function(clientData) {
 		console.log('ON CLIENT JOIN');
 		console.log(clientData);
-
-		if (clientData.isLocal())
-			this._core.checkReconnections();
 	},
 
 	onClientDisconnected: function (clientData) {

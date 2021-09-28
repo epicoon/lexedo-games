@@ -6,6 +6,7 @@ autoload:
       - ''
       - 'src'
       - 'plugin'
+      - 'pluginAdmin'
     lexedo\games\sys\: '.system'
     lexedo\games\monopoly\: 'plugin/monopoly/src'
     lexedo\games\chess: 'plugin/chesslike/src'
@@ -14,6 +15,7 @@ autoload:
 service:
   routes:
     /: {plugin: main}
+    manage: {plugin: manage}
     cofb: {plugin: cofb}
     tetris: {plugin: tetris}
     sapper: {plugin: sapper}
@@ -23,6 +25,7 @@ service:
   plugins:
     - plugin
     - plugin/_dev
+    - pluginAdmin
   models: model
 
   components:

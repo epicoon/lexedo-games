@@ -152,10 +152,14 @@ abstract class GameChannel extends Channel
         $this->sendGameData($connection);
 
         if ($this->users->connectionIsObserver($connection)) {
-            $event = $this->createEvent('new-observer');
-            $event->setInitiator($connection);
+            $event = $this->createEvent('observer-joined');
+            $event->setReceiver($connection);
             $gameData = $this->getGame()->getGameDataForGamer();
-            $event->addDataForConnection($connection, ['gameData' => $gameData]);
+            $event->addDataForConnection($connection, [
+                'gamersData' => $this->getGamersData(),
+                'gameData' => $gameData,
+                'gameIsPending' => $this->getGame()->isPending(),
+            ]);
             $event->send();
             return;
         }
@@ -201,9 +205,14 @@ abstract class GameChannel extends Channel
 
         if ($this->users->connectionIsObserver($connection)) {
             $this->sendGameData($connection);
-            $event = $this->createEvent('new-observer');
+            $event = $this->createEvent('observer-joined');
+            $event->setReceiver($connection);
             $gameData = $this->getGame()->getGameDataForGamer();
-            $event->addDataForConnection($connection, ['gameData' => $gameData]);
+            $event->addDataForConnection($connection, [
+                'gamersData' => $this->getGamersData(),
+                'gameData' => $gameData,
+                'gameIsPending' => $this->getGame()->isPending(),
+            ]);
             $event->send();
             return;
         }
@@ -268,16 +277,22 @@ abstract class GameChannel extends Channel
             ]);
             $this->app->getCommonChannel()->closePendingGame($this);
             $this->drop();
-        } else {
-            if ($this->game->isPending()) {
-                $this->app->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
-            }
-
-            $gamer = $this->game->getGamerByConnection($connection);
-            $this->game->dropGamer($gamer);
-            $this->trigger('gamer-leave', ['gamer' => $gamer->getId()]);
-            $this->users->dropUser($connection);
+            return;
         }
+        
+        if ($this->users->connectionIsObserver($connection)) {
+            $this->users->dropUser($connection);
+            return;
+        }
+
+        if ($this->game->isPending()) {
+            $this->app->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
+        }
+
+        $gamer = $this->game->getGamerByConnection($connection);
+        $this->game->dropGamer($gamer);
+        $this->trigger('gamer-leave', ['gamer' => $gamer->getId()]);
+        $this->users->dropUser($connection);
     }
     
     public function userIsDisconnected(ModelInterface $user): bool

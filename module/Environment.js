@@ -9,7 +9,7 @@
 class Environment #lx:namespace lexedo.games {
 	constructor(plugin, config) {
 		this._plugin = plugin;
-		this._eventCore = new lx.LocalEventSupervisor();		
+		this._eventCore = new lx.EventSupervisor();		
 
 		plugin.onDestruct(()=>this.destruct());
 
@@ -78,7 +78,10 @@ class Environment #lx:namespace lexedo.games {
 		this.game.onChangeGamersList(data);
 	}
 
-	onNewObserver(data) {
+	onObserverJoined(data) {
+		this.game.setPending(data.gameIsPending);
+		if (!this.game.isPending())
+			this.unlockScreen();
 		this.game.onObserverJoined(data);
 	}
 

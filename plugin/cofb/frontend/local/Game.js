@@ -58,7 +58,7 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Cofb {
 				}
 			}
 		});
-		this.world.createTable();		
+		this.world.createTable();
 
 		__prepareField(this);
 		__preparePacks(this);
@@ -675,7 +675,7 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Cofb {
 }
 
 function __prepareEventSupervisor(self) {
-	self.eventSupervisor = new lx.LocalEventSupervisor();
+	self.eventSupervisor = new lx.EventSupervisor();
 	/*
 	События:
 		- cofb_status_changed

@@ -2,6 +2,7 @@
 
 namespace lexedo\games\main\backend;
 
+use lexedo\games\GamesServer;
 use lx\ResponseCodeEnum;
 use lx\ResponseInterface;
 
@@ -9,10 +10,12 @@ class Respondent extends \lx\Respondent
 {
     public function getConnectData(): ResponseInterface
     {
+        $processes = $this->getService()->getConfig('processes');
+        $serverConfig = $processes['games_server']['config'];
         return $this->prepareResponse([
-            'protocol' => 'ws',
-            'port' => 8003,
-            'channelName' => 'common',
+            'protocol' => $serverConfig['protocol'],
+            'port' => $serverConfig['port'],
+            'channelName' => GamesServer::COMMON_CHANNEL_KEY,
         ]);
     }
 
