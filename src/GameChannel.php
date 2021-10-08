@@ -13,14 +13,12 @@ use lx\socket\Connection;
 
 abstract class GameChannel extends Channel
 {
-    protected GamesServer $app;
     protected bool $isStuffed = false;
     protected ?AbstractGame $game = null;
     private GameChannelUserHolder $users;
 
     public function init(): void
     {
-        $this->app = lx::$app;
         $this->users = new GameChannelUserHolder();
         if ($this->game) {
             $this->game->setChannel($this);
@@ -171,11 +169,13 @@ abstract class GameChannel extends Channel
         }
         $this->trigger('new-gamer', $this->getGamersData());
 
+        /** @var GamesServer $app */
+        $app = lx::$app;
         if ($this->getGamersCount() == $this->getNeedleGamersCount()) {
-            $this->app->getCommonChannel()->trigger('game-stuffed', [
+            $app->getCommonChannel()->trigger('game-stuffed', [
                 'channel' => $this->getName(),
             ]);
-            $this->app->getCommonChannel()->stuffPendingGame($this);
+            $app->getCommonChannel()->stuffPendingGame($this);
             $this->isStuffed = true;
             $this->trigger('game-stuffed');
             $this->getGame()->setPending(false);
@@ -193,7 +193,7 @@ abstract class GameChannel extends Channel
 
             $event->send();
         } else {
-            $this->app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
+            $app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
         }
     }
 
@@ -218,7 +218,9 @@ abstract class GameChannel extends Channel
         }
 
         if ($this->getGame()->isPending()) {
-            $this->app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
+            /** @var GamesServer $app */
+            $app = lx::$app;
+            $app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
         }
 
         if (!$this->game->actualizeGamerConnection($connection)) {
@@ -261,7 +263,9 @@ abstract class GameChannel extends Channel
         }
 
         if ($this->game->isPending()) {
-            $this->app->getCommonChannel()->onUserLeaveGame($this, $user);
+            /** @var GamesServer $app */
+            $app = lx::$app;
+            $app->getCommonChannel()->onUserLeaveGame($this, $user);
         }
 
         $this->users->disconnectUser($connection);
@@ -270,12 +274,15 @@ abstract class GameChannel extends Channel
     public function onLeave(Connection $connection): void
     {
         parent::onLeave($connection);
+        
+        /** @var GamesServer $app */
+        $app = lx::$app;
 
         if ($this->getConnectionsCount() == 0) {
-            $this->app->getCommonChannel()->trigger('game-close', [
+            $app->getCommonChannel()->trigger('game-close', [
                 'channel' => $this->getName(),
             ]);
-            $this->app->getCommonChannel()->closePendingGame($this);
+            $app->getCommonChannel()->closePendingGame($this);
             $this->drop();
             return;
         }
@@ -286,7 +293,7 @@ abstract class GameChannel extends Channel
         }
 
         if ($this->game->isPending()) {
-            $this->app->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
+            $app->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
         }
 
         $gamer = $this->game->getGamerByConnection($connection);
@@ -302,17 +309,21 @@ abstract class GameChannel extends Channel
     
     public function beforeClose(): void
     {
-        $this->app->getCommonChannel()->closeGame($this);
+        /** @var GamesServer $app */
+        $app = lx::$app;
+        $app->getCommonChannel()->closeGame($this);
     }
 
     public function onIteration(): void
     {
         if ($this->getTimer() > $this->reconnectionPeriod) {
-            $this->app->getCommonChannel()->trigger('game-close', [
+            /** @var GamesServer $app */
+            $app = lx::$app;
+            $app->getCommonChannel()->trigger('game-close', [
                 'channel' => $this->getName(),
             ]);
-            $this->app->getCommonChannel()->closePendingGame($this);
-            $this->app->channels->close($this->getName());
+            $app->getCommonChannel()->closePendingGame($this);
+            $app->channels->close($this->getName());
         }
     }
 

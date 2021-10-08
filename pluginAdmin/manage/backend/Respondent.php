@@ -2,6 +2,7 @@
 
 namespace lexedo\games\pluginAdmin\manage\backend;
 
+use lx;
 use lexedo\games\GamesServer;
 use lx\process\ProcessConst;
 use lx\process\ProcessSupervisor;
@@ -13,7 +14,7 @@ class Respondent extends lxRespondent
     public function checkProcess(): ResponseInterface
     {
         /** @var ProcessSupervisor $processSupervisor */
-        $processSupervisor = $this->app->processSupervisor;
+        $processSupervisor = lx::$app->processSupervisor;
         if (!$processSupervisor) {
             return $this->prepareErrorResponse('Process supervisor doesn\'t defined in the project');
         }

@@ -9,9 +9,9 @@ use lexedo\games\GameChannel;
  */
 class CofbChannel extends GameChannel
 {
-    public static function getConfigProtocol(): array
+    public static function getDependenciesConfig(): array
     {
-        return array_merge(parent::getConfigProtocol(), [
+        return array_merge(parent::getDependenciesConfig(), [
             'eventListener' => CofbEventListener::class,
             'game' => CofbGame::class,
         ]);

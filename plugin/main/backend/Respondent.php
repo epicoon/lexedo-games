@@ -2,6 +2,7 @@
 
 namespace lexedo\games\main\backend;
 
+use lx;
 use lexedo\games\GamesServer;
 use lx\ResponseCodeEnum;
 use lx\ResponseInterface;
@@ -21,7 +22,7 @@ class Respondent extends \lx\Respondent
 
     public function loadGamePlugin(string $gameType): ResponseInterface
     {
-        $plugin = $this->app->getService('lexedo/games')->gamesProvider->getGamePlugin($gameType);
+        $plugin = lx::$app->getService('lexedo/games')->gamesProvider->getGamePlugin($gameType);
         if (!$plugin) {
             return $this->prepareErrorResponse(
                 'Game plugin not found',

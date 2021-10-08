@@ -115,6 +115,7 @@ function __initOpenButton(self) {
 }
 
 function __initMenu(self) {
+	console.log(self.boxes);
 	self.boxes.butClose.forEach(but=>but.click(()=>menu.hide()));
 
 	let menu = self.boxes.newGameMenu,

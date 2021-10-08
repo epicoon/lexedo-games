@@ -21,9 +21,9 @@ class CommonChannel extends Channel
     /** @var array<GameChannel> */
     private array $stuffedGamesList = [];
 
-    public static function getConfigProtocol(): array
+    public static function getDependenciesConfig(): array
     {
-        return array_merge(parent::getConfigProtocol(), [
+        return array_merge(parent::getDependenciesConfig(), [
             'eventListener' => EventListener::class,
         ]);
     }

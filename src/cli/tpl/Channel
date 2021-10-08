@@ -9,9 +9,9 @@ use lexedo\games\GameChannel;
  */
 class <slug>Channel extends GameChannel
 {
-    public static function getConfigProtocol(): array
+    public static function getDependenciesConfig(): array
     {
-        return array_merge(parent::getConfigProtocol(), [
+        return array_merge(parent::getDependenciesConfig(), [
             'eventListener' => <slug>EventListener::class,
             'game' => <slug>Game::class,
         ]);

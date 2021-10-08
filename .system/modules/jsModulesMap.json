@@ -22,6 +22,10 @@
         "name": "lexedo.games.CofbLocal",
         "path": "plugin\/cofb\/frontend\/local\/Game.js"
     },
+    "lexedo.games.CofbOnline": {
+        "name": "lexedo.games.CofbOnline",
+        "path": "plugin\/cofb\/frontend\/online\/Game.js"
+    },
     "lexedo.games.HiveLocal": {
         "name": "lexedo.games.HiveLocal",
         "path": "plugin\/hive\/frontend\/HiveLocal.js"
