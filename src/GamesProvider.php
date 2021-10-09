@@ -7,7 +7,6 @@ use lexedo\games\evolution\backend\EvolutionChannel;
 use lexedo\games\cofb\backend\CofbChannel;
 use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
-use lx\ObjectTrait;
 use lx\Plugin;
 
 class GamesProvider implements FusionComponentInterface
