@@ -7,11 +7,9 @@ class ConnectionEventListener #lx:namespace lexedo.games {
 		return this._environment;
 	}
 
-	onConnected(mates, data) {
+	onConnected() {
 		if (this._environment.mode == 'dev') {
 		    console.log(__title(this, 'ON CONNECTED'));
-			console.log(mates);
-			console.log(data);
 		}
 	}
 
