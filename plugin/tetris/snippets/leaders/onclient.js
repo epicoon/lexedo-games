@@ -1,9 +1,9 @@
-#lx:model-collection leadersList = TetrisLeader;
+#lx:model-collection leadersList = tetris\Leader;
 
 Plugin->>leadersTable.matrix({
 	items: leadersList,
 	itemBox: [ lx.Form, {grid: true} ],
-	itemRender: function(form) {
+	itemRender: function(form, model) {
 		form.fields({
 			place: [lx.Box, {width: 1}],
 			name:  [lx.Box, {width: 5}],
@@ -15,10 +15,11 @@ Plugin->>leadersTable.matrix({
 });
 
 function loadLeaders() {
-	^Respondent.getLeaders().then((list)=>{
+	^Respondent.getLeaders().then(response=>{
+		let list = response.data;
 		leadersList.reset(list);
 	});
 }
 loadLeaders();
 
-lx.EventSupervisor.subscribe('tetris_change_leaders', ()=>loadLeaders());
+Plugin.on('tetris_change_leaders', ()=>loadLeaders());

@@ -81,7 +81,5 @@ slot.begin();
 	})).align(lx.CENTER, lx.MIDDLE);
 slot.end();
 
-Snippet.addSnippet({
-	plugin: 'lx/tools:snippets',
-	snippet: 'inputPopup'
-});
+#lx:use lx.InputPopup;
+new lx.InputPopup();

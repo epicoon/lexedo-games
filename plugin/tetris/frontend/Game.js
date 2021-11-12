@@ -7,9 +7,11 @@ let gameInstance = null;
 class Game extends lx.BindableModel #lx:namespace tetris {
 	#lx:schema level, lines, score;
 
-	constructor() {
+	constructor(plugin) {
 		super();
 
+		this.plugin = plugin;
+		
 		this.nextFigure = null;
 		this.activeFigure = null;
 
@@ -39,17 +41,19 @@ class Game extends lx.BindableModel #lx:namespace tetris {
 		Plugin->>pause.disabled(true);
 		lx.Tost('Game over');
 
-		^Respondent.checkLeaderPlace(this.score).then((place)=>{
+		^Respondent.checkLeaderPlace(this.score).then(response=>{
+			let place = response.data;
 			if (place === false) return;
 
-			Plugin.root->inputPopup.open('You took place ' + place + '. Enter your name').confirm((name)=>{
-				^Respondent.updateLeaders({
-					name,
-					score: this.score,
-					level: this.level
-				}).then(()=>lx.EventSupervisor.trigger('tetris_change_leaders'));
-				lx.Tost('You was saved to the hall of honor!');
-			});
+			Plugin.root->inputPopup.open('You took the place number ' + place + '. Enter your name')
+				.confirm(name=>{
+					^Respondent.updateLeaders({
+						name,
+						score: this.score,
+						level: this.level
+					}).then(()=>this.plugin.trigger('tetris_change_leaders'));
+					lx.Tost('You was saved to the hall of honor!');
+				});
 		});
 	}
 

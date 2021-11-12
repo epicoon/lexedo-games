@@ -2,43 +2,71 @@
 
 namespace lexedo\games\tetris\backend;
 
-//TODO устарел - править ОРМ и возвращаемые типы
-class Respondent extends \lx\Respondent {
-	public function getLeaders() {
-		$leaders = $this->getModelManager('TetrisLeader')->loadModels([
-			'ORDER BY' => 'place ASC',
-		]);
+use lexedo\games\models\tetris\Leader;
+use lx\model\modelTools\ModelsCollection;
+use lx\Respondent as lxRespondent;
+use lx\ResponseInterface;
 
-		$result = [];
-		foreach ($leaders as $leader) {
-			$result[] = $leader->getFields();
-		}
-
-		return $result;
+class Respondent extends lxRespondent
+{
+	public function getLeaders(): ResponseInterface
+    {
+        $leaders = $this->loadLeaders();
+        return $this->prepareResponse($leaders->toArray());
 	}
 
-	public function checkLeaderPlace($score) {
-		return $this->checkLeaderPlaceProcess($score);
+	public function checkLeaderPlace(int $score): ResponseInterface
+    {
+        $place = $this->checkLeaderPlaceProcess($score);
+        if ($place === null) {
+            return $this->prepareResponse(false);
+        }
+        
+        return $this->prepareResponse($place);
 	}
 
-	public function updateLeaders($data) {
+	public function updateLeaders(iterable $data): void
+    {
 		$place = $this->checkLeaderPlaceProcess($data['score']);
-		if (!$place) {
+		if ($place === null) {
 			return;
 		}
 
-		$leaders = $this->loadLeaders();
-		for ($i = 4; $i >= $place; $i--) {
-			$prevLeaderFields = $leaders[$i - 1]->getFields(['name', 'level', 'score']);
-			$leaders[$i]->setFields($prevLeaderFields);			
-		}
+        $data['place'] = $place;
 
-		$leaders[$place - 1]->setFields($data);
-
-		$this->getModelManager('TetrisLeader')->saveModels($leaders);
+        Leader::getModelRepository()->hold();
+        $leadersCount = Leader::getCount();
+        if ($leadersCount < 5) {
+            $oldLeaders = $this->loadLeaders();
+            foreach ($oldLeaders as $leader) {
+                if ($leader->place >= $place) {
+                    $leader->place++;
+                    $leader->save();
+                }
+            }
+            $newLeader = new Leader($data);
+            $newLeader->save();
+        } else {
+            $leaders = $this->loadLeaders();
+            for ($i = 4; $i >= $place; $i--) {
+                $leader = $leaders[$i];
+                $prevLeader = $leaders[$i - 1];
+                $leader->setFields($prevLeader->getFields(['name', 'level', 'score']));
+                $leader->save();
+            }
+            $newLeader = $leaders[$place - 1];
+            $newLeader->setFields($data);
+            $newLeader->save();
+        }
+        Leader::getModelRepository()->commit();
 	}
 
-	private function checkLeaderPlaceProcess($score) {
+	private function checkLeaderPlaceProcess(int $score): ?int
+    {
+        if ($score == 0) {
+            return null;
+        }
+        
 		$leaders = $this->loadLeaders();
 		foreach ($leaders as $leader) {
 			if ($score > $leader->score) {
@@ -46,12 +74,19 @@ class Respondent extends \lx\Respondent {
 			}
 		}
 
-		return false;
+        $leadersCount = Leader::getCount();
+        if ($leadersCount < 5) {
+            return $leadersCount + 1;
+        }
+
+		return null;
 	}
 
-	private function loadLeaders() {
-		return $this->getModelManager('TetrisLeader')->loadModels([
-			'ORDER BY' => 'place ASC',
-		]);
+    /**
+     * @return ModelsCollection & iterable<Leader>
+     */
+	private function loadLeaders(): ModelsCollection
+    {
+		return Leader::find(['ORDER BY' => 'place ASC']);
 	}
 }

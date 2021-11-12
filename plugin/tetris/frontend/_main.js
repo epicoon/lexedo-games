@@ -6,7 +6,7 @@
 #lx:require Game;
 #lx:require keyboard;
 
-var game = new tetris.Game();
+var game = new tetris.Game(Plugin);
 game.bind(Plugin->>tetris);
 
 Plugin->>newGame.click(()=> game.newGame());

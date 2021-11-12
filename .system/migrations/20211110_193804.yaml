@@ -1,0 +1,18 @@
+actions:
+  - type: createTable
+    schema:
+      name: tetris\Leader
+      fields:
+        name:
+          type: string
+          required: false
+          size: 256
+        place:
+          type: int
+          required: false
+        score:
+          type: int
+          required: false
+        level:
+          type: int
+          required: false

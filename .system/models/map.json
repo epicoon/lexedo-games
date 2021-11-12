@@ -1,1 +1,1 @@
-{"GameSave":"lexedo\\games\\models\\GameSave","GamerInGame":"lexedo\\games\\models\\GamerInGame"}
+{"GameSave":"lexedo\\games\\models\\GameSave","GamerInGame":"lexedo\\games\\models\\GamerInGame","tetris\\Leader":"lexedo\\games\\models\\tetris\\Leader"}

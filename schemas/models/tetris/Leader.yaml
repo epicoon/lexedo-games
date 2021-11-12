@@ -1,0 +1,7 @@
+name: tetris\Leader
+
+fields:
+  name: string
+  place: int
+  score: int
+  level: int
