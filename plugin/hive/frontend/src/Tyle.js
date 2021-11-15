@@ -1,5 +1,3 @@
-#lx:private;
-
 #lx:macros hive {lexedo.games.Hive}
 
 class Tyle #lx:namespace lexedo.games.Hive {

@@ -1,5 +1,3 @@
-#lx:private;
-
 #lx:macros ev {lexedo.games.Evolution};
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
@@ -23,11 +21,11 @@ class Game extends lexedo.games.Game #lx:namespace lexedo.games.Evolution {
 		this.gamersBySequence = new lx.Collection();
 		this.isLastTurn = false;
 
-		this.phase = new GamePhase(this);
-		this.chat = new GameChat(this);
-		this.logger = new GameLogger(this);
-		this.mouse = new Mouse(this);
-		this.mode = new MouseMode(this);
+		this.phase = new >>>ev.GamePhase(this);
+		this.chat = new >>>ev.GameChat(this);
+		this.logger = new >>>ev.GameLogger(this);
+		this.mouse = new >>>ev.Mouse(this);
+		this.mode = new >>>ev.MouseMode(this);
 
 		this.getEnvironment().attakCore = new >>>ev.AttakCore(this);
 

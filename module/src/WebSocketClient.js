@@ -1,3 +1,5 @@
+#lx:public;
+
 class WebSocketClient extends lx.socket.WebSocketClient {
 	constructor(config) {
 		var env = config.env;

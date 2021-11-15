@@ -1,5 +1,3 @@
-#lx:private;
-
 #lx:macros hive {lexedo.games.Hive}
 
 class World extends lx3d.World #lx:namespace lexedo.games.Hive {

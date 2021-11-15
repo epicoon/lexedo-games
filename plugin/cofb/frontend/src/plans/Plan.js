@@ -1,7 +1,5 @@
 #lx:macros Const {lexedo.games.Cofb.Constants};
 
-#lx:private;
-
 //TODO data-provider
 var PLAN_CUBE_MAP = [6, 5, 4, 3, 2, 1, 6, 5, 4, 5, 4, 3, 1, 2, 3, 6, 1, 2, 6, 5, 4, 1, 2, 5, 4, 3, 1, 2, 6, 1, 2, 5, 6, 3, 4, 1, 3];
 var PLAN_GROUPE_MAP = [

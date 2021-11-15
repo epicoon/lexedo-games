@@ -1,3 +1,5 @@
+#lx:public;
+
 class SocketEventListener extends lx.socket.EventListener {
 	constructor(plugin) {
 		super();

@@ -1,5 +1,3 @@
-#lx:private;
-
 #lx:macros Const {lexedo.games.Cofb.Constants};
 
 class World extends lx3dWorld #lx:namespace lexedo.games.Cofb {

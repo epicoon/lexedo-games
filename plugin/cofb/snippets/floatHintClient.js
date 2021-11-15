@@ -1,7 +1,5 @@
 #lx:macros Const {lexedo.games.Cofb.Constants};
 
-#lx:private;
-
 const floatHint = Snippet->floatHint;
 
 const __STATUS_NONE = 0;

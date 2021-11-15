@@ -1,3 +1,5 @@
+#lx:public;
+
 class Connector {
 	constructor(plugin, env, gameConfig) {
 		this._plugin = plugin;

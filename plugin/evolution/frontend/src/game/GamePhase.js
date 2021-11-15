@@ -1,6 +1,6 @@
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
-class GamePhase extends lx.BindableModel {
+class GamePhase extends lx.BindableModel #lx:namespace lexedo.games.Evolution {
 	#lx:schema type, name, gamer, hint, food;
 
 	constructor(game) {

@@ -1,7 +1,5 @@
 #lx:macros Const {lexedo.games.Cofb.Constants};
 
-#lx:private;
-
 #lx:use lx.Checkbox;
 
 class NewGameMenu #lx:namespace lexedo.games.local.gui {

@@ -1,3 +1,5 @@
+#lx:public;
+
 class Core {
 	#lx:const
 		ONLINE_ONLY = #lx:php(\lexedo\games\GamePlugin::ONLINE_ONLY),

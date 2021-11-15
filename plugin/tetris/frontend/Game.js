@@ -1,4 +1,3 @@
-#lx:private;
 #lx:require figures/;
 #lx:require classes/;
 

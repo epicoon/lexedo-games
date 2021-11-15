@@ -1,7 +1,5 @@
 #lx:macros Const {lexedo.games.Cofb.Constants};
 
-#lx:private;
-
 class Field #lx:namespace lexedo.games.Cofb {
 	constructor(game) {
 		this.game = game;

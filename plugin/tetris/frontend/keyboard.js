@@ -1,5 +1,3 @@
-#lx:private;
-
 lx.on('keydown', (event)=>{
 	var game = tetris.Game.instance;
 	if (!game.active || !game.activeFigure) return;

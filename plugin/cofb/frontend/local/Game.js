@@ -9,11 +9,7 @@
 #lx:require Gamer;
 #lx:require -R ../src/;
 
-
 #lx:require -R gui/;
-
-
-#lx:private;
 
 class Game extends lexedo.games.Game #lx:namespace lexedo.games.Cofb {
 	init() {

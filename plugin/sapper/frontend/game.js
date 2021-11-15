@@ -1,3 +1,5 @@
+#lx:public;
+
 var constUp = 2;
 var constUpRight = 3;
 var constRight = 4;

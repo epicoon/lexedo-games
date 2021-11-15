@@ -1,4 +1,4 @@
-class GameChat {
+class GameChat #lx:namespace lexedo.games.Evolution {
 	constructor(game) {
 		this.game = game;
 		this.messages = new lx.Collection();

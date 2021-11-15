@@ -12,7 +12,7 @@ class Respondent extends lxRespondent
 	public function getLeaders(): ResponseInterface
     {
         $leaders = $this->loadLeaders();
-        return $this->prepareResponse($leaders->toArray());
+        return $this->prepareResponse($leaders->getModelsAsArray());
 	}
 
 	public function checkLeaderPlace(int $score): ResponseInterface

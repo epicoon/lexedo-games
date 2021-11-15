@@ -1,5 +1,3 @@
-#lx:private;
-
 #lx:use lx.Form;
 #lx:use lx.socket.WebSocketClient;
 

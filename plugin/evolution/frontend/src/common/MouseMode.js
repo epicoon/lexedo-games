@@ -1,6 +1,6 @@
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
-class MouseMode {
+class MouseMode #lx:namespace lexedo.games.Evolution {
 	constructor(game) {
 		this.game = game;
 		this.mode = >>>evConst.MOUSE_MODE_NONE;

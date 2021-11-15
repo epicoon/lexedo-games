@@ -1,5 +1,3 @@
-#lx:private;
-
 class ChessBoard #lx:namespace lexedo.games.Chess {
 	constructor(plugin, env) {
 		#lx:require -F tool/__classInit;

@@ -1,5 +1,3 @@
-#lx:private;
-
 #lx:macros Const {lexedo.games.Cofb.Constants};
 
 var CUBE_COLOR = [ [0, 1, 0], [0.5, 0.5, 1], [1, 0.3, 0.3], [0.6, 0.6, 0.6, 0.6] ];

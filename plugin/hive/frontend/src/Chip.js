@@ -1,5 +1,3 @@
-#lx:private;
-
 #lx:macros hive {lexedo.games.Hive}
 
 class Chip #lx:namespace >>>hive {

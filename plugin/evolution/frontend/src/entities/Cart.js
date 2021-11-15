@@ -1,5 +1,3 @@
-#lx:private;
-
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
 class Cart #lx:namespace lexedo.games.Evolution {

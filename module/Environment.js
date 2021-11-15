@@ -2,8 +2,6 @@
 
 #lx:use lx.socket.WebSocketClient;
 
-#lx:private;
-
 #lx:require src/;
 
 class Environment #lx:namespace lexedo.games {

@@ -1,6 +1,6 @@
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 
-class Mouse {
+class Mouse #lx:namespace lexedo.games.Evolution {
 	constructor(game) {
 		this.game = game;
 		this.box = new lx.Box({geom:[0, 0, '40px', '40px']});

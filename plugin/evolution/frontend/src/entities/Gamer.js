@@ -1,5 +1,3 @@
-#lx:private;
-
 #lx:macros ev {lexedo.games.Evolution};
 #lx:macros evConst {lexedo.games.Evolution.Constants};
 

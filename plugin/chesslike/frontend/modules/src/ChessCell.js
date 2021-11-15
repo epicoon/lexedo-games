@@ -1,5 +1,3 @@
-#lx:private;
-
 class ChessCell #lx:namespace lexedo.games.Chess {
 	constructor(plugin, env, box, id) {
 		#lx:require -F tool/__classInit;

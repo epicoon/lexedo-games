@@ -6,8 +6,6 @@
 #lx:use lx.ActiveBox;
 #lx:use lx.Image;
 
-#lx:private;
-
 class SaveMenu extends lx.ActiveBox #lx:namespace lexedo.games {
     modifyConfigBeforeApply(config) {
     	config.geom = config.geom || [10, 15, 80, 60];
