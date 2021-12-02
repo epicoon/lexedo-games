@@ -9,25 +9,5 @@
         "data": {
             "i18n": "i18n.yaml"
         }
-    },
-    "lexedo.games.ChessLocal": {
-        "name": "lexedo.games.ChessLocal",
-        "path": "plugin\/chesslike\/frontend\/modules\/ChessLocal.js"
-    },
-    "lexedo.games.ChessOnline": {
-        "name": "lexedo.games.ChessOnline",
-        "path": "plugin\/chesslike\/frontend\/modules\/ChessOnline.js"
-    },
-    "lexedo.games.CofbLocal": {
-        "name": "lexedo.games.CofbLocal",
-        "path": "plugin\/cofb\/frontend\/local\/Game.js"
-    },
-    "lexedo.games.CofbOnline": {
-        "name": "lexedo.games.CofbOnline",
-        "path": "plugin\/cofb\/frontend\/online\/Game.js"
-    },
-    "lexedo.games.HiveLocal": {
-        "name": "lexedo.games.HiveLocal",
-        "path": "plugin\/hive\/frontend\/HiveLocal.js"
     }
 }

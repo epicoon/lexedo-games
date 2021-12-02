@@ -2,9 +2,6 @@
 
 namespace lexedo\games;
 
-use lexedo\games\chesslike\backend\ChessChannel;
-use lexedo\games\evolution\backend\EvolutionChannel;
-use lexedo\games\cofb\backend\CofbChannel;
 use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
 use lx\Plugin;

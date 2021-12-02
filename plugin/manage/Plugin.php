@@ -1,16 +1,16 @@
 <?php
 
-namespace lexedo\games\plugin\main;
+namespace lexedo\games\plugin\manage;
 
-use lx\Plugin as lxPlugin;
 use lx\auth\RbacResourceInterface;
+use lx\Plugin as lxPlugin;
 
 class Plugin extends lxPlugin implements RbacResourceInterface
 {
     public function getPermissions(): array
     {
         return [
-            lxPlugin::DEFAULT_RESOURCE_METHOD => ['client_w', 'client_r'],
+            lxPlugin::DEFAULT_RESOURCE_METHOD => ['admin_w', 'admin_r'],
         ];
     }
 }
