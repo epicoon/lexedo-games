@@ -22,21 +22,22 @@ class SaveMenu extends lx.ActiveBox #lx:namespace lexedo.games {
 
     	this.nameInput = content.nameInput;
 
-		#lx:model-collection gamesList = {
-			type,
-			image,
-			name,
-			date,
-			gamers,
-			isActive: {default: false}
-		};
-		this.gamesList = gamesList;
+		this.gamesList = lx.ModelCollection.create({
+			schema: {
+				type: {},
+				image: {},
+				name: {},
+				date: {},
+				gamers: {},
+				isActive: {default: false}
+			}
+		});
 		this.activeSave = null;
 
     	content.filter.on('change', function(event, val) {
 
     		//TODO фильтровать список игр
-    		console.log('Filter was changed', val);
+    		console.log('Filter has changed', val);
     	});
 
     	content.list.matrix({

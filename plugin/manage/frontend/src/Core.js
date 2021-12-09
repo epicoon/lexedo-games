@@ -10,22 +10,24 @@ class Core #lx:namespace lexedo.games.manage {
 		this.processInfo = new lexedo.games.manage.ProcessInfo();
 		this.channelInfo = new lexedo.games.manage.ChannelInfo();
 
-		#lx:model-collection channels = {
-		    type,
-		    icon,
-		    name,
-		    selected: {default: false}
-		};
-		this.channels = channels;
+		this.channels = lx.ModelCollection.create({
+			schema: {
+				type: {},
+				icon: {},
+				name: {},
+				selected: {default: false}
+			}
+		});
 
-		#lx:model-collection connections = {
-		    key,
-		    type,   // gamer, observer
-		    userId,
-		    userAuthValue,
-		    date
-		};
-		this.connections = connections;
+		this.connections = lx.ModelCollection.create({
+			schema: [
+				'key',
+				'type', // gamer, observer
+				'userId',
+				'userAuthValue',
+				'date'
+			]
+		});
 
 		this.boxes = null;
 		__initGui(this);

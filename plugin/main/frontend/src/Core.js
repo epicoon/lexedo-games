@@ -12,33 +12,33 @@ class Core {
 		this.socketEventListener = null;
 		this.socket = null;
 
-		#lx:model-collection gamePropotypes = {
-			type,
-			connectionType,
-			image,
-			minGamers,
-			maxGamers
-		};
-		#lx:model-collection pendingGames = {
-			channelKey,
-			type,
-			name,
-			image,
-			gamersCurrent,
-			gamersRequired,
-			follow: {default: false},
-			isOwned: {default: false}
-		};
-		#lx:model-collection stuffedGames = {
-			channelKey,
-			type,
-			name
-		};
-
 		this.lists = {
-			gamePropotypes,
-			pendingGames,
-			stuffedGames
+			gamePropotypes: lx.ModelCollection.create({
+				schema: [
+					'type',
+					'connectionType',
+					'image',
+					'minGamers',
+					'maxGamers'
+				]
+			}),
+			pendingGames: lx.ModelCollection.create({
+				channelKey: {},
+				type: {},
+				name: {},
+				image: {},
+				gamersCurrent: {},
+				gamersRequired: {},
+				follow: {default: false},
+				isOwned: {default: false}
+			}),
+			stuffedGames: lx.ModelCollection.create({
+				schema: [
+					'channelKey',
+					'type',
+					'name'
+				]
+			})
 		};
 
 		this.__initGui();
@@ -64,13 +64,19 @@ class Core {
 	}
 
 	getStuffedGame(channelKey) {
-		var arr = this.lists.stuffedGames.select({channelKey});
+		var arr = (new lx.CollectionSelector())
+			.setCollection(this.lists.stuffedGames)
+			.ifPropertiesAre({channelKey})
+			.getResult();
 		if (arr.len != 1) return null;
 		return arr[0];
 	}
 	
 	getPendingGame(channelKey) {
-		var arr = this.lists.pendingGames.select({channelKey});
+		var arr = (new lx.CollectionSelector())
+			.setCollection(this.lists.pendingGames)
+			.ifPropertiesAre({channelKey})
+			.getResult();
 		if (arr.len != 1) return null;
 		return arr[0];
 	}
