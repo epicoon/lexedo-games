@@ -1,3 +1,4 @@
+#lx:use lx.Color;
 #lx:use lx.Form;
 #lx:use lx.socket.WebSocketClient;
 

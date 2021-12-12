@@ -7,7 +7,7 @@
 class Environment #lx:namespace lexedo.games {
 	constructor(plugin, config) {
 		this._plugin = plugin;
-		this._eventCore = new lx.EventSupervisor();		
+		this._eventCore = new lx.EventDispatcher();
 
 		plugin.onDestruct(()=>this.destruct());
 

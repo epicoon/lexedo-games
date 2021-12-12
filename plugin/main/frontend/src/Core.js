@@ -23,14 +23,16 @@ class Core {
 				]
 			}),
 			pendingGames: lx.ModelCollection.create({
-				channelKey: {},
-				type: {},
-				name: {},
-				image: {},
-				gamersCurrent: {},
-				gamersRequired: {},
-				follow: {default: false},
-				isOwned: {default: false}
+				schema: {
+					channelKey: {},
+					type: {},
+					name: {},
+					image: {},
+					gamersCurrent: {},
+					gamersRequired: {},
+					follow: {default: false},
+					isOwned: {default: false}
+				}
 			}),
 			stuffedGames: lx.ModelCollection.create({
 				schema: [
@@ -68,8 +70,7 @@ class Core {
 			.setCollection(this.lists.stuffedGames)
 			.ifPropertiesAre({channelKey})
 			.getResult();
-		if (arr.len != 1) return null;
-		return arr[0];
+		return arr.at(0);
 	}
 	
 	getPendingGame(channelKey) {
@@ -77,8 +78,7 @@ class Core {
 			.setCollection(this.lists.pendingGames)
 			.ifPropertiesAre({channelKey})
 			.getResult();
-		if (arr.len != 1) return null;
-		return arr[0];
+		return arr.at(0);
 	}
 	
 	addPendingGame(config) {
