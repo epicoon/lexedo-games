@@ -28,6 +28,8 @@ const __WebSocketHandlers = {
 	onConnected: function() {
 	    console.log('ON CLIENT CONNECTED');
 		console.log(this);
+
+		this._core.checkReconnections();
 	},
 
 	onMessage: function(msg) {
@@ -38,9 +40,6 @@ const __WebSocketHandlers = {
 	onClientJoin: function(clientData) {
 		console.log('ON CLIENT JOIN');
 		console.log(clientData);
-
-		if (clientData.isLocal())
-			this._core.checkReconnections();
 	},
 
 	onClientDisconnected: function (clientData) {
