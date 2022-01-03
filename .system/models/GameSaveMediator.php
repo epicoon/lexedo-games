@@ -43,8 +43,10 @@ class GameSaveMediator extends Model
                 ],
                 'data' => [
                     'type' => 'string',
-                    'size' => 4000,
                     'required' => true,
+                    'details' => [
+                        'size' => 4000,
+                    ],
                 ],
             ],
             'relations' => [
