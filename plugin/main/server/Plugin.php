@@ -1,6 +1,6 @@
 <?php
 
-namespace lexedo\games\plugin\main;
+namespace lexedo\games\plugin\main\server;
 
 use lx\Plugin as lxPlugin;
 use lx\auth\RbacResourceInterface;

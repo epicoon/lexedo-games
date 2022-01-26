@@ -1,6 +1,6 @@
 <?php
 
-namespace lexedo\games\plugin\main\backend;
+namespace lexedo\games\plugin\main\server;
 
 use lx;
 use lexedo\games\GamesServer;

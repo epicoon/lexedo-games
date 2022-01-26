@@ -14,7 +14,7 @@ class SocketEventListener extends lx.socket.EventListener {
 
 	onNewUser(event) {
 		var data = event.getData();
-		Plugin.core.reset(data.games, data.currentGames);
+		this._plugin.core.reset(data.games, data.currentGames);
 	}
 
 	onGameCreated(event) {

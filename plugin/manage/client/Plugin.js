@@ -1,7 +1,4 @@
-/**
- * @const {lx.Plugin} Plugin
- * @const {lx.Snippet} Snippet
- */
+#lx:require -R src/;
 
 /*
 1. Процесс [[lexedo/games games_server]]
@@ -32,29 +29,28 @@
     - можно посмотреть все подключения юзера (таблица: подключение, ключ канала, имя игры, игра, дата подключения)
 */
 
-#lx:require -R src/;
+class Plugin extends lx.Plugin {
+    initCssAsset(css) {
+        css.inheritClass('lga-Box', 'AbstractBox');
+    }
+    
+    run() {
+        this.core = new lexedo.games.manage.Core(this);
+        this.core.run();
 
 
-Plugin.core = new lexedo.games.manage.Core(Plugin);
-Plugin.core.run();
+        // this.core.channels.add({
+        //     type: '__common__',
+        //     name: 'common'
+        // });
+        // this.core.channelInfo.set( this.core.channels.at(0) );
 
-
-
-
-
-
-// Plugin.core.channels.add({
-//     type: '__common__',
-//     name: 'common'
-// });
-// Plugin.core.channelInfo.set( Plugin.core.channels.at(0) );
-
-// Plugin.core.connections.add({
-//     userId: 1,
-//     userAuthValue: 'dfdf',
-//     key: 'dfwefwefwefwef',
-//     type: 'gamer',
-//     date: ''
-// });
-
-
+        // this.core.connections.add({
+        //     userId: 1,
+        //     userAuthValue: 'dfdf',
+        //     key: 'dfwefwefwefwef',
+        //     type: 'gamer',
+        //     date: ''
+        // });
+    }
+}

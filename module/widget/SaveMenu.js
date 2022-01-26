@@ -14,6 +14,10 @@ class SaveMenu extends lx.ActiveBox #lx:namespace lexedo.games {
         return config;
     }
 
+	static initCssAsset(css) {
+		css.inheritClass('lgames-Box', 'AbstractBox');
+	}
+	
     #lx:client clientBuild(config) {
     	super.clientBuild(config);
     	this.begin();
@@ -44,13 +48,13 @@ class SaveMenu extends lx.ActiveBox #lx:namespace lexedo.games {
     		items: this.gamesList,
     		itemBox: [lx.Box, {height:'60px', gridProportional: {indent:'10px'}}],
     		itemRender: (box, model)=>{
-    			let imgWrapper = new lx.Box({css:'lx-Box'});
+    			let imgWrapper = new lx.Box({css:'lgames-Box'});
     			let img = imgWrapper.add(lx.Image, {filename: model.image});
     			img.adapt();
 
-    			new lx.Box({field:'name', width:3, css:'lx-Box'});
-    			new lx.Box({field:'date', width:3, css:'lx-Box'});
-    			new lx.Box({field:'gamers', width:5, css:'lx-Box'});
+    			new lx.Box({field:'name', width:3, css:'lgames-Box'});
+    			new lx.Box({field:'date', width:3, css:'lgames-Box'});
+    			new lx.Box({field:'gamers', width:5, css:'lgames-Box'});
 
     			box.getChildren().forEach(c=>c.align(lx.CENTER, lx.MIDDLE));
     			box.style('cursor', 'pointer');
