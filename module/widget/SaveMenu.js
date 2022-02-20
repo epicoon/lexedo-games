@@ -38,10 +38,10 @@ class SaveMenu extends lx.ActiveBox #lx:namespace lexedo.games {
 		});
 		this.activeSave = null;
 
-    	content.filter.on('change', function(event, val) {
+    	content.filter.on('change', function(e) {
 
     		//TODO фильтровать список игр
-    		console.log('Filter has changed', val);
+    		console.log('Filter has changed', e.newValue);
     	});
 
     	content.list.matrix({
