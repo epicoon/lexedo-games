@@ -4,7 +4,8 @@
 
 #lx:require src/;
 
-class Environment #lx:namespace lexedo.games {
+#lx:namespace lexedo.games;
+class Environment {
 	constructor(plugin, config) {
 		this._plugin = plugin;
 		this._eventCore = new lx.EventDispatcher();

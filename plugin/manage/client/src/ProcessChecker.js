@@ -1,4 +1,5 @@
-class ProcessChecker #lx:namespace lexedo.games.manage {
+#lx:namespace lexedo.games.manage;
+class ProcessChecker {
     constructor(core) {
         this.core = core;
         this.interval = 2000;

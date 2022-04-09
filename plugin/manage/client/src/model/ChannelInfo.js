@@ -1,4 +1,5 @@
-class ChannelInfo extends lx.BindableModel #lx:namespace lexedo.games.manage {
+#lx:namespace lexedo.games.manage;
+class ChannelInfo extends lx.BindableModel {
     #lx:schema
         date,
         type,

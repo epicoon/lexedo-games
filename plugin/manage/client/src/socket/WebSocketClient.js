@@ -1,4 +1,5 @@
-class WebSocketClient extends lx.socket.WebSocketClient #lx:namespace lexedo.games.manage {
+#lx:namespace lexedo.games.manage;
+class WebSocketClient extends lx.socket.WebSocketClient {
 	constructor(core, connectData) {
 		super({
 			protocol: connectData.protocol,

@@ -1,4 +1,5 @@
-class ConnectionEventListener #lx:namespace lexedo.games {
+#lx:namespace lexedo.games;
+class ConnectionEventListener {
 	constructor(env) {
 		this._environment = env;
 	}

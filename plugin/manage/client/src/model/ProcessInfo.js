@@ -1,4 +1,5 @@
-class ProcessInfo extends lx.BindableModel #lx:namespace lexedo.games.manage {
+#lx:namespace lexedo.games.manage;
+class ProcessInfo extends lx.BindableModel {
     #lx:const
         ACTIVE = lx\process\ProcessConst::PROCESS_STATUS_ACTIVE,
         CLOSED = lx\process\ProcessConst::PROCESS_STATUS_CLOSED,

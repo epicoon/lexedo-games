@@ -2,7 +2,8 @@
 #lx:use lx.Form;
 #lx:use lx.socket.WebSocketClient;
 
-class Core #lx:namespace lexedo.games.manage {
+#lx:namespace lexedo.games.manage;
+class Core {
 	constructor(plugin) {
 		this.plugin = plugin;
 		this.processChecker = new lexedo.games.manage.ProcessChecker(this);

@@ -1,4 +1,5 @@
-class Gamer extends lx.BindableModel #lx:namespace lexedo.games {
+#lx:namespace lexedo.games;
+class Gamer extends lx.BindableModel {
 	constructor(game, id, channelMate, data = {}) {
 		super();
 

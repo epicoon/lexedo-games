@@ -16,7 +16,6 @@
         "lx/model":"dev-master",
         "lx/process":"dev-master",
         "lx/socket":"dev-master",
-        "lx/tools":"dev-master",
         "lx/template":"dev-master"
     },
     "repositories":[
