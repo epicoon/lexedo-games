@@ -124,7 +124,7 @@ class SaveMenu extends lx.ActiveBox {
     }
 
 	#lx:tpl-method renderContent() {
-		<lx.Box:._vol>
+		<lx.Box:._spread>
 			.streamProportional(indent:'10px')
 			<lx.Box>
 				.gridProportional(stepX:'10px')

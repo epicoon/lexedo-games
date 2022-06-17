@@ -104,12 +104,12 @@ function __initGui(self) {
 }
 
 #lx:tpl-function __render(color, channelColor) {
-	<lx.Box:@main._vol>
+	<lx.Box:@main._spread>
 		.gridProportional()
 		<lx.Box:@processBox>(geom:[0, 0, 12, 2]).fill(color)
 			.gridProportional(indent:'10px', cols:13)
 			<lx.Box:.lga-Box>(width:3)
-				<lx.Box:@processLabel._vol>(text:'lexedo/games - games_server').align(lx.CENTER, lx.MIDDLE)
+				<lx.Box:@processLabel._spread>(text:'lexedo/games - games_server').align(lx.CENTER, lx.MIDDLE)
 				<lx.Box:@processRefreshIndicator>(geom: ['5px', '5px', '5px', '5px'])
 			<lx.Box:{f}status.lga-Box>(width:2).align(lx.CENTER, lx.MIDDLE)
 			<lx.Box:{f}pid.lga-Box>(width:2).align(lx.CENTER, lx.MIDDLE)
@@ -121,7 +121,7 @@ function __initGui(self) {
 		<lx.Box>(geom:[0, 2, 4, 1], text:'Channels').align(lx.CENTER, lx.MIDDLE).fill(color)
 		<lx.Box>(geom:[4, 2, 8, 1], text:'Channel info').align(lx.CENTER, lx.MIDDLE).fill(color)
 		<lx.Box:>(geom:[0, 3, 4, 25])
-			<lx.Box:@channelsList._vol>.stream()
+			<lx.Box:@channelsList._spread>.stream()
 		<lx.Box:@channelInfoBox>(geom:[4, 3, 8, 25]).fill(channelColor)
 			.gridProportional(indent:'10px')
 			<lx.Box:.lga-Box>(geom:[0, 0, 2, 3]).align(lx.CENTER, lx.MIDDLE)
