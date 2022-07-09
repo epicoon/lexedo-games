@@ -106,44 +106,44 @@ function __initGui(self) {
 #lx:tpl-function __render(color, channelColor) {
 	<lx.Box:@main._spread>
 		.gridProportional()
-		<lx.Box:@processBox>(geom:[0, 0, 12, 2]).fill(color)
+		<lx.Box:@processBox (geom:[0, 0, 12, 2])>.fill(color)
 			.gridProportional(indent:'10px', cols:13)
-			<lx.Box:.lga-Box>(width:3)
-				<lx.Box:@processLabel._spread>(text:'lexedo/games - games_server').align(lx.CENTER, lx.MIDDLE)
-				<lx.Box:@processRefreshIndicator>(geom: ['5px', '5px', '5px', '5px'])
-			<lx.Box:{f}status.lga-Box>(width:2).align(lx.CENTER, lx.MIDDLE)
-			<lx.Box:{f}pid.lga-Box>(width:2).align(lx.CENTER, lx.MIDDLE)
-			<lx.Box:{f}date.lga-Box>(width:2).align(lx.CENTER, lx.MIDDLE)
-			<lx.Button:@processErrors>(text:'errors')
-			<lx.Button:@processLog>(text:'log')
-			<lx.Button:@processRestart>(text:'restart')
-			<lx.Button:@processStor>(text:'stop')
-		<lx.Box>(geom:[0, 2, 4, 1], text:'Channels').align(lx.CENTER, lx.MIDDLE).fill(color)
-		<lx.Box>(geom:[4, 2, 8, 1], text:'Channel info').align(lx.CENTER, lx.MIDDLE).fill(color)
-		<lx.Box:>(geom:[0, 3, 4, 25])
+			<lx.Box:.lga-Box (width:3)>
+				<lx.Box:@processLabel._spread (text:'lexedo/games - games_server')>.align(lx.CENTER, lx.MIDDLE)
+				<lx.Box:@processRefreshIndicator (geom: ['5px', '5px', '5px', '5px'])>
+			<lx.Box:[f]status.lga-Box (width:2)>.align(lx.CENTER, lx.MIDDLE)
+			<lx.Box:[f]pid.lga-Box (width:2)>.align(lx.CENTER, lx.MIDDLE)
+			<lx.Box:[f]date.lga-Box (width:2)>.align(lx.CENTER, lx.MIDDLE)
+			<lx.Button:@processErrors (text:'errors')>
+			<lx.Button:@processLog (text:'log')>
+			<lx.Button:@processRestart (text:'restart')>
+			<lx.Button:@processStor (text:'stop')>
+		<lx.Box (geom:[0, 2, 4, 1], text:'Channels')>.align(lx.CENTER, lx.MIDDLE).fill(color)
+		<lx.Box (geom:[4, 2, 8, 1], text:'Channel info')>.align(lx.CENTER, lx.MIDDLE).fill(color)
+		<lx.Box (geom:[0, 3, 4, 25])>
 			<lx.Box:@channelsList._spread>.stream()
-		<lx.Box:@channelInfoBox>(geom:[4, 3, 8, 25]).fill(channelColor)
+		<lx.Box:@channelInfoBox (geom:[4, 3, 8, 25])>.fill(channelColor)
 			.gridProportional(indent:'10px')
-			<lx.Box:.lga-Box>(geom:[0, 0, 2, 3]).align(lx.CENTER, lx.MIDDLE)
-			<lx.Box:.lga-Box>(geom:[2, 0, 5, 1]).align(lx.CENTER, lx.MIDDLE)
-				<lx.Box>(size:['auto','auto'], text:'Type: ')
-				<lx.Box:{f}type>(size:['auto','auto'])
-			<lx.Box:.lga-Box>(geom:[2, 1, 5, 1]).align(lx.CENTER, lx.MIDDLE)
-				<lx.Box>(size:['auto','auto'], text:'Name: ')
-				<lx.Box:{f}name>(size:['auto','auto'])
-			<lx.Box:.lga-Box>(geom:[2, 2, 5, 1]).align(lx.CENTER, lx.MIDDLE)
-				<lx.Box>(size:['auto','auto'], text:'Key: ')
-				<lx.Box:{f}key>(size:['auto','auto'])
-			<lx.Box:.lga-Box>(geom:[7, 0, 5, 1]).align(lx.CENTER, lx.MIDDLE)
-				<lx.Box>(size:['auto','auto'], text:'Date: ')
-				<lx.Box:{f}date>(size:['auto','auto'])
-			<lx.Box:.lga-Box>(geom:[0, 3, 12, 9])
-				<lx.Box>(geom:[0,0,100,'60px'])
+			<lx.Box:.lga-Box (geom:[0, 0, 2, 3])>.align(lx.CENTER, lx.MIDDLE)
+			<lx.Box:.lga-Box (geom:[2, 0, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
+				<lx.Box (size:['auto','auto'], text:'Type: ')>
+				<lx.Box:[f]type (size:['auto','auto'])>
+			<lx.Box:.lga-Box (geom:[2, 1, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
+				<lx.Box (size:['auto','auto'], text:'Name: ')>
+				<lx.Box:[f]name (size:['auto','auto'])>
+			<lx.Box:.lga-Box (geom:[2, 2, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
+				<lx.Box (size:['auto','auto'], text:'Key: ')>
+				<lx.Box:[f]key (size:['auto','auto'])>
+			<lx.Box:.lga-Box (geom:[7, 0, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
+				<lx.Box (size:['auto','auto'], text:'Date: ')>
+				<lx.Box:[f]date (size:['auto','auto'])>
+			<lx.Box:.lga-Box (geom:[0, 3, 12, 9])>
+				<lx.Box (geom:[0,0,100,'60px'])>
 					.grid(indent:'10px',cols:20)
-					<lx.Box>(text:'id').align(lx.CENTER, lx.MIDDLE)
-					<lx.Box>(text:'auth value', width:5).align(lx.CENTER, lx.MIDDLE)
-					<lx.Box>(text:'connection key', width:8).align(lx.CENTER, lx.MIDDLE)
-					<lx.Box>(text:'type', width:3).align(lx.CENTER, lx.MIDDLE)
-					<lx.Box>(text:'date', width:3).align(lx.CENTER, lx.MIDDLE)
-				<lx.Box:@connectionsList>(top:'60px').stream()
+					<lx.Box (text:'id')>.align(lx.CENTER, lx.MIDDLE)
+					<lx.Box (text:'auth value', width:5)>.align(lx.CENTER, lx.MIDDLE)
+					<lx.Box (text:'connection key', width:8)>.align(lx.CENTER, lx.MIDDLE)
+					<lx.Box (text:'type', width:3)>.align(lx.CENTER, lx.MIDDLE)
+					<lx.Box (text:'date', width:3)>.align(lx.CENTER, lx.MIDDLE)
+				<lx.Box:@connectionsList (top:'60px')>.stream()
 }

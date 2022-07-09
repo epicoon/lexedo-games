@@ -128,15 +128,17 @@ class SaveMenu extends lx.ActiveBox {
 			.streamProportional(indent:'10px')
 			<lx.Box>
 				.gridProportional(stepX:'10px')
-				<lx.Box>(width:3, text:#lx:i18n(gameName)).align(lx.CENTER, lx.MIDDLE)
-				<lx.Input:@nameInput>(width:6)
-				<lx.Button:@actionBut>(width:3)
-			<lx.RadioGroup:@filter>(cols:3, height:'auto', labels:[
-				#lx:i18n(yourSaves),
-				#lx:i18n(savesWithYou),
-				#lx:i18n(allSaves)
-			])
-			<lx.Box>(height:8).fill('white')
+				<lx.Box (width:3, text:#lx:i18n(gameName))>.align(lx.CENTER, lx.MIDDLE)
+				<lx.Input:@nameInput (width:6)>
+				<lx.Button:@actionBut (width:3)>
+			<lx.RadioGroup:@filter
+				(cols:3, height:'auto', labels:[
+					#lx:i18n(yourSaves),
+					#lx:i18n(savesWithYou),
+					#lx:i18n(allSaves)
+				])
+			>
+			<lx.Box (height:8)>.fill('white')
 				<lx.Box:@list>
 					.stream(direction:lx.VERTICAL, indent:'10px')
     }
