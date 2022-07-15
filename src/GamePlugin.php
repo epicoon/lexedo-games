@@ -14,6 +14,8 @@ abstract class GamePlugin extends Plugin
 
     protected function init(): void
     {
+        parent::init();
+
         $options = $this->getConfig('gameOptions');
         $validator = new GameOptionsValidator();
         if (!$validator->validate($options)) {

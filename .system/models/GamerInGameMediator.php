@@ -6,9 +6,6 @@ use lx\model\Model;
 use lexedo\games\models\GameSave;
 
 /**
- * Class GamerInGameMediator
- * @package lexedo\games\sys\models
- *
  * @property string $userAuthValue
  * @property string $gamerId
  * @property bool $isHolder

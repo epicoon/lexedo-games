@@ -8,9 +8,6 @@ use lx\model\modelTools\RelatedModelsCollection;
 use lexedo\games\models\GamerInGame;
 
 /**
- * Class GameSaveMediator
- * @package lexedo\games\sys\models
- *
  * @property string $gameType
  * @property string $name
  * @property DateTimeValue $date

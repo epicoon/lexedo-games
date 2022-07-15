@@ -17,8 +17,10 @@ abstract class GameChannel extends Channel
     protected ?AbstractGame $game = null;
     private GameChannelUserHolder $users;
 
-    public function init(): void
+    protected function init(): void
     {
+        parent::init();
+
         $this->users = new GameChannelUserHolder();
         if ($this->game) {
             $this->game->setChannel($this);
