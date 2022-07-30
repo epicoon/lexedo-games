@@ -5,11 +5,11 @@ namespace lexedo\games\plugin\main\server;
 use lx;
 use lexedo\games\GamesServer;
 use lx\ResponseCodeEnum;
-use lx\ResponseInterface;
+use lx\HttpResponseInterface;
 
 class Respondent extends \lx\Respondent
 {
-    public function getConnectData(): ResponseInterface
+    public function getConnectData(): HttpResponseInterface
     {
         $processes = $this->getService()->getConfig('processes');
         $serverConfig = $processes['games_server']['config'];
@@ -20,7 +20,7 @@ class Respondent extends \lx\Respondent
         ]);
     }
 
-    public function loadGamePlugin(string $gameType): ResponseInterface
+    public function loadGamePlugin(string $gameType): HttpResponseInterface
     {
         $plugin = lx::$app->getService('lexedo/games')->gamesProvider->getGamePlugin($gameType);
         if (!$plugin) {

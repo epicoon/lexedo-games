@@ -7,11 +7,11 @@ use lexedo\games\GamesServer;
 use lx\process\ProcessConst;
 use lx\process\ProcessSupervisor;
 use lx\Respondent as lxRespondent;
-use lx\ResponseInterface;
+use lx\HttpResponseInterface;
 
 class Respondent extends lxRespondent
 {
-    public function checkProcess(): ResponseInterface
+    public function checkProcess(): HttpResponseInterface
     {
         /** @var ProcessSupervisor $processSupervisor */
         $processSupervisor = lx::$app->processSupervisor;
