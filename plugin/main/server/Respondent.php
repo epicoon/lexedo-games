@@ -4,7 +4,7 @@ namespace lexedo\games\plugin\main\server;
 
 use lx;
 use lexedo\games\GamesServer;
-use lx\ResponseCodeEnum;
+use lx\HttpResponse;
 use lx\HttpResponseInterface;
 
 class Respondent extends \lx\Respondent
@@ -26,7 +26,7 @@ class Respondent extends \lx\Respondent
         if (!$plugin) {
             return $this->prepareErrorResponse(
                 'Game plugin not found',
-                ResponseCodeEnum::NOT_FOUND,
+                HttpResponse::NOT_FOUND,
             );
         }
 
