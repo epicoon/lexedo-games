@@ -30,7 +30,7 @@
 */
 
 class Plugin extends lx.Plugin {
-    initCssAsset(css) {
+    initCss(css) {
         css.inheritClass('lga-Box', 'AbstractBox');
     }
     

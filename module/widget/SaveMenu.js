@@ -15,7 +15,7 @@ class SaveMenu extends lx.ActiveBox {
         return config;
     }
 
-	static initCssAsset(css) {
+	static initCss(css) {
 		css.inheritClass('lgames-Box', 'AbstractBox');
 	}
 	

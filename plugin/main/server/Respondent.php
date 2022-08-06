@@ -30,6 +30,6 @@ class Respondent extends \lx\Respondent
             );
         }
 
-        return $plugin->run();
+        return $plugin->render();
     }
 }
