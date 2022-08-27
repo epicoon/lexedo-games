@@ -11,12 +11,22 @@ class SaveMenu extends lx.ActiveBox {
     modifyConfigBeforeApply(config) {
     	config.geom = config.geom || [10, 15, 80, 60];
     	config.header = config.header || #lx:i18n(saveMenu);
-    	config.closeButton = config.closeButton ?? true;
+    	config.closeButton = config.closeButton ?? {
+			click: function() {
+				this.getActiveBox().del();
+			}
+		};
         return config;
     }
 
 	static initCss(css) {
 		css.inheritClass('lgames-Box', 'AbstractBox');
+		css.addClass('lgames-saved-games-list', {
+			backgroundColor: css.preset.bodyBackgroundColor,
+		});
+		css.addClass('lgames-save-game-checked', {
+			backgroundColor: css.preset.checkedMainColor,
+		});
 	}
 	
     #lx:client clientBuild(config) {
@@ -25,6 +35,8 @@ class SaveMenu extends lx.ActiveBox {
     	let content = this.renderContent();
     	this.end();
 
+		this._core = null;
+		this._env = null;
     	this.nameInput = content.nameInput;
 
 		this.gamesList = lx.ModelCollection.create({
@@ -61,15 +73,20 @@ class SaveMenu extends lx.ActiveBox {
     			box.style('cursor', 'pointer');
     			box.click(()=>__setActiveSave(this, model));
     			box.setField('isActive', function(value) {
-					this.fill(value ? 'lightgreen' : ''); 
+					this.toggleClassOnCondition(value, 'lgames-save-game-checked');
     			});
     		}
     	});
     }
 
     #lx:client setEnvironment(env) {
-    	let actionBut = this->>actionBut;
-    	actionBut.text(#lx:i18n(save))
+		this._env = env;
+		this._env.commonSocketRequest('getSavedGames', {
+			gameType: this._env.type
+		}).then(result=>this.gamesList.reset(result));
+
+    	const actionBut = this->>actionBut;
+    	actionBut.text(#lx:i18n(save));
     	actionBut.click(()=>{
     		let gameName = this.getGameName();
     		if (gameName == '') {
@@ -77,24 +94,20 @@ class SaveMenu extends lx.ActiveBox {
     			return;
     		}
 
-	    	this._env.socketRequest('saveGame', {gameName}).then((res)=>{
-	    		lx.Tost('Game has saved');
+	    	this._env.socketRequest('saveGame', {gameName}).then(res=>{
+	    		lx.Tost(#lx:i18n(gameSaved));
 	    		__unsetActiveSave(this);
 	    		//TODO this.gamesList.reset()
 	    	});
     	});
-
-    	this._env = env;
-    	this._env.commonSocketRequest('getSavedGames', {
-    		gameType: this._env.type
-    	}).then(result=>{
-    		this.gamesList.reset(result);
-    	});
     }
 
     #lx:client setCore(core) {
+		this._core = core;
+		this._core.socket.request('getSavedGames').then(result=>this.gamesList.reset(result));
+
     	let actionBut = this->>actionBut;
-    	actionBut.text(#lx:i18n(load))
+    	actionBut.text(#lx:i18n(load));
     	actionBut.click(()=>{
     		let gameName = this.getGameName();
     		if (gameName == '' || !this.activeSave) {
@@ -111,11 +124,6 @@ class SaveMenu extends lx.ActiveBox {
 				name: this.activeSave.name
 			});
 			this.del();
-    	});
-
-    	this._core = core;
-    	this._core.socket.request('getSavedGames').then(result=>{
-    		this.gamesList.reset(result);
     	});
     }
 
@@ -138,7 +146,7 @@ class SaveMenu extends lx.ActiveBox {
 					#lx:i18n(allSaves)
 				])
 			>
-			<lx.Box (height:8)>.fill('white')
+			<lx.Box:.lgames-saved-games-list (height:8)>
 				<lx.Box:@list>
 					.stream(direction:lx.VERTICAL, indent:'10px')
     }
