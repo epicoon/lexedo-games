@@ -32,7 +32,7 @@ class ProcessChecker {
         this.core.boxes.processRefreshIndicator.fill('green');
         ^Respondent.checkProcess().then(res=>{
             if (!res.success) {
-                lx.Tost.warning(res.data);
+                lx.tostWarning(res.data);
                 return;
             }
 

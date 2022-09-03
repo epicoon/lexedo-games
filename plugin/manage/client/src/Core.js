@@ -43,8 +43,8 @@ class Core {
         this.processInfo.set(data.process);
         if (this.processInfo.isActive()) {
 			this.socket = new lexedo.games.manage.WebSocketClient(this, data.connectionData);
-			this.socket.connect({login: lx.User.login}, {
-				auth: lx.Storage.get('lxauthtoken'),
+			this.socket.connect({login: lx.app.user.login}, {
+				auth: lx.app.storage.get('lxauthtoken'),
 				cookie: document.cookie
 			});
         }

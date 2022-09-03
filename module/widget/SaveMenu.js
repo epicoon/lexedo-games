@@ -90,12 +90,12 @@ class SaveMenu extends lx.ActiveBox {
     	actionBut.click(()=>{
     		let gameName = this.getGameName();
     		if (gameName == '') {
-    			lx.Tost.warning(#lx:i18n(needGameName));
+    			lx.tostWarning(#lx:i18n(needGameName));
     			return;
     		}
 
 	    	this._env.socketRequest('saveGame', {gameName}).then(res=>{
-	    		lx.Tost(#lx:i18n(gameSaved));
+	    		lx.tostMessage(#lx:i18n(gameSaved));
 	    		__unsetActiveSave(this);
 	    		//TODO this.gamesList.reset()
 	    	});
@@ -111,7 +111,7 @@ class SaveMenu extends lx.ActiveBox {
     	actionBut.click(()=>{
     		let gameName = this.getGameName();
     		if (gameName == '' || !this.activeSave) {
-    			lx.Tost.warning(#lx:i18n(needGameName));
+    			lx.tostWarning(#lx:i18n(needGameName));
     			return;
     		}
 

@@ -9,7 +9,7 @@ class SocketEventListener extends lx.socket.EventListener {
 	}
 
 	onError(event) {
-		lx.Tost.error(event.getData().message);
+		lx.tostError(event.getData().message);
 	}
 
 	onNewUser(event) {
@@ -48,7 +48,7 @@ class SocketEventListener extends lx.socket.EventListener {
 		var data = event.getData();
 		var game = this._core.getPendingGame(data.channel);
 		if (!game) {
-			lx.Tost.error('Game state changing error');
+			lx.tostError('Game state changing error');
 			return;
 		}
 
@@ -64,7 +64,7 @@ class SocketEventListener extends lx.socket.EventListener {
 
 		var game = this._core.getPendingGame(data.channelKey);
 		if (!game) {
-			lx.Tost.error('Game state changing error');
+			lx.tostError('Game state changing error');
 			return;
 		}
 
@@ -82,7 +82,7 @@ class SocketEventListener extends lx.socket.EventListener {
 			url: this._core.connectData.url,
 			channelKey: eventData.channelKey,
 			token: eventData.token,
-			userChannelData: {login: lx.User.login}
+			userChannelData: {login: lx.app.user.login}
 		};
 		if (this._core.__inConnecting.password != '')
 			connectData.password = this._core.__inConnecting.password;

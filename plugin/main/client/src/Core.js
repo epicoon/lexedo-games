@@ -58,8 +58,8 @@ class Core {
 			this.socketEventListener = new SocketEventListener(this.plugin);
 			this.socket = new WebSocketClient(this.plugin);
 			
-			this.socket.connect({login: lx.User.login}, {
-				auth: lx.Storage.get('lxauthtoken'),
+			this.socket.connect({login: lx.app.user.login}, {
+				auth: lx.app.storage.get('lxauthtoken'),
 				cookie: document.cookie
 			});
 		});
@@ -91,7 +91,7 @@ class Core {
 
 	checkReconnections() {
 		this.socket.request('checkReconnections').then(stuffedGamesList=>{
-			var map = lx.Storage.get('lexedogames') || {};
+			var map = lx.app.storage.get('lexedogames') || {};
 			if (!map.channels) return;
 
 			this.lists.stuffedGames.reset(stuffedGamesList);
@@ -107,7 +107,7 @@ class Core {
 
 			lx.socket.WebSocketClient.filterReconnectionsData(filter);
 			map.channels = {};
-			lx.Storage.set('lexedogames', map);
+			lx.app.storage.set('lexedogames', map);
 
 			for (let i in reconnections) {
 				let reconnection = reconnections[i];
@@ -130,13 +130,13 @@ class Core {
 			game.box = box;
 
 			if (connectData) {
-				var map = lx.Storage.get('lexedogames') || {};
+				var map = lx.app.storage.get('lexedogames') || {};
 				if (!map.channels) map.channels = {};
 				map.channels[connectData.channelKey] = connectData;  //port protocol url channelKey
-				lx.Storage.set('lexedogames', map);
+				lx.app.storage.set('lexedogames', map);
 			}
 		}).catch(error=>{
-			lx.Tost.error(error.error_details[0]);
+			lx.tostError(error.error_details[0]);
 		});
 	}
 

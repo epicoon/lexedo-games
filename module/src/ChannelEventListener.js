@@ -10,7 +10,7 @@ class ChannelEventListener extends lx.socket.EventListener {
 	}
 
 	onError(event) {
-		lx.Tost.error(event.getData().message);
+		lx.tostError(event.getData().message);
 	}
 
 	onNewGamer(event) {
