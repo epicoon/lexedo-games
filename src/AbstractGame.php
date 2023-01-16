@@ -13,12 +13,13 @@ abstract class AbstractGame
     const GAMER_CLASS = 'gamer';
     const CONDITION_CLASS = 'condition';
 
-    private GameChannel $channel;
+    private Plugin $_plugin;
+    private GameChannel $_channel;
+
     private bool $isPending;
     /** @var array<AbstractGamer> */
     private array $gamers;
     private array $userToGamerMap;
-    private Plugin $plugin;
 
     protected bool $isActive;
     protected bool $isWaitingForRevenge;
@@ -38,7 +39,7 @@ abstract class AbstractGame
     abstract public function fillEventBeginGame(ChannelEvent $event): void;
     abstract public function getGameDataForGamer(?AbstractGamer $gamer = null): array;
 
-    public function getBasicCondition(): AbstractGameCondition
+    public function getConditionBlank(): AbstractGameCondition
     {
         $class = $this->getDependedClass(self::CONDITION_CLASS);
         return new $class($this);
@@ -52,19 +53,33 @@ abstract class AbstractGame
         $this->revengeApprovements = $condition->getRevengeApprovements();
     }
 
+    public function __get(string $name)
+    {
+        switch ($name) {
+            case 'plugin': return $this->getPlugin();
+            case 'channel': return $this->getChannel();
+        }
+        return null;
+    }
+
     public function setChannel(GameChannel $channel): void
     {
-        $this->channel = $channel;
+        $this->_channel = $channel;
     }
 
     public function getChannel(): GameChannel
     {
-        return $this->channel;
+        return $this->_channel;
+    }
+
+    public function setPlugin(Plugin $plugin): void
+    {
+        $this->_plugin = $plugin;
     }
 
     public function getPlugin(): Plugin
     {
-        return $this->plugin;
+        return $this->_plugin;
     }
     
     public function getType(): string

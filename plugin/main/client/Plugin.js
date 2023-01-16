@@ -1,10 +1,9 @@
-#lx:use lx.socket.WebSocketClient;
-
-#lx:require src/;
+#lx:client {
+    #lx:use lx.socket.WebSocketClient;
+}
 
 class Plugin extends lx.Plugin {
     run() {
-        this.core = new Core(this);
-        this.core.run();
+
     }
 }

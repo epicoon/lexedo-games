@@ -11,7 +11,7 @@ class SaveMenu extends lx.ActiveBox {
     modifyConfigBeforeApply(config) {
     	config.geom = config.geom || [10, 15, 80, 60];
     	config.header = config.header || #lx:i18n(saveMenu);
-    	config.closeButton = config.closeButton ?? {
+    	config.closeButton = config.closeButton || {
 			click: function() {
 				this.getActiveBox().del();
 			}

@@ -111,9 +111,9 @@ function __initGui(self) {
 			<lx.Box:.lga-Box (width:3)>
 				<lx.Box:@processLabel._spread (text:'lexedo/games - games_server')>.align(lx.CENTER, lx.MIDDLE)
 				<lx.Box:@processRefreshIndicator (geom: ['5px', '5px', '5px', '5px'])>
-			<lx.Box:[f]status.lga-Box (width:2)>.align(lx.CENTER, lx.MIDDLE)
-			<lx.Box:[f]pid.lga-Box (width:2)>.align(lx.CENTER, lx.MIDDLE)
-			<lx.Box:[f]date.lga-Box (width:2)>.align(lx.CENTER, lx.MIDDLE)
+			<lx.Box:[f:status].lga-Box (width:2)>.align(lx.CENTER, lx.MIDDLE)
+			<lx.Box:[f:pid].lga-Box (width:2)>.align(lx.CENTER, lx.MIDDLE)
+			<lx.Box:[f:date].lga-Box (width:2)>.align(lx.CENTER, lx.MIDDLE)
 			<lx.Button:@processErrors (text:'errors')>
 			<lx.Button:@processLog (text:'log')>
 			<lx.Button:@processRestart (text:'restart')>
@@ -127,16 +127,16 @@ function __initGui(self) {
 			<lx.Box:.lga-Box (geom:[0, 0, 2, 3])>.align(lx.CENTER, lx.MIDDLE)
 			<lx.Box:.lga-Box (geom:[2, 0, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
 				<lx.Box (size:['auto','auto'], text:'Type: ')>
-				<lx.Box:[f]type (size:['auto','auto'])>
+				<lx.Box:[f:type] (size:['auto','auto'])>
 			<lx.Box:.lga-Box (geom:[2, 1, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
 				<lx.Box (size:['auto','auto'], text:'Name: ')>
-				<lx.Box:[f]name (size:['auto','auto'])>
+				<lx.Box:[f:name] (size:['auto','auto'])>
 			<lx.Box:.lga-Box (geom:[2, 2, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
 				<lx.Box (size:['auto','auto'], text:'Key: ')>
-				<lx.Box:[f]key (size:['auto','auto'])>
+				<lx.Box:[f:key] (size:['auto','auto'])>
 			<lx.Box:.lga-Box (geom:[7, 0, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
 				<lx.Box (size:['auto','auto'], text:'Date: ')>
-				<lx.Box:[f]date (size:['auto','auto'])>
+				<lx.Box:[f:date] (size:['auto','auto'])>
 			<lx.Box:.lga-Box (geom:[0, 3, 12, 9])>
 				<lx.Box (geom:[0,0,100,'60px'])>
 					.grid(indent:'10px',cols:20)

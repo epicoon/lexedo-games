@@ -9,10 +9,10 @@ class Gamer extends lx.BindableModel {
 		this._name = channelMate.login;
 		this._isLocal = channelMate.isLocal();
 
-		this.init(data);
+		this.construct(data);
 	}
 
-	init(data) {
+	construct(data) {
 		// pass
 	}
 

@@ -9,6 +9,10 @@ class ChannelEventListener extends lx.socket.EventListener {
 		return this._environment;
 	}
 
+	getGame() {
+		return this.getEnvironment().getGame();
+	}
+
 	onError(event) {
 		lx.tostError(event.getData().message);
 	}

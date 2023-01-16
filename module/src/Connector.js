@@ -23,33 +23,57 @@ class Connector {
 	run() {
 		if (lx.isString(this._gameConfig)) {
 			this.initGame(this._gameConfig);
-		} else if (lx.isObject(this._gameConfig)) {
-			var className = this._gameConfig.class;
-			if (this.isOnline() && this._gameConfig.online) {
-				if (this._gameConfig.online.class)
-					this._gameConfig.class = this._gameConfig.online.class;
-				if (this._gameConfig.online.channelEventListener)
-					this._gameConfig.channelEventListener = this._gameConfig.online.channelEventListener;
-				if (this._gameConfig.online.connectionEventListener)
-					this._gameConfig.connectionEventListener = this._gameConfig.online.connectionEventListener;
-				this._plugin.useModule(
-					this._gameConfig.online.module,
-					()=>this.initGame(className)
-				);
-			} else if (!this.isOnline() && this._gameConfig.local) {
-				if (this._gameConfig.local.class)
-					this._gameConfig.class = this._gameConfig.local.class;
-				this._plugin.useModule(
-					this._gameConfig.local.module,
-					()=>this.initGame(className)
-				);
-			} else {
-				this.initGame(className);
-			}
-		} else {
+			return;
+		}
+
+		if (!lx.isObject(this._gameConfig)) {
 			console.error('Wrong game configuration');
 			return;
 		}
+
+		let className = this._gameConfig.class || null;
+
+		if (this.isOnline() && this._gameConfig.online) {
+			if (this._gameConfig.online.class) {
+				this._gameConfig.class = this._gameConfig.online.class;
+				className = this._gameConfig.class;
+			}
+
+			if (this._gameConfig.online.module) {
+				this._plugin.useModule(
+					this._gameConfig.online.module,
+					()=>{
+						let constructor = lx.getClassConstructor(className);
+						this._gameConfig.channelEventListener = constructor.getChannelEventListenerClass();
+						this._gameConfig.connectionEventListener = constructor.getConnectionEventListenerClass();
+						this.initGame(className);
+					}
+				);
+				return;
+			}
+		}
+
+		if (!this.isOnline() && this._gameConfig.local) {
+			if (this._gameConfig.local.class) {
+				this._gameConfig.class = this._gameConfig.local.class;
+				className = this._gameConfig.class;
+			}
+
+			this._plugin.useModule(
+				this._gameConfig.local.module,
+				()=>this.initGame(className)
+			);
+			return;
+		}
+
+		let constructor = lx.getClassConstructor(className);
+		if (constructor) {
+			if (constructor.getChannelEventListenerClass)
+				this._gameConfig.channelEventListener = constructor.getChannelEventListenerClass();
+			if (constructor.getConnectionEventListenerClass)
+				this._gameConfig.connectionEventListener = constructor.getConnectionEventListenerClass();
+		}
+		this.initGame(className);
 	}
 
 	connect() {

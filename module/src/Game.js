@@ -9,8 +9,16 @@ class Game {
 		this.init();
 	}
 
-	getGamerClass() {
+	static getGamerClass() {
 		return lexedo.games.Gamer;
+	}
+
+	static getChannelEventListenerClass() {
+		return lexedo.games.ChannelEventListener;
+	}
+
+	static getConnectionEventListenerClass() {
+		return lexedo.games.ConnectionEventListener;
 	}
 
 	init() {
@@ -34,7 +42,7 @@ class Game {
 	}
 
 	onChangeGamersList(list) {
-		let gamerClass = this.getGamerClass();
+		let gamerClass = self::getGamerClass();
 		for (let i=0; i<list.len; i++) {
 			let pare = list[i];
 			let mate = this.getEnvironment().getSocket().getChannelMate(pare.connectionId);
@@ -69,6 +77,10 @@ class Game {
 
 	getPlugin() {
 		return this._plugin;
+	}
+
+	getCore() {
+		return this._plugin.core;
 	}
 
 	getEnvironment() {

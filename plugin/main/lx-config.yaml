@@ -1,6 +1,5 @@
+# --- Server ---
 server: lexedo\games\plugin\main\server\Plugin
-client: client/Plugin.js
-
 respondents:
   Respondent: Respondent
 
@@ -14,3 +13,11 @@ images: @web/images/games
 
 cacheType: smart
 #cacheType: build
+#cacheType: none
+
+# --- Client ---
+client: client/Plugin.js
+requireForClient:
+  - '-R client/src/'
+
+core: lxGames.Core

@@ -14,6 +14,7 @@ use lx\socket\Connection;
 abstract class GameChannel extends Channel
 {
     protected bool $isStuffed = false;
+    protected ?GamePlugin $plugin = null;
     protected ?AbstractGame $game = null;
     private GameChannelUserHolder $users;
 
@@ -23,6 +24,7 @@ abstract class GameChannel extends Channel
 
         $this->users = new GameChannelUserHolder();
         if ($this->game) {
+            $this->game->setPlugin($this->plugin);
             $this->game->setChannel($this);
         }
 
@@ -33,6 +35,13 @@ abstract class GameChannel extends Channel
             $condition->initByString($this->getParameter('condition'));
             $this->game->setCondition($condition);
         }
+    }
+
+    public static function getDependenciesConfig(): array
+    {
+        return array_merge(parent::getDependenciesConfig(), [
+            'plugin' => GamePlugin::class,
+        ]);
     }
 
     public function getGame(): AbstractGame
@@ -169,6 +178,7 @@ abstract class GameChannel extends Channel
         } else {
             $this->game->createGamerByConnection($connection);
         }
+
         $this->trigger('new-gamer', $this->getGamersData());
 
         /** @var GamesServer $app */

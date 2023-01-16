@@ -15,6 +15,7 @@ class WebSocketClient extends lx.socket.WebSocketClient {
 		var listener = lx.isString(config.connectionEventListener)
 			? lx.createObject(config.connectionEventListener, [env])
 			: new config.connectionEventListener(env);
+
 		if (listener.onConnected)
 			superConfig.onConnected = listener.onConnected;
 		if (listener.onMessage)

@@ -1,13 +1,11 @@
-#lx:public;
-
-class Core {
+#lx:namespace lxGames;
+class Core extends lx.PluginCore {
 	#lx:const
 		ONLINE_ONLY = #lx:php(\lexedo\games\GamePlugin::ONLINE_ONLY),
 		LOCAL_ONLY = #lx:php(\lexedo\games\GamePlugin::LOCAL_ONLY),
 		ONLINE_AND_LOCAL = #lx:php(\lexedo\games\GamePlugin::ONLINE_AND_LOCAL);
 
-	constructor(plugin) {
-		this.plugin = plugin;
+	init() {
 		this.connectData = {};
 		this.socketEventListener = null;
 		this.socket = null;
@@ -44,25 +42,22 @@ class Core {
 		};
 
 		this.__initGui();
-	}
-	
-	reset(games, currentGames) {
-		this.lists.gamePropotypes.reset(games);
-		this.lists.pendingGames.reset(currentGames);
-		this.lists.stuffedGames.reset();
-	}
-
-	run() {
 		^Respondent.getConnectData().then(res=>{
 			this.connectData = res.data;
 			this.socketEventListener = new SocketEventListener(this.plugin);
 			this.socket = new WebSocketClient(this.plugin);
-			
+
 			this.socket.connect({login: lx.app.user.login}, {
 				auth: lx.app.storage.get('lxauthtoken'),
 				cookie: document.cookie
 			});
 		});
+	}
+
+	reset(games, currentGames) {
+		this.lists.gamePropotypes.reset(games);
+		this.lists.pendingGames.reset(currentGames);
+		this.lists.stuffedGames.reset();
 	}
 
 	getStuffedGame(channelKey) {
@@ -72,7 +67,7 @@ class Core {
 			.getResult();
 		return arr.at(0);
 	}
-	
+
 	getPendingGame(channelKey) {
 		var arr = (new lx.CollectionSelector())
 			.setCollection(this.lists.pendingGames)
@@ -80,7 +75,7 @@ class Core {
 			.getResult();
 		return arr.at(0);
 	}
-	
+
 	addPendingGame(config) {
 		return this.lists.pendingGames.add(config);
 	}

@@ -10,15 +10,15 @@ use lx\socket\Connection;
 use <use_plugin>;
 
 /**
- * @property <slug>Channel $channel
- * @property Plugin $plugin;
+ * @property-read <slug>Channel $channel
+ * @property-read Plugin $plugin;
  *
  * @method <slug>Channel getChannel()
  * @method Plugin getPlugin()
  * @method <slug>Gamer[] getGamers()
  * @method <slug>Gamer|null getGamerById(string $id)
  * @method registerGamer(<slug>Gamer $gamer)
- * @method <slug>GameCondition getBasicCondition()
+ * @method <slug>GameCondition getConditionBlank()
  */
 class <slug>Game extends AbstractGame
 {
@@ -32,7 +32,7 @@ class <slug>Game extends AbstractGame
 
     public function getCondition(): <slug>GameCondition
     {
-        $condition = $this->getBasicCondition();
+        $condition = $this->getConditionBlank();
 
         //TODO
 

@@ -138,6 +138,7 @@ class EventListener extends ChannelEventListener
         return $app->channels->create($channelKey, $channelClass, [
             'reconnectionPeriod' => $app->getConfig('reconnectionPeriod') ?: 0,
             'parameters' => $parameters,
+            'plugin' => $gamesProvider->getGamePlugin($parameters['type']),
         ]);
     }
 
