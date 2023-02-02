@@ -14,52 +14,52 @@ class ConnectionEventListener {
 		}
 	}
 
-	onMessage(msg) {
+	onMessage(event) {
 		if (this._environment.mode == 'dev') {
 		    console.log(__title(this, 'ON MESSAGE'));
-		    console.log(msg);
+		    console.log(event.payload.message);
 		}
 	}
 
-	onClientJoin(channelMate) {
+	onClientJoin(event) {
 		if (this._environment.mode == 'dev') {
 		    console.log(__title(this, 'ON CLIENT JOIN'));
-			console.log(channelMate);
+			console.log(event.payload.mate);
 		}
 	}
 
-	onClientDisconnected(channelMate) {
+	onClientDisconnected(event) {
 		if (this._environment.mode == 'dev') {
 			console.log(__title(this, 'ON CLIENT DISCONNECTED'));
-			console.log(channelMate);
+			console.log(event.payload.mate);
 		}
 	}
 
-	onClientReconnected(channelMate) {
+	onClientReconnected(event) {
 		if (this._environment.mode == 'dev') {
 			console.log(__title(this, 'ON CLIENT RECONNECTED'));
-			console.log(channelMate);
+			console.log(event.payload.mate);
 		}
 	}
 
-	onClientLeave(channelMate) {
+	onClientLeave(event) {
 		if (this._environment.mode == 'dev') {
 		    console.log(__title(this, 'ON CLIENT LEAVE'));
-			console.log(channelMate);
+			console.log(event.payload.mate);
 		}
 	}
 
-	onClose(msg) {
+	onClose(event) {
 		if (this._environment.mode == 'dev') {
 		    console.log(__title(this, 'ON CLOSE'));
-			console.log(msg);
+			console.log(event);
 		}
 	}
 
-	onError(msg) {
+	onError(event) {
 		if (this._environment.mode == 'dev') {
 		    console.log(__title(this, 'ON ERROR'));
-			console.log(msg);
+			console.log(event);
 		}
 	}
 }

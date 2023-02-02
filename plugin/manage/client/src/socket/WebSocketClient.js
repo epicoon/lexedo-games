@@ -26,40 +26,35 @@ const __WebSocketHandlers = {
 	onConnected: function() {
 	    console.log('ON CLIENT CONNECTED');
 		console.log(this);
-
-
-		// this.request('test').then(res=>{
-		// 	console.log(res);
-		// });
 	},
 
-	onMessage: function(msg) {
+	onMessage: function(event) {
 	    console.log('ON MESSAGE');
-	    console.log(msg);
+	    console.log(event.payload.message);
 	},
 
-	onClientJoin: function(clientData) {
+	onClientJoin: function(event) {
 		console.log('ON CLIENT JOIN');
-		console.log(clientData);
+		console.log(event.payload.mate);
 	},
 
-	onClientDisconnected: function (clientData) {
+	onClientDisconnected: function (event) {
 		console.log('ON CLIENT DISCONNECTED');
-		console.log(clientData);
+		console.log(event.payload.mate);
 	},
 
-	onClientLeave: function(clientData) {
+	onClientLeave: function(event) {
 		console.log('ON CLIENT LEAVE');
-		console.log(clientData);
+		console.log(event.payload.mate);
 	},
 
-	onClose: function(msg) {
+	onClose: function(event) {
 		console.log('ON CLOSE');
-		console.log(msg);
+		console.log(event);
 	},
 
-	onError: function(msg) {
+	onError: function(event) {
 		console.log('ON ERROR');
-		console.log(msg);
+		console.log(event);
 	}
 };

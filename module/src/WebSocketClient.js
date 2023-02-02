@@ -2,10 +2,10 @@
 
 class WebSocketClient extends lx.socket.WebSocketClient {
 	constructor(config) {
-		var env = config.env;
-		var superConfig = {};
+		let env = config.env,
+			handlers = {};
 		if (config.channelEventListener)
-			superConfig.onChannelEvent = lx.isString(config.channelEventListener)
+			handlers.onChannelEvent = lx.isString(config.channelEventListener)
 				? lx.createObject(config.channelEventListener, [env])
 				: new config.channelEventListener(env);
 
@@ -17,28 +17,28 @@ class WebSocketClient extends lx.socket.WebSocketClient {
 			: new config.connectionEventListener(env);
 
 		if (listener.onConnected)
-			superConfig.onConnected = listener.onConnected;
+			handlers.onConnected = listener.onConnected;
 		if (listener.onMessage)
-			superConfig.onMessage = listener.onMessage;
+			handlers.onMessage = listener.onMessage;
 		if (listener.onClientJoin)
-			superConfig.onClientJoin = listener.onClientJoin;
+			handlers.onClientJoin = listener.onClientJoin;
 		if (listener.onClientLeave)
-			superConfig.onClientLeave = listener.onClientLeave;
+			handlers.onClientLeave = listener.onClientLeave;
 		if (listener.onClientDisconnected)
-			superConfig.onClientDisconnected = listener.onClientDisconnected;
+			handlers.onClientDisconnected = listener.onClientDisconnected;
 		if (listener.onClientReconnected)
-			superConfig.onClientReconnected = listener.onClientReconnected;
+			handlers.onClientReconnected = listener.onClientReconnected;
 		if (listener.onClose)
-			superConfig.onClose = listener.onClose;
+			handlers.onClose = listener.onClose;
 		if (listener.onError)
-			superConfig.onError = listener.onError;
+			handlers.onError = listener.onError;
 
 		super({
 			protocol: config.protocol,
 			port: config.port,
 			url: config.url,
 			channel: config.channel,
-			handlers: superConfig
+			handlers
 		});
 
 		this._environment = env;
