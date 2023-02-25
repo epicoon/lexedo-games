@@ -4,7 +4,7 @@ namespace lexedo\games;
 
 use lx;
 use lx\Math;
-use lx\Plugin;
+use lexedo\games\GamePlugin;
 use lx\socket\Channel\ChannelEvent;
 use lx\socket\Connection;
 
@@ -13,12 +13,11 @@ abstract class AbstractGame
     const GAMER_CLASS = 'gamer';
     const CONDITION_CLASS = 'condition';
 
-    private Plugin $_plugin;
+    private GamePlugin $_plugin;
     private GameChannel $_channel;
 
     private bool $isPending;
-    /** @var array<AbstractGamer> */
-    private array $gamers;
+    private GamersList $gamers;
     private array $userToGamerMap;
 
     protected bool $isActive;
@@ -29,15 +28,47 @@ abstract class AbstractGame
     {
         $this->isPending = true;
         $this->isActive = false;
-        $this->gamers = [];
+        $this->gamers = new GamersList();
         $this->isWaitingForRevenge = false;
         $this->revengeApprovements = [];
     }
 
     abstract public function getClassesMap(): array;
     abstract public function getCondition(): AbstractGameCondition;
-    abstract public function fillEventBeginGame(ChannelEvent $event): void;
     abstract public function getGameDataForGamer(?AbstractGamer $gamer = null): array;
+
+    public function beforeStaffed(): void
+    {
+        // pass
+    }
+
+    public function prepareStaffedEvent(ChannelEvent $event): void
+    {
+        // pass
+    }
+
+    public function beforeBegin(): void
+    {
+        // pass
+    }
+
+    public function prepareBeginEvent(ChannelEvent $event): void
+    {
+        // pass
+    }
+
+    public function beforeLoaded(): void
+    {
+        // pass
+    }
+
+    public function prepareLoadedEvent(ChannelEvent $event): void
+    {
+        foreach ($this->getGamers() as $gamer) {
+            $gameData = $this->getGameDataForGamer($gamer);
+            $event->addDataForConnection($gamer->getConnection(), ['gameData' => $gameData]);
+        }
+    }
 
     public function getConditionBlank(): AbstractGameCondition
     {
@@ -72,12 +103,12 @@ abstract class AbstractGame
         return $this->_channel;
     }
 
-    public function setPlugin(Plugin $plugin): void
+    public function setPlugin(GamePlugin $plugin): void
     {
         $this->_plugin = $plugin;
     }
 
-    public function getPlugin(): Plugin
+    public function getPlugin(): GamePlugin
     {
         return $this->_plugin;
     }
@@ -132,23 +163,9 @@ abstract class AbstractGame
         return $this->revengeApprovements;
     }
 
-    /**
-     * @return array<AbstractGamer>
-     */
-    public function getGamers(): array
+    public function getGamers(): GamersList
     {
         return $this->gamers;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUserAuthFieldByConnection(Connection $connection)
-    {
-        $user = $this->getChannel()->getUser($connection);
-        /** @var lx\UserManagerInterface $userManager */
-        $userManager = lx::$app->userManager;
-        return $userManager->getAuthField($user);
     }
 
     public function getGamerById(string $id): ?AbstractGamer
@@ -183,7 +200,7 @@ abstract class AbstractGame
     /**
      * @param mixed $authField
      */
-    public function registerGamer(AbstractGamer $gamer, ?string $id = null)
+    public function registerGamer(AbstractGamer $gamer, ?string $id = null): void
     {
         if ($id === null) {
             $id = Math::randHash();
@@ -194,7 +211,7 @@ abstract class AbstractGame
         $this->gamers[$id] = $gamer;
     }
     
-    public function actualizeGamerConnection(Connection $connection): bool
+    public function actualizeGamerByConnection(Connection $connection): bool
     {
         $authField = $this->getUserAuthFieldByConnection($connection);
         if (!array_key_exists($authField, $this->userToGamerMap)) {
@@ -203,7 +220,7 @@ abstract class AbstractGame
 
         $id = $this->userToGamerMap[$authField];
         $gamer = $this->gamers[$id];
-        $gamer->updateConnection($connection);
+        $gamer->updateByConnection($connection);
         return true;
     }
 
@@ -234,6 +251,17 @@ abstract class AbstractGame
         $authField = $gamer->getAuthField();
         unset($this->userToGamerMap[$authField]);
         unset($this->gamers[$gamerId]);
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getUserAuthFieldByConnection(Connection $connection)
+    {
+        $user = $this->getChannel()->getUser($connection);
+        /** @var lx\UserManagerInterface $userManager */
+        $userManager = lx::$app->userManager;
+        return $userManager->getAuthField($user);
     }
 
     private function getNewGamer(?Connection $connection = null, $authField = null): AbstractGamer

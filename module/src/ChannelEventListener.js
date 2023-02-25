@@ -18,37 +18,30 @@ class ChannelEventListener extends lx.socket.EventListener {
 	}
 
 	onNewGamer(event) {
-		var data = event.getData();
-		this.getEnvironment().onChangeGamersList(data);
+		this.getEnvironment().onChangeGamersList(event.getData());
 	}
 
 	onGamerReconnected(event) {
-		var data = event.getData();
-		this.getEnvironment().onGamerReconnected(data);
+		this.getEnvironment().onGamerReconnected(event.getData());
 	}
 
 	onObserverJoined(event) {
-		var data = event.getData();
-		this.getEnvironment().onObserverJoined(data);		
+		this.getEnvironment().onObserverJoined(event.getData());
 	}
 
 	onSetGameReferences(event) {
-		var data = event.getData();
-		this.getEnvironment().onSetGameReferences(data);
+		this.getEnvironment().onSetGameReferences(event.getData());
 	}
 
 	onGameStuffed(event) {
-		var data = event.getData();
-		this.getEnvironment().onGameStuffed();
+		this.getEnvironment().onGameStuffed(event.getData());
 	}
 
 	onGameBegin(event) {
-		var data = event.getData();
-		this.getEnvironment().onGameBegin(data);
+		this.getEnvironment().onGameBegin(event.getData());
 	}
 
 	onGameLoaded(event) {
-		var data = event.getData();
-		this.getEnvironment().onGameLoaded(data);		
+		this.getEnvironment().onGameLoaded(event.getData());
 	}
 }

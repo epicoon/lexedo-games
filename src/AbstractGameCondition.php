@@ -42,7 +42,7 @@ abstract class AbstractGameCondition
             $this
                 ->setPending($game->isPending())
                 ->setActive($game->isActive())
-                ->setGamers($game->getGamers())
+                ->setGamers($game->getGamers()->getGamersAsArray())
                 ->setWaitingForRevenge($game->isWaitingForRevenge())
                 ->setRevengeApprovements($game->getRevengeApprovements());
         }

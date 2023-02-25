@@ -1,7 +1,10 @@
 {
     "lexedo.games": {
         "name": "lexedo.games",
-        "path": "module\/Environment.js"
+        "path": "module\/Environment.js",
+        "data": {
+            "i18n": "EnvironmentI18n.yaml"
+        }
     },
     "lexedo.games.SaveMenu": {
         "name": "lexedo.games.SaveMenu",

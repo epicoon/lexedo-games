@@ -12,12 +12,14 @@ class ConnectionEventListener {
 		if (this._environment.mode == 'dev') {
 		    console.log(__title(this, 'ON CONNECTED'));
 		}
+
+		this._environment.triggerEvent('socketConnected');
 	}
 
-	onMessage(event) {
+	onMessage(message) {
 		if (this._environment.mode == 'dev') {
 		    console.log(__title(this, 'ON MESSAGE'));
-		    console.log(event.payload.message);
+		    console.log(message);
 		}
 	}
 
@@ -40,6 +42,8 @@ class ConnectionEventListener {
 			console.log(__title(this, 'ON CLIENT RECONNECTED'));
 			console.log(event.payload.mate);
 		}
+
+		this._environment.triggerEvent('socketConnected');
 	}
 
 	onClientLeave(event) {

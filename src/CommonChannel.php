@@ -3,9 +3,15 @@
 namespace lexedo\games;
 
 use lexedo\games\actions\ActionFactory;
+use lexedo\games\admin\Admin;
+use lexedo\games\requestHandling\events\AdminEvent;
+use lexedo\games\admin\AdminEventSender;
+use lexedo\games\requestHandling\RequestHandler;
+use lexedo\games\requestHandling\RequestVoter;
 use lx;
 use lx\ModelInterface;
 use lx\AuthenticationInterface;
+use lx\ResourceVoterInterface;
 use lx\socket\Channel\Channel;
 use lx\socket\Channel\ChannelRequest;
 use lx\socket\Channel\ChannelResponse;
@@ -13,6 +19,10 @@ use lx\socket\Connection;
 
 class CommonChannel extends Channel
 {
+    /** @var array<Admin> */
+    private array $adminsList = [];
+    private AdminEventSender $adminEventSender;
+
     /** @var array<Connection> */
     private array $userConnetionMap = [];
     private array $userList = [];
@@ -20,12 +30,27 @@ class CommonChannel extends Channel
     private array $pendingGamesMap = [];
     /** @var array<GameChannel> */
     private array $stuffedGamesList = [];
+    protected ?ResourceVoterInterface $requestVoter = null;
+
+    protected function init()
+    {
+        parent::init();
+        $this->adminEventSender = new AdminEventSender($this);
+    }
 
     public static function getDependenciesConfig(): array
     {
         return array_merge(parent::getDependenciesConfig(), [
             'eventListener' => EventListener::class,
+            'requestVoter' => ResourceVoterInterface::class,
         ]);
+    }
+
+    public static function getDependenciesDefaultMap(): array
+    {
+        return [
+            ResourceVoterInterface::class => RequestVoter::class,
+        ];
     }
 
     public function getGamesProvider(): GamesProvider
@@ -37,21 +62,58 @@ class CommonChannel extends Channel
         return $gamesProvider;
     }
 
-    public function handleRequest(ChannelRequest $request): ChannelResponse
+    public function hasAdminConnection(Connection $connection): bool
+    {
+        return array_key_exists($connection->getId(), $this->adminsList);
+    }
+
+    /**
+     * @return Admin[]
+     */
+    public function getAdminsList(): array
+    {
+        return $this->adminsList;
+    }
+
+    /**
+     * @return Connection[]
+     */
+    public function getAdminConnections(): array
+    {
+        $connections = [];
+        foreach ($this->adminsList as $admin) {
+            $connections[] = $admin->getConnection();
+        }
+        return $connections;
+    }
+
+    public function handleRequest(ChannelRequest $request): ?ChannelResponse
     {
         if ($request->getRoute() == 'test') {
             return $this->prepareResponse('ok');
         }
-        
-        $action = ActionFactory::getAction($this, $request);
-        if (!$action) {
-            return $this->prepareResponse('error');
+
+        $requestHandler = new RequestHandler($this);
+        $result = $requestHandler->handleRequest($request);
+        if ($requestHandler->hasFlightRecords()) {
+            return $this->prepareResponse([
+                'success' => false,
+                'error' => $requestHandler->getFirstFlightRecord(),
+            ]);
         }
-        
-        $result = $action->run();
+
+        if ($result === null) {
+            return null;
+        }
+
         return $this->prepareResponse($result);
     }
 
+    public function sendAdminEvent(string $eventName, array $eventData = []): void
+    {
+        $this->adminEventSender->send($eventName, $eventData);
+    }
+    
     /**
      * @return array<GameChannel>
      */
@@ -74,7 +136,7 @@ class CommonChannel extends Channel
             unset($this->pendingGamesMap[$gameChannel->getName()]);
         }
     }
-    
+
     public function stuffPendingGame(GameChannel $gameChannel): void
     {
         if (array_key_exists($gameChannel->getName(), $this->pendingGamesMap)) {
@@ -90,6 +152,9 @@ class CommonChannel extends Channel
         } elseif (array_key_exists($gameChannel->getName(), $this->stuffedGamesList)) {
             unset($this->stuffedGamesList[$gameChannel->getName()]);
         }
+        $this->sendAdminEvent('gameChannelDropped', [
+            'gameChannel' => $gameChannel,
+        ]);;
     }
 
     public function onUserJoinGame(GameChannel $gameChannel, ModelInterface $user): void
@@ -163,7 +228,7 @@ class CommonChannel extends Channel
         if ($this->requirePassword() && !$this->checkPassword($authData['password'] ?? null)) {
             return false;
         }
-        
+
         /** @var AuthenticationInterface $gate */
         $gate = lx::$app->authenticationGate;
         if (!$gate) {
@@ -174,20 +239,34 @@ class CommonChannel extends Channel
         if (!$user) {
             return false;
         }
-        $user = $user->getModel();
-        if (!$user) {
+
+        if ($authData['admin'] === true) {
+            if (!$this->requestVoter->run($user, 'admin')) {
+                return false;
+            }
+
+            $this->adminsList[$connection->getId()] = new Admin(
+                $user,
+                $connection,
+                $this->parseCookie($authData['cookie'] ?? '')
+            );
+            return true;
+        }
+
+        $userModel = $user->getModel();
+        if (!$userModel) {
             return false;
         }
 
-        $this->userConnetionMap[$user->getId()] = $connection;
+        $this->userConnetionMap[$userModel->getId()] = $connection;
         $this->userList[$connection->getId()] = [
-            'user' => $user,
+            'user' => $userModel,
             'cookie' => $this->parseCookie($authData['cookie'] ?? ''),
         ];
 
         return true;
     }
-    
+
     public function onConnect(Connection $connection): void
     {
         parent::onConnect($connection);
@@ -208,12 +287,15 @@ class CommonChannel extends Channel
 
     public function onDisconnect(Connection $connection): void
     {
-        $user = $this->getUser($connection);
-        if ($user) {
-            unset($this->userConnetionMap[$user->getId()]);
+        if (array_key_exists($connection->getId(), $this->adminsList)) {
+            unset($this->adminsList[$connection->getId()]);
+        } else {
+            $user = $this->getUser($connection);
+            if ($user) {
+                unset($this->userConnetionMap[$user->getId()]);
+            }
+            unset($this->userList[$connection->getId()]);
         }
-
-        unset($this->userList[$connection->getId()]);
 
         parent::onDisconnect($connection);
     }

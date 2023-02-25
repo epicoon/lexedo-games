@@ -77,7 +77,7 @@ class Connector {
 	}
 
 	connect() {
-		var socket = new WebSocketClient({
+		this.socket = new WebSocketClient({
 			protocol: this._connectData.protocol,
 			port: this._connectData.port,
 			url: this._connectData.url,
@@ -86,8 +86,7 @@ class Connector {
 			connectionEventListener: this._gameConfig.connectionEventListener,
 			channelEventListener: this._gameConfig.channelEventListener
 		});
-		socket.connect(this._connectData.userChannelData || {}, {token: this._connectData.token});
-		this.socket = socket;
+		this.socket.connect(this._connectData.userChannelData || {}, {token: this._connectData.token});
 	}
 
 	leave() {

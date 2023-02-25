@@ -25,19 +25,19 @@ class Game {
 		// abstract		
 	}
 
-	onStuffed() {
-		// abstract
-	}
-
 	setGameReferences(references) {
 		// abstract
 	}
 
-	actualizeAfterReconnect(data) {
+	onStuffed(data) {
 		// abstract
 	}
 
 	onBegin(data) {
+		// abstract
+	}
+
+	actualizeAfterReconnect(data) {
 		// abstract
 	}
 

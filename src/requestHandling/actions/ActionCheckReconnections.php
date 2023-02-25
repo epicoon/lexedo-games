@@ -1,13 +1,13 @@
 <?php
 
-namespace lexedo\games\actions;
+namespace lexedo\games\requestHandling\actions;
 
 class ActionCheckReconnections extends AbstractAction
 {
     /**
      * @return array
      */
-    public function run()
+    protected function process()
     {
         $connection = $this->request->getInitiator();
         $user = $this->channel->getUser($connection);
@@ -21,6 +21,7 @@ class ActionCheckReconnections extends AbstractAction
                 ];
             }
         }
+
         return $list;
     }
 }

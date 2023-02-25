@@ -17,7 +17,7 @@ use <use_plugin>;
  * @method Plugin getPlugin()
  * @method <slug>Gamer[] getGamers()
  * @method <slug>Gamer|null getGamerById(string $id)
- * @method registerGamer(<slug>Gamer $gamer)
+ * @method void registerGamer(<slug>Gamer $gamer)
  * @method <slug>GameCondition getConditionBlank()
  */
 class <slug>Game extends AbstractGame
@@ -49,7 +49,27 @@ class <slug>Game extends AbstractGame
         //TODO
     }
 
-    public function fillEventBeginGame(ChannelEvent $event): void
+    public function beforeStaffed(): void
+    {
+        //TODO
+    }
+
+    public function prepareStaffedEvent(ChannelEvent $event): void
+    {
+        //TODO
+    }
+
+    public function beforeBegin(): void
+    {
+        //TODO
+    }
+
+    public function prepareBeginEvent(ChannelEvent $event): void
+    {
+        //TODO
+    }
+
+    public function beforeLoaded(): void
     {
         //TODO
     }
@@ -57,5 +77,6 @@ class <slug>Game extends AbstractGame
     public function getGameDataForGamer(?AbstractGamer $gamer = null): array
     {
         //TODO
+        return [];
     }
 }

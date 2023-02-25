@@ -30,27 +30,7 @@
 */
 
 class Plugin extends lx.Plugin {
-    initCss(css) {
-        css.inheritClass('lga-Box', 'AbstractBox');
-    }
-    
     run() {
-        this.core = new lexedo.games.manage.Core(this);
         this.core.run();
-
-
-        // this.core.channels.add({
-        //     type: '__common__',
-        //     name: 'common'
-        // });
-        // this.core.channelInfo.set( this.core.channels.at(0) );
-
-        // this.core.connections.add({
-        //     userId: 1,
-        //     userAuthValue: 'dfdf',
-        //     key: 'dfwefwefwefwef',
-        //     type: 'gamer',
-        //     date: ''
-        // });
     }
 }

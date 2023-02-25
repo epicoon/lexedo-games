@@ -1,6 +1,5 @@
+# --- Server ---
 server: lexedo\games\plugin\manage\server\Plugin
-client: client/Plugin.js
-
 respondents:
   Respondent: Respondent
 
@@ -10,3 +9,22 @@ snippets: snippets
 images: assets/images
 
 cacheType: smart
+
+# --- Common ---
+require:
+  - '-R assets/css/'
+
+cssAssets:
+  - lxGames.manage.MainAsset
+
+# --- Client ---
+client: client/Plugin.js
+requireForClient:
+  - '-R client/src/'
+  - '-R client/guiNodes/'
+
+core: lxGames.manage.Core
+
+guiNodes:
+  mainBox: lxGames.manage.gui.MainBox
+  channelInfoBox: lxGames.manage.gui.ChannelInfoBox

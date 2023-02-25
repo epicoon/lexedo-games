@@ -9,8 +9,7 @@ use lx\socket\Connection;
 abstract class AbstractGamer
 {
     protected AbstractGame $game;
-    protected ?Connection $connection;
-    protected ?ModelInterface $user;
+    protected ?GameChannelUser $gameChannelUser;
     /** @var mixed */
     protected $authField;
     protected string $id;
@@ -18,16 +17,17 @@ abstract class AbstractGamer
     public function __construct(AbstractGame $game, ?Connection $connection = null, $authField = null)
     {
         $this->game = $game;
-        $this->connection = $connection;
-        $this->user = $connection ? $game->getChannel()->getUser($connection) : null;
-        if ($this->user) {
+
+        $this->gameChannelUser = $connection ? $game->getChannel()->getGameChannelUser($connection) : null;
+        if ($this->gameChannelUser) {
+            $user = $this->gameChannelUser->getUser();
             /** @var lx\UserManagerInterface $userManager */
             $userManager = lx::$app->userManager;
-            $this->authField = $userManager->getAuthField($this->user);
+            $this->authField = $userManager->getAuthField($user);
         } else {
             $this->authField = $authField;
         }
-        
+
         $this->init();
     }
 
@@ -38,7 +38,7 @@ abstract class AbstractGamer
         // pass
     }
 
-    public function setId(string $id)
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
@@ -63,21 +63,35 @@ abstract class AbstractGamer
 
     public function getConnection(): ?Connection
     {
-        return $this->connection;
+        return $this->gameChannelUser ? $this->gameChannelUser->getConnection() : null;
     }
 
     public function getConnectionId(): ?string
     {
-        return $this->connection ? $this->connection->getId() : null;
+        $connection = $this->getConnection();
+        return $connection ? $connection->getId() : null;
     }
-    
-    public function updateConnection(Connection $connection)
+
+    public function updateByConnection(Connection $connection): void
     {
-        $this->connection = $connection;
+        $this->gameChannelUser = $this->getGame()->getChannel()->getGameChannelUser($connection);
     }
 
     public function getUser(): ?ModelInterface
     {
-        return $this->user;
+        return $this->gameChannelUser ? $this->gameChannelUser->getUser() : null;
+    }
+
+    public function getGameChannelUser(): GameChannelUser
+    {
+        return $this->gameChannelUser;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'gamerId' => $this->getId(),
+            'authField' => $this->getAuthField(),
+        ];
     }
 }

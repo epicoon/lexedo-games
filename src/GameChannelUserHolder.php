@@ -7,52 +7,39 @@ use lx\socket\Connection;
 
 class GameChannelUserHolder
 {
-    /** @var array<ModelInterface> */
+    /** @var array<GameChannelUser> */
     private array $userList = [];
-    /** @var array<ModelInterface> */
-    private array $observerUsers = [];
-    /** @var array<array{'user':ModelInterface, 'isObserver':bool}> */
+    /** @var array<GameChannelUser> */
     private $usersWaitingList = [];
-    /** @var array<array{'user':ModelInterface, 'isObserver':bool}> */
+    /** @var array<GameChannelUser> */
     private array $disconnectedUsers = [];
 
-    public function addWaitingUser(string $token, ModelInterface $user, bool $isObserver = false): void
+    public function addWaitingUser(string $token, ModelInterface $user, string $type): void
     {
-        $this->usersWaitingList[$token] = [
-            'user' => $user,
-            'isObserver' => $isObserver,
-        ];
+        $this->usersWaitingList[$token] = new GameChannelUser($user, $type);
     }
 
-    public function getUser(Connection $connection): ?ModelInterface
+    public function getUser(Connection $connection): ?GameChannelUser
     {
         return $this->userList[$connection->getId()] ?? null;
     }
 
     public function userIsDisconnected(ModelInterface $user): bool
     {
-        foreach ($this->disconnectedUsers as $pare) {
-            if ($pare['user'] === $user) {
-                return true;
-            }
+        $user = $this->findUser($user);
+        if (!$user) {
+            return false;
         }
-
-        return false;
+        return !$user->isConnected();
     }
     
     public function userIsObserver(ModelInterface $user): bool
     {
-        if (array_key_exists($user->getId(), $this->observerUsers)) {
-            return true;
+        $user = $this->findUser($user);
+        if (!$user) {
+            return false;
         }
-
-        foreach ($this->disconnectedUsers as $pare) {
-            if ($pare['user'] === $user) {
-                return $pare['isObserver'];
-            }
-        }
-
-        return false;
+        return $user->isObserver();
     }
     
     public function connectionIsObserver(Connection $connection): bool
@@ -61,8 +48,7 @@ class GameChannelUserHolder
         if (!$user) {
             return false;
         }
-        
-        return $this->userIsObserver($user);
+        return $user->isObserver();
     }
 
     public function acceptWaitingUser(Connection $connection, string $token): bool
@@ -71,12 +57,9 @@ class GameChannelUserHolder
             return false;
         }
 
-        /** @var ModelInterface $user */
-        $user = $this->usersWaitingList[$token]['user'];
+        $user = $this->usersWaitingList[$token];
+        $user->connect($connection);
         $this->userList[$connection->getId()] = $user;
-        if ($this->usersWaitingList[$token]['isObserver']) {
-            $this->observerUsers[$user->getId()] = $user;
-        }
         unset($this->usersWaitingList[$token]);
         return true;
     }
@@ -87,41 +70,62 @@ class GameChannelUserHolder
             return false;
         }
 
-        $pare = $this->disconnectedUsers[$oldConnectionId];
+        $user = $this->disconnectedUsers[$oldConnectionId];
         unset($this->disconnectedUsers[$oldConnectionId]);
 
-        /** @var ModelInterface $user */
-        $user = $pare['user'];
+        $user->connect($connection);
         $this->userList[$connection->getId()] = $user;
-        if ($pare['isObserver']) {
-            $this->observerUsers[$user->getId()] = $user;
-        }
         return true;
     }
 
     public function disconnectUser(Connection $connection): void
     {
-        $user = $this->userList[$connection->getId()];
-        unset($this->userList[$connection->getId()]);
-
-        $isObserver = array_key_exists($user->getId(), $this->observerUsers);
-        if ($isObserver) {
-            unset($this->observerUsers[$user->getId()]);
+        $user = $this->userList[$connection->getId()] ?? null;
+        if (!$user) {
+            return;
         }
-        $this->disconnectedUsers[$connection->getId()] = [
-            'user' => $user,
-            'isObserver' => $isObserver,
-        ];
+
+        unset($this->userList[$connection->getId()]);
+        $user->disconnect();
+        $this->disconnectedUsers[$connection->getId()] = $user;
     }
 
     public function dropUser(Connection $connection): void
     {
         $user = $this->userList[$connection->getId()] ?? null;
+
         unset($this->userList[$connection->getId()]);
         unset($this->disconnectedUsers[$connection->getId()]);
-        if ($user) {
-            unset($this->observerUsers[$user->getId()]);
+        if (!$user) {
+            return;
         }
+
+        if ($user) {
+            $user->disconnect();
+        }
+    }
+
+    private function findUser(ModelInterface $user): ?GameChannelUser
+    {
+        foreach ($this->userList as $item) {
+            if ($item->getUser()->getId() === $user->getId()) {
+                return $item;
+            }
+        }
+
+        foreach ($this->usersWaitingList as $item) {
+            if ($item->getUser()->getId() === $user->getId()) {
+                return $item;
+            }
+        }
+
+        foreach ($this->disconnectedUsers as $item) {
+            if ($item->getUser()->getId() === $user->getId()) {
+                return $item;
+            }
+        }
+
+        return null;
     }
 
     private function checkWaitingUserByToken(?string $token): bool

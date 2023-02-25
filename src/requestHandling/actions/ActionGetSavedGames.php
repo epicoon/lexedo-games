@@ -1,16 +1,15 @@
 <?php
 
-namespace lexedo\games\actions;
+namespace lexedo\games\requestHandling\actions;
 
 use lexedo\games\models\GamerInGame;
-use lx;
 
 class ActionGetSavedGames extends AbstractAction
 {
     /**
      * @return array
      */
-    public function run()
+    protected function process()
     {
         $authField = $this->channel->getUserAuthFieldByConnection($this->request->getInitiator());
 

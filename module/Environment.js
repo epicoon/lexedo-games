@@ -1,4 +1,7 @@
 #lx:module lexedo.games;
+#lx:module-data {
+	i18n: EnvironmentI18n.yaml
+};
 
 #lx:use lx.socket.WebSocketClient;
 
@@ -88,9 +91,9 @@ class Environment {
 		this.game.setGameReferences(data);
 	}
 
-	onGameStuffed() {
+	onGameStuffed(data) {
 		this.unlockScreen();
-		this.game.onStuffed();
+		this.game.onStuffed(data);
 		this.game.setPending(false);
 	}
 
@@ -103,7 +106,7 @@ class Environment {
 	}
 
 	onGamerReconnected(data) {
-		this.game.setPending(data.gameIsPending);
+		this.game.setPending(data.reconnectionData.gameIsPending);
 		if (!this.game.isPending())
 			this.unlockScreen();
 		this.game.onGamerReconnected(data);
@@ -111,10 +114,10 @@ class Environment {
 
 	lockScreen() {
 		if (this.useScreenLock) {
-			this.screenLock = new lx.Box({geom: true});
-			this.screenLock.add(lx.Box, {geom: true, style:{fill:'black', opacity:0.5}});
+			this.screenLock = new lx.Box({parent: this.getPlugin().root, geom: true});
+			this.screenLock.add(lx.Box, {geom: true, fill:'black', opacity:0.5});
 			var textWrapper = this.screenLock.add(lx.Box, {geom:true});
-			textWrapper.text('Waiting for players...');
+			textWrapper.text(#lx:i18n(waiting));
 			textWrapper.style('color', 'white');
 			textWrapper->text.style('fontSize', '2em');
 			textWrapper.align(lx.CENTER, lx.MIDDLE);

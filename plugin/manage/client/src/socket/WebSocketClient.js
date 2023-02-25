@@ -1,4 +1,4 @@
-#lx:namespace lexedo.games.manage;
+#lx:namespace lxGames.manage;
 class WebSocketClient extends lx.socket.WebSocketClient {
 	constructor(core, connectData) {
 		super({
@@ -6,8 +6,9 @@ class WebSocketClient extends lx.socket.WebSocketClient {
 			port: connectData.port,
 			url: connectData.url,
 			channel: connectData.channelName,
+			reconnect: false,
 			handlers: {
-				onChannelEvent: new lexedo.games.manage.SocketEventListener(core),
+				onChannelEvent: new lxGames.manage.SocketEventListener(core),
 				onConnected:   __WebSocketHandlers.onConnected,
 				onMessage:     __WebSocketHandlers.onMessage,
 				onClientJoin:  __WebSocketHandlers.onClientJoin,
@@ -25,12 +26,13 @@ class WebSocketClient extends lx.socket.WebSocketClient {
 const __WebSocketHandlers = {
 	onConnected: function() {
 	    console.log('ON CLIENT CONNECTED');
-		console.log(this);
+
+		this.core.getPlugin().trigger('connectionEstablished');
 	},
 
-	onMessage: function(event) {
+	onMessage: function(message) {
 	    console.log('ON MESSAGE');
-	    console.log(event.payload.message);
+	    console.log(message);
 	},
 
 	onClientJoin: function(event) {
@@ -51,10 +53,14 @@ const __WebSocketHandlers = {
 	onClose: function(event) {
 		console.log('ON CLOSE');
 		console.log(event);
+
+		this.core.getPlugin().trigger('connectionClosed');
 	},
 
 	onError: function(event) {
 		console.log('ON ERROR');
 		console.log(event);
+
+		this.core.getPlugin().trigger('connectionClosed');
 	}
 };

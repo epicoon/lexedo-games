@@ -71,7 +71,7 @@ class EventListener extends ChannelEventListener
             'type' => $type,
             'name' => $name,
             'gamersCount' => $gamersCount,
-            'loading' => true,
+            'loadingMode' => true,
             'condition' => $gameSave->data,
         ]);
         //TODO password
@@ -110,10 +110,11 @@ class EventListener extends ChannelEventListener
         }
 
         $token = Math::randHash();
+        $isObserver = $eventData['isObserver'] ?? false;
         $channel->addWaitingUser(
             $token,
             $app->getCommonChannel()->getUser($event->getInitiator()),
-            $eventData['isObserver'] ?? false
+            $isObserver ? GameChannelUser::TYPE_OBSERVER : GameChannelUser::TYPE_PARTICIPANT
         );
 
         $subEvent = $event->replaceEvent('gameJoining', [
@@ -149,7 +150,8 @@ class EventListener extends ChannelEventListener
         $token = Math::randHash();
         $channel->addWaitingUser(
             $token,
-            $this->getChannel()->getUser($event->getInitiator())
+            $this->getChannel()->getUser($event->getInitiator()),
+            GameChannelUser::TYPE_AUTHOR
         );
 
         $gamesProvider = $this->getChannel()->getGamesProvider();
@@ -181,5 +183,9 @@ class EventListener extends ChannelEventListener
         }
 
         $subEvent->setDataForConnection($event->getInitiator(), ['token' => $token]);
+
+        $this->getChannel()->sendAdminEvent('gameChannelCreated', [
+            'gameChannel' => $channel,
+        ]);;
     }
 }

@@ -27,14 +27,13 @@ class WebSocketClient extends lx.socket.WebSocketClient {
 const __WebSocketHandlers = {
 	onConnected: function() {
 	    console.log('ON CLIENT CONNECTED');
-		console.log(this);
 
 		this._core.checkReconnections();
 	},
 
-	onMessage: function(event) {
+	onMessage: function(message) {
 	    console.log('ON MESSAGE');
-	    console.log(event.payload.message);
+	    console.log(message);
 	},
 
 	onClientJoin: function(event) {
