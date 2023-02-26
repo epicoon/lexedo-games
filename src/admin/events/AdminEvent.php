@@ -3,7 +3,7 @@
 namespace lexedo\games\admin\events;
 
 use lexedo\games\CommonChannel;
-use lx\socket\Channel\ChannelEvent;
+use lx\socket\channel\ChannelEvent;
 use lx\socket\Connection;
 
 /**

@@ -64,8 +64,14 @@ class Environment {
 		this._connector.leave();
 	}
 
-	triggerChannelEvent(eventName, data = {}, receivers = null, privateMode = false) {
-		this._connector.trigger(eventName, data, receivers, privateMode);
+	triggerChannelEvent(
+		eventName,
+		data = {},
+		receivers = null,
+		returnToSender = true,
+		privateMode = false
+	) {
+		this._connector.trigger(eventName, data, receivers, returnToSender, privateMode);
 	}
 
 	triggerEvent(eventName, params = []) {

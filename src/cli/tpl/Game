@@ -5,7 +5,8 @@ namespace <namespace>;
 use lexedo\games\AbstractGame;
 use lexedo\games\AbstractGameCondition;
 use lexedo\games\AbstractGamer;
-use lx\socket\Channel\ChannelEvent;
+use lexedo\games\GamersList;
+use lx\socket\channel\ChannelEvent;
 use lx\socket\Connection;
 use <use_plugin>;
 
@@ -15,7 +16,7 @@ use <use_plugin>;
  *
  * @method <slug>Channel getChannel()
  * @method Plugin getPlugin()
- * @method <slug>Gamer[] getGamers()
+ * @method GamersList|<slug>Gamer[] getGamers()
  * @method <slug>Gamer|null getGamerById(string $id)
  * @method void registerGamer(<slug>Gamer $gamer)
  * @method <slug>GameCondition getConditionBlank()
@@ -42,10 +43,8 @@ class <slug>Game extends AbstractGame
     /**
      * @param <slug>GameCondition $condition
      */
-    public function setCondition(AbstractGameCondition $condition): void
+    protected function setFromCondition(AbstractGameCondition $condition): void
     {
-        parent::setCondition($condition);
-        
         //TODO
     }
 
@@ -69,14 +68,10 @@ class <slug>Game extends AbstractGame
         //TODO
     }
 
-    public function beforeLoaded(): void
+    protected function filterConditionForGamer(?AbstractGamer $gamer, AbstractGameCondition $condition): array
     {
         //TODO
-    }
 
-    public function getGameDataForGamer(?AbstractGamer $gamer = null): array
-    {
-        //TODO
-        return [];
+        return $condition->toArray();
     }
 }

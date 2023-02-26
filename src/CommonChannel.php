@@ -12,9 +12,9 @@ use lx;
 use lx\ModelInterface;
 use lx\AuthenticationInterface;
 use lx\ResourceVoterInterface;
-use lx\socket\Channel\Channel;
-use lx\socket\Channel\ChannelRequest;
-use lx\socket\Channel\ChannelResponse;
+use lx\socket\channel\Channel;
+use lx\socket\channel\request\ChannelRequest;
+use lx\socket\channel\request\ChannelResponse;
 use lx\socket\Connection;
 
 class CommonChannel extends Channel

@@ -26,6 +26,10 @@ class Gamer extends lx.BindableModel {
 		return this._game.getEnvironment();
 	}
 
+	getGame() {
+		return this._game;
+	}
+	
 	getId() {
 		return this._id;
 	}

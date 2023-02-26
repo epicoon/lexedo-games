@@ -2,7 +2,7 @@
 
 namespace lexedo\games;
 
-use lx\socket\Channel\ChannelEventListener;
+use lx\socket\channel\ChannelEventListener;
 
 class GameEventListener extends ChannelEventListener
 {

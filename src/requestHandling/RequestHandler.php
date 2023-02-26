@@ -6,7 +6,7 @@ use Throwable;
 use lexedo\games\CommonChannel;
 use lx\FlightRecorderHolderInterface;
 use lx\FlightRecorderHolderTrait;
-use lx\socket\Channel\ChannelRequest;
+use lx\socket\channel\request\ChannelRequest;
 
 class RequestHandler implements FlightRecorderHolderInterface
 {

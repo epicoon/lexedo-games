@@ -3,7 +3,7 @@
 namespace <namespace>;
 
 use lexedo\games\GameEventListener;
-use lx\socket\Channel\ChannelEvent;
+use lx\socket\channel\ChannelEvent;
 
 /**
  * @method <slug>Channel getChannel()

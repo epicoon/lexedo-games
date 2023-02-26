@@ -94,9 +94,9 @@ class Connector {
 			this.socket.close();
 	}
 
-	trigger(eventName, data, receivers = null, privateMode = false) {
+	trigger(eventName, data, receivers = null, returnToSender = true, privateMode = false) {
 		if (this.socket)
-			this.socket.trigger(eventName, data, receivers, privateMode);
+			this.socket.trigger(eventName, data, receivers, returnToSender, privateMode);
 		else
 			console.error('Socket is undefined');
 	}

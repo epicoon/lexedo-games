@@ -3,7 +3,7 @@
 namespace lexedo\games\requestHandling\actions;
 
 use lexedo\games\CommonChannel;
-use lx\socket\Channel\ChannelRequest;
+use lx\socket\channel\request\ChannelRequest;
 
 abstract class AbstractAction
 {

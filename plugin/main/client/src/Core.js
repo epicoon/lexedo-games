@@ -121,6 +121,7 @@ class Core extends lx.PluginCore {
 					click: ()=>plugin.root->confirmPopup.open(#lx:i18n(ToLeave)).confirm(()=>box.del())
 				}
 			});
+			box->body.overflow('hidden');
 			box.setPlugin(res.data, {connectData, gameType: game.type});
 			game.box = box;
 

@@ -3,7 +3,7 @@
 namespace lexedo\games\requestHandling;
 
 use lexedo\games\CommonChannel;
-use lx\socket\Channel\ChannelRequest;
+use lx\socket\channel\request\ChannelRequest;
 use lexedo\games\requestHandling\actions\AbstractAction;
 use lx\StringHelper;
 

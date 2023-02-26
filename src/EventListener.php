@@ -5,8 +5,8 @@ namespace lexedo\games;
 use lexedo\games\models\GameSave;
 use lx;
 use lx\Math;
-use lx\socket\Channel\ChannelEvent;
-use lx\socket\Channel\ChannelEventListener;
+use lx\socket\channel\ChannelEvent;
+use lx\socket\channel\ChannelEventListener;
 
 /**
  * @method CommonChannel getChannel()
@@ -39,6 +39,7 @@ class EventListener extends ChannelEventListener
             'type' => $eventData['type'],
             'name' => $eventData['name'],
             'gamersCount' => $eventData['gamers'],
+            'loadingMode' => false,
         ]);
         if (isset($eventData['password']) && $eventData['password'] != '') {
             $channel->setPassword($eventData['password']);

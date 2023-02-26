@@ -5,13 +5,17 @@ namespace lexedo\games;
 use lx;
 use lx\Math;
 use lexedo\games\GamePlugin;
-use lx\socket\Channel\ChannelEvent;
+use lx\socket\channel\ChannelEvent;
 use lx\socket\Connection;
 
 abstract class AbstractGame
 {
     const GAMER_CLASS = 'gamer';
     const CONDITION_CLASS = 'condition';
+
+    const RECONNECTION_STATUS_PENDING = 'pending';
+    const RECONNECTION_STATUS_STAFFED = 'staffed';
+    const RECONNECTION_STATUS_REVANGE = 'revange';
 
     private GamePlugin $_plugin;
     private GameChannel $_channel;
@@ -21,6 +25,7 @@ abstract class AbstractGame
     private array $userToGamerMap;
 
     protected bool $isActive;
+    protected bool $isLoaded;
     protected bool $isWaitingForRevenge;
     protected array $revengeApprovements;
 
@@ -28,16 +33,32 @@ abstract class AbstractGame
     {
         $this->isPending = true;
         $this->isActive = false;
+        $this->isLoaded = false;
         $this->gamers = new GamersList();
         $this->isWaitingForRevenge = false;
         $this->revengeApprovements = [];
+        $this->init();
     }
+
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * ABSTRACT
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     abstract public function getClassesMap(): array;
     abstract public function getCondition(): AbstractGameCondition;
-    abstract public function getGameDataForGamer(?AbstractGamer $gamer = null): array;
+
+    protected function init(): void
+    {
+        // pass
+    }
 
     public function beforeStaffed(): void
+    {
+        // pass
+    }
+
+    public function afterStaffed(): void
     {
         // pass
     }
@@ -52,21 +73,80 @@ abstract class AbstractGame
         // pass
     }
 
+    public function afterBegin(): void
+    {
+        // pass
+    }
+
     public function prepareBeginEvent(ChannelEvent $event): void
     {
         // pass
     }
 
-    public function beforeLoaded(): void
+    protected function setFromCondition(AbstractGameCondition $condition): void
     {
-        // pass
+
+    }
+
+    protected function filterConditionForGamer(?AbstractGamer $gamer, AbstractGameCondition $condition): array
+    {
+        return $condition->toArray();
+    }
+
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * COMMON
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    public function loadFromCondition(AbstractGameCondition $condition): void
+    {
+        $this->isPending = true;
+        $this->isLoaded = true;
+        $this->isActive = $condition->getActive();
+        $this->isWaitingForRevenge = $condition->getWaitingForRevenge();
+        $this->revengeApprovements = $condition->getRevengeApprovements();
+        $this->setFromCondition($condition);
+    }
+
+    public function prepareNewGamerEvent(ChannelEvent $event): void
+    {
+        $event->addData($this->getGamersData());
+    }
+
+    public function prepareGamerReconnectedEvent(ChannelEvent $event, Connection $connection): void
+    {
+        $gamer = $this->getGamerByConnection($connection);
+        $event->addData([
+            'reconnectionData' => [
+                'oldConnectionId' => $connection->getOldId(),
+                'newConnectionId' => $connection->getId(),
+                'gamerId' => $gamer->getId(),
+                'gameIsPending' => $this->isPending(),
+            ],
+        ]);
+        $event->setDataForConnection($connection, [
+            'gamersData' => $this->getGamersData(),
+            'gameData' => $this->getGameDataForGamer($gamer),
+        ]);
+    }
+
+    public function prepareObserverJoinedEvent(ChannelEvent $event, Connection $connection): void
+    {
+        //TODO сейчас посылается только наблюдателю, остальные не видят, что присоединился наблюдатель
+        $event->setReceiver($connection);
+        $event->addDataForConnection($connection, [
+            'gamersData' => $this->getGamersData(),
+            'gameData' => $this->getGameDataForGamer(),
+            'gameIsPending' => $this->isPending(),
+        ]);
     }
 
     public function prepareLoadedEvent(ChannelEvent $event): void
     {
         foreach ($this->getGamers() as $gamer) {
-            $gameData = $this->getGameDataForGamer($gamer);
-            $event->addDataForConnection($gamer->getConnection(), ['gameData' => $gameData]);
+            $event->addDataForConnection($gamer->getConnection(), [
+                'gameData' => $this->getGameDataForGamer($gamer)
+            ]);
         }
     }
 
@@ -74,14 +154,6 @@ abstract class AbstractGame
     {
         $class = $this->getDependedClass(self::CONDITION_CLASS);
         return new $class($this);
-    }
-
-    public function setCondition(AbstractGameCondition $condition): void
-    {
-        $this->isPending = true;
-        $this->isActive = $condition->getActive();
-        $this->isWaitingForRevenge = $condition->getWaitingForRevenge();
-        $this->revengeApprovements = $condition->getRevengeApprovements();
     }
 
     public function __get(string $name)
@@ -179,13 +251,6 @@ abstract class AbstractGame
             $this->userToGamerMap[$this->getUserAuthFieldByConnection($connection)]
         );
     }
-    
-    public function createGamerByConnection(Connection $connection): AbstractGamer
-    {
-        $gamer = $this->getNewGamer($connection);
-        $this->registerGamer($gamer);
-        return $gamer;
-    }
 
     /**
      * @param mixed $authField
@@ -195,6 +260,30 @@ abstract class AbstractGame
         $gamer = $this->getNewGamer(null, $authField);
         $this->registerGamer($gamer, $id);
         return $gamer;
+    }
+
+    public function promiseGamerForConnection(Connection $connection): bool
+    {
+        if ($this->getChannel()->isLoaded()) {
+            return $this->actualizeGamerByConnection($connection);
+        }
+
+        $gamer = $this->getNewGamer($connection);
+        $this->registerGamer($gamer);
+        return true;
+    }
+
+    public function actualizeGamerByConnection(Connection $connection): bool
+    {
+        $authField = $this->getUserAuthFieldByConnection($connection);
+        if (!array_key_exists($authField, $this->userToGamerMap)) {
+            return false;
+        }
+
+        $id = $this->userToGamerMap[$authField];
+        $gamer = $this->gamers[$id];
+        $gamer->updateByConnection($connection);
+        return true;
     }
 
     /**
@@ -209,19 +298,6 @@ abstract class AbstractGame
         $authField = $gamer->getAuthField();
         $this->userToGamerMap[$authField] = $id;
         $this->gamers[$id] = $gamer;
-    }
-    
-    public function actualizeGamerByConnection(Connection $connection): bool
-    {
-        $authField = $this->getUserAuthFieldByConnection($connection);
-        if (!array_key_exists($authField, $this->userToGamerMap)) {
-            return false;
-        }
-
-        $id = $this->userToGamerMap[$authField];
-        $gamer = $this->gamers[$id];
-        $gamer->updateByConnection($connection);
-        return true;
     }
 
     public function approveRevenge(string $gamerId): array
@@ -253,6 +329,11 @@ abstract class AbstractGame
         unset($this->gamers[$gamerId]);
     }
 
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * PRIVATE
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
     /**
      * @return mixed
      */
@@ -268,5 +349,46 @@ abstract class AbstractGame
     {
         $class = $this->getDependedClass(self::GAMER_CLASS);
         return new $class($this, $connection, $authField);
+    }
+
+    private function getGamersData(): array
+    {
+        $gamers = $this->getGamers();
+        $list = [];
+        foreach ($gamers as $gamer) {
+            $connectionId = $gamer->getConnectionId();
+            if (!$connectionId) {
+                continue;
+            }
+
+            $list[] = [
+                'connectionId' => $connectionId,
+                'gamerId' => $gamer->getId(),
+            ];
+        }
+        return $list;
+    }
+
+    private function getGameDataForGamer(?AbstractGamer $gamer = null): array
+    {
+        if ($this->isPending()) {
+            return [
+                'type' => self::RECONNECTION_STATUS_PENDING,
+            ];
+        }
+
+        if ($this->isWaitingForRevenge) {
+            return [
+                'type' => self::RECONNECTION_STATUS_REVANGE,
+                'approvesCount' => count($this->revengeApprovements),
+                'gamersCount' => $this->getNeedleGamersCount(),
+                'revengeApprovements' => $this->revengeApprovements,
+            ];
+        }
+
+        return [
+            'type' => self::RECONNECTION_STATUS_STAFFED,
+            'condition' => $this->filterConditionForGamer($gamer, $this->getCondition()),
+        ];
     }
 }
