@@ -11,8 +11,6 @@
 class Environment {
 	constructor(plugin, config) {
 		this._plugin = plugin;
-		this._eventCore = new lx.EventDispatcher();
-
 		plugin.onDestruct(()=>this.destruct());
 
 		this.mode = config.mode || 'prod';
@@ -21,11 +19,16 @@ class Environment {
 
 		this.useScreenLock = (config.useScreenLock === undefined) ? true : config.useScreenLock;
 		this.game = null;
+		this.gameEventHandler = null;
 		this._connector = new Connector(plugin, this, config.game);
 	}
 
-	setGame(game) {
+	setGame(game, isOnline) {
 		this.game = game;
+		if (isOnline) {
+			__subscribeGameEvents(this);
+			this.gameEventHandler = new lexedo.games.GameEventHandler(this, game);
+		}
 	}
 
 	getPlugin() {
@@ -74,50 +77,6 @@ class Environment {
 		this._connector.trigger(eventName, data, receivers, returnToSender, privateMode);
 	}
 
-	triggerEvent(eventName, params = []) {
-		this._eventCore.trigger(eventName, params);
-	}
-
-	subscribeEvent(eventName, callback) {
-		this._eventCore.subscribe(eventName, callback);
-	}
-
-	onChangeGamersList(data) {
-		this.game.onChangeGamersList(data);
-	}
-
-	onObserverJoined(data) {
-		this.game.setPending(data.gameIsPending);
-		if (!this.game.isPending())
-			this.unlockScreen();
-		this.game.onObserverJoined(data);
-	}
-
-	onSetGameReferences(data) {
-		this.game.setGameReferences(data);
-	}
-
-	onGameStuffed(data) {
-		this.unlockScreen();
-		this.game.onStuffed(data);
-		this.game.setPending(false);
-	}
-
-	onGameBegin(data) {
-		this.game.onBegin(data);
-	}
-
-	onGameLoaded(data) {
-		this.game.onLoaded(data);
-	}
-
-	onGamerReconnected(data) {
-		this.game.setPending(data.reconnectionData.gameIsPending);
-		if (!this.game.isPending())
-			this.unlockScreen();
-		this.game.onGamerReconnected(data);
-	}
-
 	lockScreen() {
 		if (this.useScreenLock) {
 			this.screenLock = new lx.Box({parent: this.getPlugin().root, geom: true});
@@ -137,4 +96,21 @@ class Environment {
 			this.useScreenLock = false;
 		}
 	}
+}
+
+function __subscribeGameEvents(self) {
+	self.getPlugin().on('ENV_gameStuffed', event=>{
+		self.unlockScreen();
+		self.game.setPending(false);
+	});
+	self.getPlugin().on('ENV_gamerReconnected', event=>{
+		self.game.setPending(event.getData().reconnectionData.gameIsPending);
+		if (!self.game.isPending())
+			self.unlockScreen();
+	});
+	self.getPlugin().on('ENV_observerJoined', event=>{
+		self.game.setPending(event.getData().gameIsPending);
+		if (!self.game.isPending())
+			self.unlockScreen();
+	});
 }

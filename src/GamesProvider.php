@@ -2,6 +2,7 @@
 
 namespace lexedo\games;
 
+use lexedo\games\models\AvailableGamePlugin;
 use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
 use lx\Plugin;
@@ -10,7 +11,6 @@ class GamesProvider implements FusionComponentInterface
 {
     use FusionComponentTrait;
     
-    protected array $games = [];
     private ?array $gamesData = null;
 
     protected function getGames(): array
@@ -20,27 +20,6 @@ class GamesProvider implements FusionComponentInterface
         }
         
         return $this->gamesData;
-    }
-    
-    private function loadGamesData(): void
-    {
-        $data = [];
-        foreach ($this->games as $gamePluginName) {
-            $gamePlugin = \lx::$app->getPlugin($gamePluginName);
-            if (!$gamePlugin || !($gamePlugin instanceof GamePlugin)) {
-                continue;
-            }
-            
-            $data[$gamePlugin->getGameSlug()] = [
-                'channel' => $gamePlugin->getGameChannelClass(),
-                'connectionType' => $gamePlugin->getGameConnectionType(),
-                'plugin' => $gamePluginName,
-                'image' => $gamePlugin->getTitleImage(),
-                'minGamers' => $gamePlugin->getMinGamers(),
-                'maxGamers' => $gamePlugin->getMaxGamers(),
-            ];
-        }
-        $this->gamesData = $data;
     }
 
     public function getFullData(): array
@@ -99,5 +78,36 @@ class GamesProvider implements FusionComponentInterface
         }
 
         return $plugin;
+    }
+
+    private function loadGamesData(): void
+    {
+        $games = AvailableGamePlugin::find([
+            'ORDER BY' => 'sorting ASC'
+        ]);
+        
+        $data = [];
+        /** @var AvailableGamePlugin $gamePluginData */
+        foreach ($games as $gamePluginData) {
+            if (!$gamePluginData->isActive) {
+                continue;
+            }
+
+            $gamePluginName = $gamePluginData->name;
+            $gamePlugin = \lx::$app->getPlugin($gamePluginName);
+            if (!$gamePlugin || !($gamePlugin instanceof GamePlugin)) {
+                continue;
+            }
+
+            $data[$gamePlugin->getGameSlug()] = [
+                'channel' => $gamePlugin->getGameChannelClass(),
+                'connectionType' => $gamePlugin->getGameConnectionType(),
+                'plugin' => $gamePluginName,
+                'image' => $gamePlugin->getTitleImage(),
+                'minGamers' => $gamePlugin->getMinGamers(),
+                'maxGamers' => $gamePlugin->getMaxGamers(),
+            ];
+        }
+        $this->gamesData = $data;
     }
 }

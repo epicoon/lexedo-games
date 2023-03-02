@@ -48,16 +48,6 @@ class <slug>Game extends AbstractGame
         //TODO
     }
 
-    public function beforeStaffed(): void
-    {
-        //TODO
-    }
-
-    public function prepareStaffedEvent(ChannelEvent $event): void
-    {
-        //TODO
-    }
-
     public function beforeBegin(): void
     {
         //TODO

@@ -217,30 +217,14 @@ abstract class GameChannel extends Channel
         ]);
         $app->getCommonChannel()->stuffPendingGame($this);
 
-        $game->beforeStaffed();
-        $event = $this->createEvent('game-stuffed');
-        $game->prepareStaffedEvent($event);
-        $event->send();
+        $this->trigger('game-stuffed');
         $game->setPending(false);
-        $game->afterStaffed();
-    }
 
-    public function triggerGameBegin(): void
-    {
-        $game = $this->getGame();
-        $game->beforeBegin();
-        $event = $this->createEvent('game-begin');
-        $game->prepareBeginEvent($event);
-        $event->send();
-        $game->afterBegin();
-    }
-
-    public function triggerGameLoaded(): void
-    {
-        $game = $this->getGame();
-        $event = $this->createEvent('game-loaded');
-        $game->prepareLoadedEvent($event);
-        $event->send();
+        if ($this->isLoaded()) {
+            $this->triggerGameLoaded();
+        } else {
+            $this->triggerGameBegin();
+        }
     }
 
     public function onReconnect(Connection $connection): void
@@ -369,6 +353,11 @@ abstract class GameChannel extends Channel
         }
     }
 
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * PRIVATE
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
     private function onObserverConnect(Connection $connection): void
     {
         $this->sendGameReferences($connection);
@@ -388,5 +377,22 @@ abstract class GameChannel extends Channel
             ->setReceiver($connection)
             ->setData($data)
             ->send();
+    }
+
+    private function triggerGameBegin(): void
+    {
+        $game = $this->getGame();
+        $game->beforeBegin();
+        $event = $this->createEvent('game-begin');
+        $game->prepareBeginEvent($event);
+        $event->send();
+    }
+
+    private function triggerGameLoaded(): void
+    {
+        $game = $this->getGame();
+        $event = $this->createEvent('game-loaded');
+        $game->prepareLoadedEvent($event);
+        $event->send();
     }
 }

@@ -28,3 +28,4 @@ core: lxGames.manage.Core
 guiNodes:
   mainBox: lxGames.manage.gui.MainBox
   channelInfoBox: lxGames.manage.gui.ChannelInfoBox
+  availablePlugins: lxGames.manage.gui.AvailablePlugins

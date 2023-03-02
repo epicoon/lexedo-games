@@ -65,6 +65,10 @@ class MainBox extends lx.GuiNode {
     initHandlers() {
         const widget = this.getWidget();
 
+        widget->>availablePluginsBut.click(()=>{
+            this.getGuiNode('availablePlugins').show();
+        });
+
         widget->>processRestart.click(()=>{
             this.getCore().onRestart();
             ^Respondent.rerunCommonProcess().then(res=>{
@@ -75,6 +79,7 @@ class MainBox extends lx.GuiNode {
                 setTimeout(()=>this.getCore().commonProcessStatus.watchOn(), 800);
             });
         });
+
         widget->>processStop.click(()=>{
             this.getCore().onStop();
             ^Respondent.stopCommonProcess().then(res=>{

@@ -102,7 +102,7 @@ class Connector {
 	}
 
 	initGame(className) {
-		this._environment.setGame(lx.createObject(className, [this._environment]));
+		this._environment.setGame(lx.createObject(className, [this._environment]), this.isOnline());
 
 		if (this.isOnline()) {
 			this._environment.lockScreen();

@@ -1,0 +1,6 @@
+name: AvailableGamePlugin
+
+fields:
+  name: string required
+  isActive: bool default(false)
+  sorting: int

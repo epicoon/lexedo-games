@@ -1,3 +1,9 @@
+/*
+ * Game life cycle events:
+ * - ENV_gameReferencesReceived
+ * - ENV_gameConditionReceived
+ * - ENV_gameBegin
+ */
 #lx:namespace lexedo.games;
 class Game {
 	constructor(env) {
@@ -23,56 +29,6 @@ class Game {
 
 	init() {
 		// abstract		
-	}
-
-	setGameReferences(references) {
-		// abstract
-	}
-
-	onStuffed(data) {
-		// abstract
-	}
-
-	onBegin(data) {
-		// abstract
-	}
-
-	actualizeAfterReconnect(data) {
-		// abstract
-	}
-
-	onChangeGamersList(list) {
-		let gamerClass = self::getGamerClass();
-		for (let i=0; i<list.len; i++) {
-			let pare = list[i];
-			let mate = this.getEnvironment().getSocket().getChannelMate(pare.connectionId);
-			if (!(pare.gamerId in this.gamers))
-				this.gamers[pare.gamerId] = new gamerClass(this, pare.gamerId, mate);
-		}
-	}
-
-	onGamerReconnected(data) {
-		let mate = this.getEnvironment().getSocket().getChannelMate(data.reconnectionData.newConnectionId);
-		if (!mate.isLocal()) {
-			for (let i in this.gamers) {
-				let gamer = this.gamers[i];
-				if (gamer._connectionId == data.reconnectionData.oldConnectionId)
-					gamer.updateChannelMate(mate);
-			}
-			return;
-		}
-
-		this.onChangeGamersList(data.gamersData);
-		this.actualizeAfterReconnect(data.gameData);
-	}
-
-	onObserverJoined(data) {
-		this.onChangeGamersList(data.gamersData);
-		this.actualizeAfterReconnect(data.gameData);
-	}
-
-	onLoaded(data) {
-		this.actualizeAfterReconnect(data.gameData);
 	}
 
 	getPlugin() {

@@ -3,6 +3,11 @@ class ChannelEventListener extends lx.socket.EventListener {
 	constructor(env) {
 		super();
 		this._environment = env;
+		this._plugin = env.getPlugin();
+	}
+
+	getPlugin() {
+		return this._plugin;
 	}
 
 	getEnvironment() {
@@ -18,30 +23,30 @@ class ChannelEventListener extends lx.socket.EventListener {
 	}
 
 	onNewGamer(event) {
-		this.getEnvironment().onChangeGamersList(event.getData());
+		this.getPlugin().trigger('ENV_changeGamersList', event.getData());
 	}
 
 	onGamerReconnected(event) {
-		this.getEnvironment().onGamerReconnected(event.getData());
+		this.getPlugin().trigger('ENV_gamerReconnected', event.getData());
 	}
 
 	onObserverJoined(event) {
-		this.getEnvironment().onObserverJoined(event.getData());
+		this.getPlugin().trigger('ENV_observerJoined', event.getData());
 	}
 
 	onSetGameReferences(event) {
-		this.getEnvironment().onSetGameReferences(event.getData());
+		this.getPlugin().trigger('ENV_gameReferencesReceived', event.getData());
 	}
 
 	onGameStuffed(event) {
-		this.getEnvironment().onGameStuffed(event.getData());
+		this.getPlugin().trigger('ENV_gameStuffed', event.getData());
 	}
 
 	onGameBegin(event) {
-		this.getEnvironment().onGameBegin(event.getData());
+		this.getPlugin().trigger('ENV_gameBegin', event.getData());
 	}
 
 	onGameLoaded(event) {
-		this.getEnvironment().onGameLoaded(event.getData());
+		this.getPlugin().trigger('ENV_gameConditionReceived', event.getData().gameData);
 	}
 }

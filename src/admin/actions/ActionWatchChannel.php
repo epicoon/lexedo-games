@@ -43,7 +43,9 @@ class ActionWatchChannel extends AbstractAdminAction
     {
         $mapper = new ObjectMapper();
         return $mapper->setObject($gameChannel)
-            ->skipProperties([
+            ->ignoreInstanses([
+                lx\socket\Connection::class,
+            ])->skipProperties([
                 'delegateList',
                 'objectDependencies',
                 'lazyStrongDependencies',
@@ -52,6 +54,7 @@ class ActionWatchChannel extends AbstractAdminAction
                 'connections',
                 'formerConnectionIds',
                 'eventListener',
+                'requestHandler',
                 'timerStart',
                 'createdAt',
                 'plugin',
@@ -59,10 +62,8 @@ class ActionWatchChannel extends AbstractAdminAction
                 'game' => [
                     '_plugin',
                     '_channel',
-                    'gamers',
                     'userToGamerMap',
                 ],
-            ])
-            ->getResult();
+            ])->getResult();
     }
 }

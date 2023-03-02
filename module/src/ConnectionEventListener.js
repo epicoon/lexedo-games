@@ -13,7 +13,7 @@ class ConnectionEventListener {
 		    console.log(__title(this, 'ON CONNECTED'));
 		}
 
-		this._environment.triggerEvent('socketConnected');
+		this._environment.getPlugin().trigger('ENV_socketConnected');
 	}
 
 	onMessage(message) {
@@ -43,7 +43,7 @@ class ConnectionEventListener {
 			console.log(event.payload.mate);
 		}
 
-		this._environment.triggerEvent('socketConnected');
+		this._environment.getPlugin().trigger('ENV_socketConnected');
 	}
 
 	onClientLeave(event) {

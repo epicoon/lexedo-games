@@ -6,8 +6,6 @@
 
 #lx:use lx.Button;
 #lx:use lx.ActiveBox;
-#lx:use lx.ConfirmPopup;
-#lx:use lx.InputPopup;
 
 var headHeight = '60px';
 
@@ -65,5 +63,7 @@ currentGamesBox.stream({
     minHeight: '40px'
 });
 
+#lx:use lx.ConfirmPopup;
+#lx:use lx.InputPopup;
 new lx.ConfirmPopup();
 new lx.InputPopup();

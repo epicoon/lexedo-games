@@ -18,7 +18,7 @@
             <lx.Box:[f:statusText].lgman-Box.lgman-smalltext (width:2)>.align(lx.CENTER, lx.MIDDLE)
             <lx.Box:[f:pid].lgman-Box.lgman-smalltext (width:2)>.align(lx.CENTER, lx.MIDDLE)
             <lx.Box:[f:date].lgman-Box.lgman-smalltext (width:2)>.align(lx.CENTER, lx.MIDDLE)
-            <lx.Button:@processErrors (text:'errors')>
+            <lx.Button:@availablePluginsBut (text:'available')>
             <lx.Button:@processLog (text:'log')>
             <lx.Button:@processRestart (text:'restart')>
             <lx.Button:@processStop (text:'stop')>
@@ -63,3 +63,13 @@
                     <lx.Box:.lgman-Box (geom:[0, 6, 12, 6])>
                         <lx.TreeBox:@channelData._spread>
 #lx:tpl-end;
+
+#lx:use lx.ActiveBox;
+Snippet.addSnippets({
+    availablePlugins: {
+        widget: lx.ActiveBox,
+        backLock: true,
+        hidden: true,
+        config: { geom: [25, 15, 50, 60], header: 'Available plugins', closeButton: true }
+    }
+}, 'popup');

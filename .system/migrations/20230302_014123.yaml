@@ -1,0 +1,17 @@
+actions:
+  - type: createTable
+    schema:
+      name: AvailableGamePlugin
+      fields:
+        name:
+          type: string
+          required: true
+          details:
+            size: 256
+        isActive:
+          type: bool
+          required: false
+          default: false
+        sorting:
+          type: int
+          required: false

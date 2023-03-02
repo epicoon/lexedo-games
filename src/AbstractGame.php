@@ -53,17 +53,7 @@ abstract class AbstractGame
         // pass
     }
 
-    public function beforeStaffed(): void
-    {
-        // pass
-    }
-
-    public function afterStaffed(): void
-    {
-        // pass
-    }
-
-    public function prepareStaffedEvent(ChannelEvent $event): void
+    protected function setFromCondition(AbstractGameCondition $condition): void
     {
         // pass
     }
@@ -73,19 +63,9 @@ abstract class AbstractGame
         // pass
     }
 
-    public function afterBegin(): void
-    {
-        // pass
-    }
-
     public function prepareBeginEvent(ChannelEvent $event): void
     {
         // pass
-    }
-
-    protected function setFromCondition(AbstractGameCondition $condition): void
-    {
-
     }
 
     protected function filterConditionForGamer(?AbstractGamer $gamer, AbstractGameCondition $condition): array
@@ -126,7 +106,7 @@ abstract class AbstractGame
         ]);
         $event->setDataForConnection($connection, [
             'gamersData' => $this->getGamersData(),
-            'gameData' => $this->getGameDataForGamer($gamer),
+            'gameData' => $this->getConditionForGamer($gamer),
         ]);
     }
 
@@ -136,7 +116,7 @@ abstract class AbstractGame
         $event->setReceiver($connection);
         $event->addDataForConnection($connection, [
             'gamersData' => $this->getGamersData(),
-            'gameData' => $this->getGameDataForGamer(),
+            'gameData' => $this->getConditionForGamer(),
             'gameIsPending' => $this->isPending(),
         ]);
     }
@@ -145,7 +125,7 @@ abstract class AbstractGame
     {
         foreach ($this->getGamers() as $gamer) {
             $event->addDataForConnection($gamer->getConnection(), [
-                'gameData' => $this->getGameDataForGamer($gamer)
+                'gameData' => $this->getConditionForGamer($gamer)
             ]);
         }
     }
@@ -369,7 +349,7 @@ abstract class AbstractGame
         return $list;
     }
 
-    private function getGameDataForGamer(?AbstractGamer $gamer = null): array
+    private function getConditionForGamer(?AbstractGamer $gamer = null): array
     {
         if ($this->isPending()) {
             return [

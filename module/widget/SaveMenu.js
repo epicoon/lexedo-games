@@ -7,14 +7,19 @@
 #lx:use lx.Image;
 
 #lx:namespace lexedo.games;
-class SaveMenu extends lx.ActiveBox {
+class SaveMenu extends lx.Box {
     modifyConfigBeforeApply(config) {
-    	config.geom = config.geom || [10, 15, 80, 60];
-    	config.header = config.header || #lx:i18n(saveMenu);
+		config.geom = config.geom || [10, 15, 80, 60];
+		config.header = config.header || #lx:i18n(saveMenu);
     	config.closeButton = config.closeButton || {
 			click: function() {
-				this.getActiveBox().del();
+				this.getActiveBox().parent.del();
 			}
+		};
+		config = {
+			geom: true,
+			depthCluster: lx.DepthClusterMap.CLUSTER_OVER,
+			formConfig: config
 		};
         return config;
     }
@@ -31,9 +36,18 @@ class SaveMenu extends lx.ActiveBox {
 	
     #lx:client clientBuild(config) {
     	super.clientBuild(config);
-    	this.begin();
+
+		this.add(lx.Box, {
+			geom: true,
+			opacity: 0.5,
+			fill: 'black',
+			click: ()=>this.del()
+		});
+		const form = this.add(lx.ActiveBox, config.formConfig);
+
+		form.begin();
     	let content = this.renderContent();
-    	this.end();
+		form.end();
 
 		this._core = null;
 		this._env = null;
