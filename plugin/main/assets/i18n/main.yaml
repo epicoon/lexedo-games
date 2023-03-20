@@ -1,8 +1,5 @@
 en-EN:
   i18nKey_title: Lexedo games
-  Common_chat: Common chat
-  Available_games: Available games
-  Current_games: Current games
   SavedGames: Saved games
   GamersCount: Gamers count (${min}-${max})
   OnlineOrLocal: Do you want to start online type of the game?
@@ -15,9 +12,6 @@ en-EN:
 
 ru-RU:
   i18nKey_title: Lexedo игры
-  Common_chat: Общий чат
-  Available_games: Доступные игры
-  Current_games: Текущие игры
 
   NewGameName: Название новой игры
   Password: Пароль

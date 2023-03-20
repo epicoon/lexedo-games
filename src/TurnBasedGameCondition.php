@@ -12,7 +12,7 @@ namespace lexedo\games;
 class TurnBasedGameCondition extends AbstractGameCondition
 {
     protected array $turnSequence;
-    protected string $activeGamer;
+    protected ?string $activeGamer;
 
     protected function getFields(): array
     {

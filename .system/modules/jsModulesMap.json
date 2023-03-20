@@ -6,6 +6,13 @@
             "i18n": "EnvironmentI18n.yaml"
         }
     },
+    "lexedo.games.OfferDialog": {
+        "name": "lexedo.games.OfferDialog",
+        "path": "module\/OfferDialog.js",
+        "data": {
+            "i18n": "srcOfferDialog\/i18n.yaml"
+        }
+    },
     "lexedo.games.SaveMenu": {
         "name": "lexedo.games.SaveMenu",
         "path": "module\/widget\/SaveMenu.js",

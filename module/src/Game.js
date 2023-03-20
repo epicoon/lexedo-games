@@ -51,8 +51,18 @@ class Game {
 		this._pending = value;
 	}
 
+	getGamer(id) {
+		return this.gamers[id];
+	}
+
 	getGamers() {
 		return this.gamers;
+	}
+
+	getGamersCount() {
+		let counter = 0;
+		for (let i in this.gamers) counter++;
+		return counter;
 	}
 
 	eachGamer(f) {
@@ -78,5 +88,9 @@ class Game {
 			if (gamer._connectionId == mate.getId()) return gamer;
 		}
 		return null;		
+	}
+
+	getChannelMateByGamer(gamer) {
+		return this.getEnvironment().socket.getChannelMate(gamer.getChannelMateId());
 	}
 }

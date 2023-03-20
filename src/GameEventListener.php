@@ -13,4 +13,14 @@ class GameEventListener extends ChannelEventListener
     {
         return $this->getChannel()->getGame();
     }
+
+    protected function getOfferTransitEventNames(string $scenarioName): array
+    {
+        return [
+            $scenarioName . 'Offer',
+            $scenarioName . 'Confirm',
+            $scenarioName . 'Decline',
+            $scenarioName . 'Final',
+        ];
+    }
 }

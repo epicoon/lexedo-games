@@ -4,66 +4,39 @@
  * @const {lx.Snippet} Snippet
  */
 
-#lx:use lx.Button;
-#lx:use lx.ActiveBox;
+#lx:use lx.Scroll;
 
-var headHeight = '60px';
-
-var headBox = new lx.Box({
-    key: 'headBox',
-    geom: [0, 0, 100, headHeight]
-});
-headBox.border();
-headBox.gridProportional({indent:'10px'});
-headBox.add(lx.Button, {
-    key: 'savedGamesBut',
-    geom:[9, 0, 3, 1],
-    text:#lx:i18n(SavedGames)
-});
-
-
-
-var mainBox = new lx.Box({
-    key: 'mainBox',
-    geom: [0, headHeight, 100, null, null, 0]
-});
-mainBox.border();
-mainBox.begin();
-
-var commonChatWindow = new lx.ActiveBox({
-    header: #lx:i18n(Common_chat),
-    adhesive: true,
-    geom: [0, 0, 25, 100]
-});
-
-var gamesWindow = new lx.ActiveBox({
-    header: #lx:i18n(Available_games),
-    adhesive: true,
-    geom: [25, 0, 50, 100]
-});
-
-var pendingGamesWindow = new lx.ActiveBox({
-    header: #lx:i18n(Current_games),
-    adhesive: true,
-    geom: [75, 0, 25, 100]
-});
-
-mainBox.end();
-
-var gamesBox = gamesWindow.add(lx.Box, {key: 'gamesBox'});
-gamesBox.grid({
-    indent: '20px',
-    cols: 3,
-    minHeight: '200px'
-});
-
-var currentGamesBox = pendingGamesWindow.add(lx.Box, {key: 'currentGamesBox'});
-currentGamesBox.stream({
-    indent: '10px',
-    minHeight: '40px'
-});
+#lx:tpl-begin;
+    <lx.Box:._spread>
+        .streamProportional()
+        <lx.Box:@headBox (height:'60px')>
+            .gridProportional(indent:'10px')
+            <lx.Box (width:5, text:'TODO')>.border().setAttribute('title', 'Logo')
+            <lx.Button:@savedGamesBut (width:5, text:#lx:i18n(SavedGames))>
+            <lx.Box (width:1, text:'TODO')>.border().setAttribute('title', 'Color schema')
+            <lx.LanguageSwitcher (width:1)>
+        <lx.Box:@mainBox>
+            <lx.Box:._spread>
+                <lx.Box:._spread>
+                    <lx.Box:.lgmain-Box (left:'10px')>
+                        .addContainer()
+                        .addStructure(lx.Scroll, {type: lx.VERTICAL})
+                        <lx.Box:@gamesBox>.gridAdaptive(indent:'20px', minHeight:'200px', minWidth:'250px')
+                <lx.JointMover (left:'3/4', width:'10px')>
+                <lx.Box:._spread>
+                    <lx.Box:.lgmain-Box (right:'10px')>
+                        .addContainer()
+                        .addStructure(lx.Scroll, {type: lx.VERTICAL})
+                        <lx.Box:@currentGamesBox>.stream(indent:'10px', minHeight:'40px')
+            <lx.JointMover (top:'2/3', height:'10px')>
+            <lx.Box:._spread>
+                <lx.socket.ChatBox:@chatBox (
+                    id:'commonChat',
+                    geom:['10px',0,null,null,'10px','10px'],
+                    mateNameField:'login',
+                    matesPosition: lx.LEFT
+                )>
+#lx:tpl-end;
 
 #lx:use lx.ConfirmPopup;
 #lx:use lx.InputPopup;
-new lx.ConfirmPopup();
-new lx.InputPopup();

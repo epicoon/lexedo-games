@@ -3,6 +3,10 @@
 }
 
 class Plugin extends lx.Plugin {
+    initCss(css) {
+        css.inheritClass('lgmain-Box', 'AbstractBox');
+    }
+    
     run() {
 
     }

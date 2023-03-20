@@ -11,12 +11,6 @@ use lx\socket\channel\ChannelEvent;
  */
 class <slug>EventListener extends GameEventListener
 {
-    public function getAvailableEventNames(): array
-    {
-        return ['chat-message'];
-    }
-
-
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * EVENT HANDLERS
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

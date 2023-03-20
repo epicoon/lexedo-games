@@ -20,9 +20,9 @@ abstract class AbstractGame
     private GamePlugin $_plugin;
     private GameChannel $_channel;
 
-    private bool $isPending;
-    private GamersList $gamers;
     private array $userToGamerMap;
+    protected bool $isPending;
+    protected GamersList $gamers;
 
     protected bool $isActive;
     protected bool $isLoaded;
@@ -86,6 +86,17 @@ abstract class AbstractGame
         $this->isWaitingForRevenge = $condition->getWaitingForRevenge();
         $this->revengeApprovements = $condition->getRevengeApprovements();
         $this->setFromCondition($condition);
+    }
+
+    protected function loadGamersFromCondition(AbstractGameCondition $condition): void
+    {
+        $gamers = $condition->getGamers();
+        foreach ($gamers as $gamerData) {
+            $authField = $gamerData['authField'];
+            $gamerId = $gamerData['gamerId'];
+            $gamer = $this->createGamerByAuthField($authField, $gamerId);
+            $gamer->restore($gamerData);
+        }
     }
 
     public function prepareNewGamerEvent(ChannelEvent $event): void

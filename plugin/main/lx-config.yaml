@@ -4,7 +4,7 @@ respondents:
   Respondent: Respondent
 
 title: i18nKey_title
-icon: @site/web/images/lexedogames.png
+icon: @web/images/lexedogames.png
 
 rootSnippet: snippets/_root.js
 snippets: snippets

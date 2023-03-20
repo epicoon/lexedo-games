@@ -118,7 +118,7 @@ class Core extends lx.PluginCore {
 				header: game.type,
 				geom: true, //[20, 15, 60, 60]
 				closeButton: {
-					click: ()=>plugin.root->confirmPopup.open(#lx:i18n(ToLeave)).confirm(()=>box.del())
+					click: ()=>lx.ConfirmPopup.open(#lx:i18n(ToLeave)).confirm(()=>box.del())
 				}
 			});
 			box->body.overflow('hidden');
@@ -145,7 +145,7 @@ class Core extends lx.PluginCore {
 				this.__createOnlineGame(gameData);
 				break;
 			case self::ONLINE_AND_LOCAL:
-				this.plugin.root->confirmPopup.open(#lx:i18n(OnlineOrLocal))
+				lx.ConfirmPopup.open(#lx:i18n(OnlineOrLocal))
 					.confirm(()=>this.__createOnlineGame(gameData))
 					.reject(()=>this.loadGamePlugin({type: gameData.type}, null));
 				break;
@@ -157,7 +157,7 @@ class Core extends lx.PluginCore {
 		if (gameData.minGamers != gameData.maxGamers)
 			params.push(#lx:i18n(GamersCount, {min: gameData.minGamers, max: gameData.maxGamers}));
 
-		this.plugin.root->inputPopup.open(params).confirm((values)=>{
+		lx.InputPopup.open(params).confirm((values)=>{
 			let gamers = (gameData.minGamers != gameData.maxGamers)
 				? values[2]
 				: gameData.minGamers;
@@ -177,9 +177,9 @@ class Core extends lx.PluginCore {
 
 	__switchRelationToGame(game) {
 		if (game.follow) {
-			this.plugin.root->confirmPopup.open(#lx:i18n(ToLeave)).confirm(()=>game.box.del());
+			lx.ConfirmPopup.open(#lx:i18n(ToLeave)).confirm(()=>game.box.del());
 		} else {
-			this.plugin.root->confirmPopup.open(#lx:i18n(ToJoin), {asObserver:#lx:i18n(AsObserver)})
+			lx.ConfirmPopup.open(#lx:i18n(ToJoin), {asObserver:#lx:i18n(AsObserver)}, 3)
 				.confirm(()=>{
 					//TODO password
 					this.__inConnecting = {password: ''};

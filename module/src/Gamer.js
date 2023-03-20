@@ -34,6 +34,14 @@ class Gamer extends lx.BindableModel {
 		return this._id;
 	}
 
+	getChannelMate() {
+		return this.getEnvironment().getSocket().getChannelMate(this._connectionId);
+	}
+
+	getChannelMateId() {
+		return this._connectionId;
+	}
+
 	getName() {
 		return this._name;
 	}

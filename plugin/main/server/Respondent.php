@@ -2,6 +2,7 @@
 
 namespace lexedo\games\plugin\main\server;
 
+use lexedo\games\GamePlugin;
 use lx;
 use lexedo\games\GamesServer;
 use lx\HttpResponse;
@@ -22,6 +23,7 @@ class Respondent extends \lx\Respondent
 
     public function loadGamePlugin(string $gameType): HttpResponseInterface
     {
+        /** @var GamePlugin $plugin */
         $plugin = lx::$app->getService('lexedo/games')->gamesProvider->getGamePlugin($gameType);
         if (!$plugin) {
             return $this->prepareErrorResponse(
