@@ -87,30 +87,62 @@ class Respondent extends lxRespondent implements RbacResourceInterface
             $this->commonProcessName,
             $this->commonProcessIndex
         );
+
         if ($process && $process->isActive()) {
             $result = $processSupervisor->stopProcess($this->commonProcessName, $this->commonProcessIndex);
             if (!$result) {
                 return $this->prepareWarningResponse('Can not stop the process');
             }
-        }
-
-        $result = null;
-        $attempts = 0;
-        $attemptsLimit = 10;
-        while ($attempts < $attemptsLimit) {
-            usleep(200000);
-            if ($process) {
+            $attempts = 0;
+            $attemptsLimit = 10;
+            while ($attempts < $attemptsLimit) {
+                usleep(200000);
                 $process->actualizeCurrentStatus();
+                if (!$process->isActive()) {
+                    break;
+                }
+                $attempts++;
             }
-            if (!$process || !$process->isActive()) {
-                $result = $processSupervisor->rerunProcess($this->commonProcessName, $this->commonProcessIndex);
-                break;
+            if ($attempts === $attemptsLimit) {
+                return $this->prepareWarningResponse('Can not stop the process');
             }
-            $attempts++;
         }
 
-        if (!$result) {
-            return $this->prepareWarningResponse('Can not run the process');
+        if ($process) {
+            $processSupervisor->rerunProcess($this->commonProcessName, $this->commonProcessIndex);
+            $attempts = 0;
+            $attemptsLimit = 10;
+            while ($attempts < $attemptsLimit) {
+                usleep(200000);
+                if ($process->isActive()) {
+                    break;
+                }
+                $attempts++;
+            }
+            if ($attempts === $attemptsLimit) {
+                return $this->prepareWarningResponse('Can not run the process');
+            }
+        } else {
+            $processSupervisor->runServiceProcess($this->getService(), $this->commonProcessName);
+            $attempts = 0;
+            $attemptsLimit = 10;
+            while ($attempts < $attemptsLimit) {
+                usleep(200000);
+                $process = $processSupervisor->getProcess(
+                    $this->commonProcessName,
+                    $this->commonProcessIndex
+                );
+                if ($process) {
+                    $process->actualizeCurrentStatus();
+                    if ($process->isActive()) {
+                        break;
+                    }
+                }
+                $attempts++;
+            }
+            if ($attempts === $attemptsLimit) {
+                return $this->prepareWarningResponse('Can not run the process');
+            }
         }
 
         return $this->prepareResponse('Ok');
