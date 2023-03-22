@@ -6,18 +6,21 @@ actions:
         gameType:
           type: string
           required: true
-          size: 256
+          details:
+            size: 256
         name:
           type: string
           required: true
-          size: 256
+          details:
+            size: 256
         date:
           type: datetime
           required: true
         data:
           type: string
           required: true
-          size: 4000
+          details:
+            size: 4000
   - type: createTable
     schema:
       name: GamerInGame
@@ -25,11 +28,13 @@ actions:
         userAuthValue:
           type: string
           required: true
-          size: 256
+          details:
+            size: 256
         gamerId:
           type: string
           required: true
-          size: 256
+          details:
+            size: 256
         isHolder:
           type: bool
           required: false
