@@ -29,6 +29,7 @@ class GamesProvider implements FusionComponentInterface
             $result[] = [
                 'type' => $type,
                 'connectionType' => $game['connectionType'],
+                'title' => $game['title'],
                 'image' => $game['image'],
                 'minGamers' => $game['minGamers'],
                 'maxGamers' => $game['maxGamers'],
@@ -103,6 +104,7 @@ class GamesProvider implements FusionComponentInterface
                 'channel' => $gamePlugin->getGameChannelClass(),
                 'connectionType' => $gamePlugin->getGameConnectionType(),
                 'plugin' => $gamePluginName,
+                'title' => $gamePlugin->getGameTitle(),
                 'image' => $gamePlugin->getTitleImage(),
                 'minGamers' => $gamePlugin->getMinGamers(),
                 'maxGamers' => $gamePlugin->getMaxGamers(),

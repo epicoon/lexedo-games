@@ -15,6 +15,7 @@ class Core extends lx.PluginCore {
 				schema: [
 					'type',
 					'connectionType',
+					'title',
 					'image',
 					'minGamers',
 					'maxGamers'
@@ -197,7 +198,7 @@ class Core extends lx.PluginCore {
 		#lx:use lx.Image;
 		#lx:use lexedo.games.SaveMenu;
 
-		var core = this;
+		const core = this;
 
 		this.plugin->>savedGamesBut.click(()=>{
 			let saveMenu = new lexedo.games.SaveMenu();
@@ -208,11 +209,15 @@ class Core extends lx.PluginCore {
 			items: this.lists.gamePropotypes,
 			itemBox: lx.Box,
 			itemRender: function(box, model) {
-				var gameBox = new lx.Box({geom: true});
-				var img = gameBox.add(lx.Image, {geom: true, filename: model.image});
+				let gameBox = new lx.Box({geom: true});
+				gameBox.streamProportional();
+				let imgWrapper = gameBox.add(lx.Box);
+				let title = gameBox.add(lx.Box, {height: '20%', text: model.title});
+				title.align(lx.CENTER, lx.MIDDLE);
+				let img = imgWrapper.add(lx.Image, {geom: true, filename: model.image});
 				img.adapt();
-				gameBox.on('resize', ()=>img.adapt());
-				gameBox.align(lx.CENTER, lx.MIDDLE);
+				imgWrapper.on('resize', ()=>img.adapt());
+				imgWrapper.align(lx.CENTER, lx.MIDDLE);
 				gameBox.addClass('lx-Button');
 				gameBox.click(()=>core.__createGame(model));
 			}

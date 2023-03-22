@@ -25,6 +25,11 @@ abstract class GamePlugin extends Plugin
         $this->gameOptions = $options;
     }
 
+    public function getGameTitle(): string
+    {
+        return $this->gameOptions['title'];
+    }
+
     public function getGameSlug(): string
     {
         return $this->gameOptions['slug'];
