@@ -19,7 +19,7 @@ class MainBox extends lx.GuiNode {
                 icon.setField('icon', function(val) {
                     if (!val) return;
                     this.clear();
-                    var img = this.add(lx.Image, {src: val});
+                    let img = this.add(lx.Image, {src: val});
                     img.adapt();
                 });
 
