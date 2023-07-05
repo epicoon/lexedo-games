@@ -51,10 +51,6 @@ class Game {
 		this._pending = value;
 	}
 
-	getGamer(id) {
-		return this.gamers[id];
-	}
-
 	getGamers() {
 		return this.gamers;
 	}
@@ -65,7 +61,7 @@ class Game {
 		return counter;
 	}
 
-	eachGamer(f) {
+	forEachGamer(f) {
 		for (let id in this.gamers)
 			f(this.gamers[id]);
 	}
