@@ -31,7 +31,7 @@ abstract class AbstractGamer
         $this->init();
     }
 
-    abstract function restore(array $config): void;
+    abstract public function restore(array $config): void;
 
     protected function init(): void
     {

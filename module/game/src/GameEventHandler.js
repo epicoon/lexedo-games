@@ -28,17 +28,15 @@ function __subscribeEvents(self) {
     const plugin = self.getPlugin();
     plugin.on('ENV_changeGamersList', event=>__onChangeGamersList(self, event.getData()));
     plugin.on('ENV_gamerReconnected', event=>__onGamerReconnected(self, event.getData()));
-    plugin.on('ENV_observerJoined', event=>__onObserverJoined(self, event.getData()));
+    plugin.on('ENV_observerConnected', event=>__onObserverJoined(self, event.getData()));
 }
 
 function __onChangeGamersList(self, list) {
     const game = self.getGame();
-    let gamerClass = game.constructor.getGamerClass();
     for (let i=0; i<list.len; i++) {
         let pare = list[i];
         let mate = self.getEnvironment().getSocket().getChannelMate(pare.connectionId);
-        if (!(pare.gamerId in game.gamers))
-            game.gamers[pare.gamerId] = new gamerClass(game, pare.gamerId, mate);
+        game.registerGamer(mate, pare.gamerId);
     }
 }
 

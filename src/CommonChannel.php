@@ -140,6 +140,10 @@ class CommonChannel extends Channel
     public function stuffPendingGame(GameChannel $gameChannel): void
     {
         if (array_key_exists($gameChannel->getName(), $this->pendingGamesMap)) {
+            $this->trigger('game-stuffed', [
+                'channel' => $gameChannel->getName(),
+            ]);
+
             $this->stuffedGamesList[$gameChannel->getName()] = $gameChannel;
             unset($this->pendingGamesMap[$gameChannel->getName()]);
         }

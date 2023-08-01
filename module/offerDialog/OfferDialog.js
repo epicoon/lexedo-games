@@ -1,11 +1,11 @@
 #lx:module lexedo.games.OfferDialog;
 #lx:module-data {
-    i18n: srcOfferDialog/i18n.yaml
+    i18n: src/i18n.yaml
 };
 
 #lx:use lx.HashMd5;
 #lx:use lx.ConfirmPopup;
-#lx:require srcOfferDialog/;
+#lx:require src/;
 
 /*
 1. Покупатель отправляет напрямую событие владельцу

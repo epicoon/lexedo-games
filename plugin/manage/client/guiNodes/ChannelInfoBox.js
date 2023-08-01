@@ -43,10 +43,10 @@ class ChannelInfoBox extends lx.GuiNode {
             }
         });
 
-        widget->>channelData.setLeafRenderer((leaf)=>{
+        widget->>channelData.setLeafRenderer(leaf => {
             let data = leaf.node.data;
             let label = data.name + ' {' + data.type + '}';
-            if (data.value) label += ' = ' + data.value;
+            if (data.value !== undefined && data.value !== null) label += ' = ' + data.value;
             leaf->label.text(label);
         });
     }
@@ -68,13 +68,7 @@ class ChannelInfoBox extends lx.GuiNode {
             widget->>channelData.dropTree();
         });
         plugin.on('channelDataUpdated', (event)=>{
-            let tree = lx.Tree.uCreateFromObject(
-                event.data.channelData,
-                'fields',
-                (obj, node) => {
-                    node.data = obj;
-                }
-            );
+            let tree = (new lx.RecursiveTreeConverter().objectToTree(event.getData().channelData));
             widget->>channelData.setTree(tree);
         });
     }

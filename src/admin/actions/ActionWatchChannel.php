@@ -64,6 +64,7 @@ class ActionWatchChannel extends AbstractAdminAction
                     '_channel',
                     'userToGamerMap',
                 ],
-            ])->getResult();
+            ])->getResult()
+            ->toArray();
     }
 }

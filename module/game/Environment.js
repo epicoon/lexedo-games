@@ -29,6 +29,7 @@ class Environment {
 			__subscribeGameEvents(this);
 			this.gameEventHandler = new lexedo.games.GameEventHandler(this, game);
 		}
+		this._plugin.trigger('ENV_gameCreated');
 	}
 
 	getPlugin() {
@@ -41,6 +42,10 @@ class Environment {
 
 	getGame() {
 		return this.game;
+	}
+
+	isOnline() {
+		return this._connector.isOnline();
 	}
 
 	socketRequest(route, data = {}) {
@@ -108,7 +113,7 @@ function __subscribeGameEvents(self) {
 		if (!self.game.isPending())
 			self.unlockScreen();
 	});
-	self.getPlugin().on('ENV_observerJoined', event=>{
+	self.getPlugin().on('ENV_observerConnected', event=>{
 		self.game.setPending(event.getData().gameIsPending);
 		if (!self.game.isPending())
 			self.unlockScreen();

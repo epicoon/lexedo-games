@@ -37,7 +37,6 @@ abstract class AbstractGame
         $this->gamers = new GamersList();
         $this->isWaitingForRevenge = false;
         $this->revengeApprovements = [];
-        $this->init();
     }
 
 
@@ -48,7 +47,7 @@ abstract class AbstractGame
     abstract public function getClassesMap(): array;
     abstract public function getCondition(): AbstractGameCondition;
 
-    protected function init(): void
+    public function init(): void
     {
         // pass
     }
@@ -208,7 +207,7 @@ abstract class AbstractGame
 
     public function getGamersCount(): int
     {
-        return count($this->gamers);
+        return $this->gamers->count();
     }
 
     public function getNeedleGamersCount(): int

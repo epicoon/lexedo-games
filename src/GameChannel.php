@@ -26,6 +26,7 @@ abstract class GameChannel extends Channel
         if ($this->game) {
             $this->game->setPlugin($this->plugin);
             $this->game->setChannel($this);
+            $this->game->init();
         }
 
         if ($this->getParameter('loadingMode')) {
@@ -212,9 +213,6 @@ abstract class GameChannel extends Channel
 
         // Game has stuffed
         $this->isStuffed = true;
-        $app->getCommonChannel()->trigger('game-stuffed', [
-            'channel' => $this->getName(),
-        ]);
         $app->getCommonChannel()->stuffPendingGame($this);
 
         $this->trigger('game-stuffed');

@@ -2,16 +2,32 @@
  * Game life cycle events:
  * - ENV_gameReferencesReceived
  * - ENV_gameConditionReceived
+ * - ENV_gameCreated
+ * - ENV_socketConnected
+ * - ENV_changeGamersList
+ * - ENV_localGamerConnected
+ * - ENV_gamerReconnected
+ * - ENV_observerConnected
+ * - ENV_gameStuffed
  * - ENV_gameBegin
  */
 #lx:namespace lexedo.games;
-class Game {
+class Game extends lx.Object {
 	constructor(env) {
+		super();
+
 		this._environment = env;
 		this._plugin = env.getPlugin();
 		this._pending = true;
-
 		this.gamers = {};
+
+		if (lexedo.games.actions) {
+			let actionsClass = this.constructor.lxHasMethod('getActionsClass')
+				? this.constructor.getActionsClass()
+				: lexedo.games.actions.Actions;
+			this.actions = new actionsClass(this);
+		}
+
 		this.init();
 	}
 
@@ -51,6 +67,15 @@ class Game {
 		this._pending = value;
 	}
 
+	registerGamer(channelMate, gamerId) {
+		if (gamerId in this.gamers) return;
+		let gamerClass = self::getGamerClass();
+		const gamer = new gamerClass(this, gamerId, channelMate);
+		this.gamers[gamerId] = gamer;
+		if (gamer.isLocal())
+			this.getPlugin().trigger('ENV_localGamerConnected');
+	}
+	
 	getGamers() {
 		return this.gamers;
 	}

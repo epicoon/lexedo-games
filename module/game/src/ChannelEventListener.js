@@ -31,7 +31,7 @@ class ChannelEventListener extends lx.socket.EventListener {
 	}
 
 	onObserverJoined(event) {
-		this.getPlugin().trigger('ENV_observerJoined', event.getData());
+		this.getPlugin().trigger('ENV_observerConnected', event.getData());
 	}
 
 	onSetGameReferences(event) {

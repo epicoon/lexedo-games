@@ -171,7 +171,7 @@ class EventListener extends ChannelEventListener
             $receivers = [];
             foreach ($app->connections as $connection) {
                 $authField = $this->getChannel()->getUserAuthFieldByConnection($connection);
-                $index = array_search($authField, $users);
+                $index = array_search($authField, $users, true);
                 if ($index !== false) {
                     $receivers[] = $connection;
                     unset($users[$index]);

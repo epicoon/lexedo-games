@@ -33,35 +33,37 @@
                 .streamProportional()
                 <lx.Box:.lgman-head (height:'40px', text:'Channel info')>.align(lx.CENTER, lx.MIDDLE)
                 <lx.Box:@channelInfoBox.lgman-back>
-                    .gridProportional(indent:'10px')
-                    <lx.Box:@gameIcon.lgman-Box (geom:[0, 0, 2, 2])>.align(lx.CENTER, lx.MIDDLE)
-                    <lx.Box:.lgman-Box (geom:[2, 0, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
-                        <lx.Box (size:['auto','auto'], text:'Type: ')>
-                        <lx.Box:[f:gameType].lgman-Label (size:['auto','auto'])>
-                    <lx.Box:.lgman-Box (geom:[7, 0, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
-                        <lx.Box (size:['auto','auto'], text:'Name: ')>
-                        <lx.Box:[f:gameName].lgman-Label (size:['auto','auto'])>
-                    <lx.Box:.lgman-Box (geom:[2, 1, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
-                        <lx.Box (size:['auto','auto'], text:'Key: ')>
-                        <lx.Box:[f:channelName].lgman-Label (size:['auto','auto'])>
-                    <lx.Box:.lgman-Box (geom:[7, 1, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
-                        <lx.Box (size:['auto','auto'], text:'Date: ')>
-                        <lx.Box:[f:date].lgman-Label (size:['auto','auto'])>
-                    <lx.Box:.lgman-Box (geom:[0, 2, 12, 4])>
-                        .streamProportional()
-                        <lx.Box (height: '60px')>
-                            .grid(indent:'10px',cols:20)
-                            <lx.Box (text:'id')>.align(lx.CENTER, lx.MIDDLE)
-                            <lx.Box (text:'auth value', width:5)>.align(lx.CENTER, lx.MIDDLE)
-                            <lx.Box (text:'connection id', width:8)>.align(lx.CENTER, lx.MIDDLE)
-                            <lx.Box (text:'type', width:3)>.align(lx.CENTER, lx.MIDDLE)
-                            <lx.Box (text:'date', width:3)>.align(lx.CENTER, lx.MIDDLE)
-                        <lx.Box>.overflow('auto')
-                            .addContainer()
-                            .addStructure(lx.Scroll, {type: lx.VERTICAL})
-                            <lx.Box:@connectionsList>.stream()
-                    <lx.Box:.lgman-Box (geom:[0, 6, 12, 6])>
-                        <lx.TreeBox:@channelData._spread>
+                    <lx.Box>
+                        .gridProportional(indent:'10px', paddingBottom:'5px')
+                        <lx.Box:@gameIcon.lgman-Box (geom:[0, 0, 2, 2])>.align(lx.CENTER, lx.MIDDLE)
+                        <lx.Box:.lgman-Box (geom:[2, 0, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
+                            <lx.Box (size:['auto','auto'], text:'Type: ')>
+                            <lx.Box:[f:gameType].lgman-Label (size:['auto','auto'])>
+                        <lx.Box:.lgman-Box (geom:[7, 0, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
+                            <lx.Box (size:['auto','auto'], text:'Name: ')>
+                            <lx.Box:[f:gameName].lgman-Label (size:['auto','auto'])>
+                        <lx.Box:.lgman-Box (geom:[2, 1, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
+                            <lx.Box (size:['auto','auto'], text:'Key: ')>
+                            <lx.Box:[f:channelName].lgman-Label (size:['auto','auto'])>
+                        <lx.Box:.lgman-Box (geom:[7, 1, 5, 1])>.align(lx.CENTER, lx.MIDDLE)
+                            <lx.Box (size:['auto','auto'], text:'Date: ')>
+                            <lx.Box:[f:date].lgman-Label (size:['auto','auto'])>
+                        <lx.Box:.lgman-Box (geom:[0, 2, 12, 4])>
+                            .streamProportional()
+                            <lx.Box (height: '60px')>
+                                .grid(indent:'10px',cols:20)
+                                <lx.Box (text:'id')>.align(lx.CENTER, lx.MIDDLE)
+                                <lx.Box (text:'auth value', width:5)>.align(lx.CENTER, lx.MIDDLE)
+                                <lx.Box (text:'connection id', width:8)>.align(lx.CENTER, lx.MIDDLE)
+                                <lx.Box (text:'type', width:3)>.align(lx.CENTER, lx.MIDDLE)
+                                <lx.Box (text:'date', width:3)>.align(lx.CENTER, lx.MIDDLE)
+                            <lx.Box>.overflow('auto')
+                                .addContainer()
+                                .addStructure(lx.Scroll, {type: lx.VERTICAL})
+                                <lx.Box:@connectionsList>.stream()
+                    <lx.JointMover (top:'1/2')>
+                    <lx.Box:._spread>
+                        <lx.TreeBox:@channelData.lgman-Box (margin: '10px', top:0)>
 #lx:tpl-end;
 
 #lx:use lx.ActiveBox;

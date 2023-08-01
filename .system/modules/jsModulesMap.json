@@ -1,16 +1,24 @@
 {
     "lexedo.games": {
         "name": "lexedo.games",
-        "path": "module\/Environment.js",
+        "path": "module\/game\/Environment.js",
         "data": {
             "i18n": "EnvironmentI18n.yaml"
         }
     },
+    "lexedo.games.localActions": {
+        "name": "lexedo.games.localActions",
+        "path": "module\/actions\/Local.js"
+    },
+    "lexedo.games.onlineActions": {
+        "name": "lexedo.games.onlineActions",
+        "path": "module\/actions\/Online.js"
+    },
     "lexedo.games.OfferDialog": {
         "name": "lexedo.games.OfferDialog",
-        "path": "module\/OfferDialog.js",
+        "path": "module\/offerDialog\/OfferDialog.js",
         "data": {
-            "i18n": "srcOfferDialog\/i18n.yaml"
+            "i18n": "src\/i18n.yaml"
         }
     },
     "lexedo.games.SaveMenu": {
