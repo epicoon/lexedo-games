@@ -3,13 +3,12 @@ server: lexedo\games\plugin\main\server\Plugin
 respondents:
   Respondent: Respondent
 
-title: i18nKey_title
-icon: @web/images/lexedogames.png
-
 rootSnippet: snippets/_root.js
 snippets: snippets
 
-images: @web/images/games
+title: i18nKey_title
+icon: ../../images/lexedogames.png
+images: ../../images
 
 cacheType: smart
 #cacheType: build

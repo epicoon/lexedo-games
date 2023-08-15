@@ -1,0 +1,34 @@
+gameOptions:
+  title: <<title>>
+  slug: <<slug>>
+  image: <<slug>>.png
+  minGamers: 2
+  maxGamers: 2
+  offline: <<offline>>
+  online: <<online>>
+  channel: <<namespace>>\<<ucslug>>Channel
+
+# --- Server ---
+server: <<namespace>>\Plugin
+
+rootSnippet: snippets/_root.js
+snippets: snippets
+
+images: assets/images
+
+cacheType: smart
+
+# --- Common ---
+require:
+  - '-R assets/css/'
+
+cssAssets:
+  - <<front_namespace>>.MainAsset
+
+# --- Client ---
+client: client/Plugin.js
+requireForClient:
+  - '-R client/guiNodes/'
+
+guiNodes:
+  main: <<front_namespace>>.gui.Main

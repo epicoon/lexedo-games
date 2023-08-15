@@ -28,6 +28,7 @@ const __WebSocketHandlers = {
 	onConnected: function() {
 	    console.log('ON CLIENT CONNECTED');
 
+		this._plugin->>chatBox.setSocket(this);
 		this._core.checkReconnections();
 	},
 

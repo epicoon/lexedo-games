@@ -6,7 +6,8 @@ respondents:
 rootSnippet: snippets/_root.js
 snippets: snippets
 
-images: assets/images
+icon: ../../images/lexedogames.png
+images: ../../images
 
 cacheType: smart
 

@@ -23,15 +23,15 @@ class ChannelEventListener extends lx.socket.EventListener {
 	}
 
 	onNewGamer(event) {
-		this.getPlugin().trigger('ENV_changeGamersList', event.getData());
+		this.getPlugin().trigger('ENV_proxy_changeGamersList', event.getData());
 	}
 
 	onGamerReconnected(event) {
-		this.getPlugin().trigger('ENV_gamerReconnected', event.getData());
+		this.getPlugin().trigger('ENV_proxy_gamerReconnected', event.getData());
 	}
 
-	onObserverJoined(event) {
-		this.getPlugin().trigger('ENV_observerConnected', event.getData());
+	onObserverConnected(event) {
+		this.getPlugin().trigger('ENV_proxy_observerConnected', event.getData());
 	}
 
 	onSetGameReferences(event) {
@@ -39,7 +39,7 @@ class ChannelEventListener extends lx.socket.EventListener {
 	}
 
 	onGameStuffed(event) {
-		this.getPlugin().trigger('ENV_gameStuffed', event.getData());
+		this.getPlugin().trigger('ENV_proxy_gameStuffed', event.getData());
 	}
 
 	onGameBegin(event) {

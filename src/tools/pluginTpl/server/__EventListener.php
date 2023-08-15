@@ -1,15 +1,15 @@
 <?php
 
-namespace <namespace>;
+namespace <<namespace>>;
 
 use lexedo\games\GameEventListener;
 use lx\socket\channel\ChannelEvent;
 
 /**
- * @method <slug>Channel getChannel()
- * @method <slug>Game getGame()
+ * @method <<ucslug>>Channel getChannel()
+ * @method <<ucslug>>Game getGame()
  */
-class <slug>EventListener extends GameEventListener
+class <<ucslug>>EventListener extends GameEventListener
 {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * EVENT HANDLERS

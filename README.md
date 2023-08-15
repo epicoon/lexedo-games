@@ -1,5 +1,8 @@
 ## Lexedo games
 
+### Create new game plugin:
+
+
 ### To use actions architecture:
 #### Client side
 - use js-module `lexedo.games.localActions` or `lexedo.games.onlineActions` respectively to game version
@@ -26,9 +29,15 @@
                 responseActionsNamespace: 'my.dataProvider'
             };
         }
-    }    
+
+        // For online only
+        static getChannelEventListenerClass() {
+            return lexedo.games.actions.ChannelEventListener;
+        }
+    }
     ```
     > - define static method `getActionsDependencies()`
+    > - for online define your channel event listener class as `lexedo.games.actions.ChannelEventListener` or class extended from it
     > - note that namespaces for request and response actions should be different
 
 - trigger an action
@@ -71,7 +80,7 @@
      */
     class YourEventListener extends ActionsEventListener
     {
-        protected static function getActionClass(): string
+        protected function getActionClass(): string
         {
              return YourAction::class;
         }
@@ -84,7 +93,7 @@
 
     abstract class YourAction extends ResponseAction
     {
-    static protected function getActionsMap(): array
+        protected static function getActionsMap(): array
         {
             return [
                 // actionName => actionClass

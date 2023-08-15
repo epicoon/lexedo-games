@@ -4,6 +4,7 @@ namespace lexedo\games;
 
 use lexedo\games\models\GameSave;
 use lx;
+use lx\File;
 use lx\Math;
 use lx\socket\channel\ChannelEvent;
 use lx\socket\channel\ChannelEventListener;
@@ -68,12 +69,22 @@ class EventListener extends ChannelEventListener
         $gamersInGame = $gameSave->gamers;
         $gamersCount = $gamersInGame->count();
 
+        $condition = null;
+        if (preg_match('/^{file:/', $gameSave->data)) {
+            $path = trim($gameSave->data, '{}');
+            $path = preg_replace('/^file:/', '', $path);
+            $file = new File($path);
+            $condition = $file->get();
+        } else {
+            $condition = $gameSave->data;
+        }
+
         $channel = $this->createGameChannel([
             'type' => $type,
             'name' => $name,
             'gamersCount' => $gamersCount,
             'loadingMode' => true,
-            'condition' => $gameSave->data,
+            'condition' => $condition,
         ]);
         //TODO password
 

@@ -210,7 +210,7 @@ class Core extends lx.PluginCore {
 			itemBox: lx.Box,
 			itemRender: function(box, model) {
 				let gameBox = new lx.Box({geom: true});
-				gameBox.streamProportional();
+				gameBox.streamProportional({paddingTop:'10px'});
 				let imgWrapper = gameBox.add(lx.Box);
 				let title = gameBox.add(lx.Box, {height: '20%', text: model.title});
 				title.align(lx.CENTER, lx.MIDDLE);
@@ -227,13 +227,13 @@ class Core extends lx.PluginCore {
 			items: this.lists.pendingGames,
 			itemBox: lx.Box,
 			itemRender: function(box, model) {
+				box.addClass('lgmain-curgamebox');
 				box.grid({
 					step: '10px',
 					minWidth: '20px'
 				});
 
 				let imageWrapper = box.add(lx.Box, {width: 2});
-				imageWrapper.fill('white');
 				var img = imageWrapper.add(lx.Image, {geom: true, filename: model.image});
 				img.adapt();
 				imageWrapper.align(lx.CENTER, lx.MIDDLE);
@@ -246,7 +246,7 @@ class Core extends lx.PluginCore {
 					core.__switchRelationToGame(core.lists.pendingGames.at(this.index));
 				});
 				box.setField('follow', function(val) {
-					this.fill(val ? 'lightgreen' : '');
+					this.toggleClassOnCondition(val, 'lgmain-curgamebox-follow');
 				});
 			}
 		});

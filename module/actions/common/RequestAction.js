@@ -7,6 +7,14 @@ class RequestAction {
         this.responseData = {};
     }
 
+    getGame() {
+        return this.game;
+    }
+
+    getPlugin() {
+        return this.game.getPlugin();
+    }
+
     setGame(game) {
         this.game = game;
     }

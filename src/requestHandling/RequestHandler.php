@@ -33,11 +33,7 @@ class RequestHandler implements FlightRecorderHolderInterface
         }
 
         try {
-            $result = $action->run();
-            if ($action->returnResponse()) {
-                return $result;
-            }
-            return null;
+            return $action->run();
         } catch (Throwable $exception) {
             $this->addFlightRecord($exception->getMessage());
             return null;

@@ -5,6 +5,9 @@ namespace lexedo\games;
 use lexedo\games\models\GamerInGame;
 use lexedo\games\models\GameSave;
 use lx;
+use lx\Directory;
+use lx\File;
+use lx\Math;
 use lx\ModelInterface;
 use lx\socket\channel\Channel;
 use lx\socket\channel\request\ChannelRequest;
@@ -105,7 +108,22 @@ abstract class GameChannel extends Channel
             $gameSave->gameType = $game->getType();
             $gameSave->name = $gameName;
             $gameSave->date = new \DateTime();
-            $gameSave->data = $game->getCondition()->toString();
+            $conditionString = $game->getCondition()->toString();
+            $conditionToken = null;
+            if (mb_strlen($conditionString) > 3990) {
+                $plugin = $this->getGamePlugin();
+                $cobfDir = new Directory($plugin->conductor->getLocalSystemPath());
+                $savesDir = $cobfDir->getOrMakeDirectory('saves');
+                $saveFileName = $gameSave->date->format('Y_m_d_h_i_s')
+                    . '_' . $gameName . '_' . lx\Math::rand(1000, 9999);
+                $saveFile = new File($saveFileName, $savesDir->getPath());
+                $saveFile->put($conditionString);
+                $conditionToken = '{file:' . $saveFile->getPath() . '}';
+            } else {
+                $conditionToken = $conditionString;
+            }
+
+            $gameSave->data = $conditionToken;
 
             $gamersInGame = [];
             if ($gameSave->isNew()) {
@@ -359,8 +377,8 @@ abstract class GameChannel extends Channel
     private function onObserverConnect(Connection $connection): void
     {
         $this->sendGameReferences($connection);
-        $event = $this->createEvent('observer-joined');
-        $this->getGame()->prepareObserverJoinedEvent($event, $connection);
+        $event = $this->createEvent('observer-connected');
+        $this->getGame()->prepareObserverConnectedEvent($event, $connection);
         $event->send();
     }
 

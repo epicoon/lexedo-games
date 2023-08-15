@@ -13,29 +13,28 @@ abstract class AbstractGame
     const GAMER_CLASS = 'gamer';
     const CONDITION_CLASS = 'condition';
 
-    const RECONNECTION_STATUS_PENDING = 'pending';
-    const RECONNECTION_STATUS_STAFFED = 'staffed';
-    const RECONNECTION_STATUS_REVANGE = 'revange';
+    const CONDITION_STATUS_PENDING = 'pending';
+    const CONDITION_STATUS_STAFFED = 'staffed';
+    const CONDITION_STATUS_ACTIVE = 'active';
+    const CONDITION_STATUS_REVANGE = 'revange';
 
     private GamePlugin $_plugin;
     private GameChannel $_channel;
 
     private array $userToGamerMap;
-    protected bool $isPending;
     protected GamersList $gamers;
 
-    protected bool $isActive;
+    protected bool $isPending;
     protected bool $isLoaded;
-    protected bool $isWaitingForRevenge;
+    protected string $conditionStatus;
     protected array $revengeApprovements;
 
     public function __construct()
     {
         $this->isPending = true;
-        $this->isActive = false;
         $this->isLoaded = false;
+        $this->conditionStatus = self::CONDITION_STATUS_PENDING;
         $this->gamers = new GamersList();
-        $this->isWaitingForRevenge = false;
         $this->revengeApprovements = [];
     }
 
@@ -77,12 +76,16 @@ abstract class AbstractGame
      * COMMON
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+    public function getConditionStatus(): string
+    {
+        return $this->conditionStatus;
+    }
+
     public function loadFromCondition(AbstractGameCondition $condition): void
     {
         $this->isPending = true;
         $this->isLoaded = true;
-        $this->isActive = $condition->getActive();
-        $this->isWaitingForRevenge = $condition->getWaitingForRevenge();
+        $this->conditionStatus = $condition->getConditionStatus();
         $this->revengeApprovements = $condition->getRevengeApprovements();
         $this->setFromCondition($condition);
     }
@@ -120,11 +123,10 @@ abstract class AbstractGame
         ]);
     }
 
-    public function prepareObserverJoinedEvent(ChannelEvent $event, Connection $connection): void
+    public function prepareObserverConnectedEvent(ChannelEvent $event, Connection $connection): void
     {
-        //TODO сейчас посылается только наблюдателю, остальные не видят, что присоединился наблюдатель
-        $event->setReceiver($connection);
         $event->addDataForConnection($connection, [
+            'observerId' => $connection->getId(),
             'gamersData' => $this->getGamersData(),
             'gameData' => $this->getConditionForGamer(),
             'gameIsPending' => $this->isPending(),
@@ -193,16 +195,14 @@ abstract class AbstractGame
     public function setPending(bool $pending): void
     {
         $this->isPending = $pending;
+        if (!$pending) {
+            $this->conditionStatus = self::CONDITION_STATUS_STAFFED;
+        }
     }
 
     public function isPending(): bool
     {
         return $this->isPending;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->isActive;
     }
 
     public function getGamersCount(): int
@@ -215,11 +215,6 @@ abstract class AbstractGame
         return $this->getChannel()->getNeedleGamersCount();
     }
 
-    public function isWaitingForRevenge(): bool
-    {
-        return $this->isWaitingForRevenge;
-    }
-    
     public function getRevengeApprovements(): array
     {
         return $this->revengeApprovements;
@@ -292,7 +287,7 @@ abstract class AbstractGame
 
     public function approveRevenge(string $gamerId): array
     {
-        if (!$this->isWaitingForRevenge) {
+        if ($this->conditionStatus !== self::CONDITION_STATUS_REVANGE) {
             return [];
         }
 
@@ -363,22 +358,21 @@ abstract class AbstractGame
     {
         if ($this->isPending()) {
             return [
-                'type' => self::RECONNECTION_STATUS_PENDING,
+                'conditionStatus' => self::CONDITION_STATUS_PENDING,
             ];
         }
 
-        if ($this->isWaitingForRevenge) {
+        if ($this->conditionStatus === self::CONDITION_STATUS_REVANGE) {
             return [
-                'type' => self::RECONNECTION_STATUS_REVANGE,
+                'conditionStatus' => self::CONDITION_STATUS_REVANGE,
                 'approvesCount' => count($this->revengeApprovements),
                 'gamersCount' => $this->getNeedleGamersCount(),
                 'revengeApprovements' => $this->revengeApprovements,
             ];
         }
 
-        return [
-            'type' => self::RECONNECTION_STATUS_STAFFED,
-            'condition' => $this->filterConditionForGamer($gamer, $this->getCondition()),
-        ];
+        $result = $this->filterConditionForGamer($gamer, $this->getCondition());
+        $result['conditionStatus'] = self::CONDITION_STATUS_STAFFED;
+        return $result;
     }
 }

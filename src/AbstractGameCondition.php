@@ -2,28 +2,21 @@
 
 namespace lexedo\games;
 
+use lx\DataObject;
+
 /**
- * @method bool getPending()
- * @method bool getActive()
+ * @method string getConditionStatus()
  * @method array getGamers()
- * @method bool getWaitingForRevenge()
  * @method array getRevengeApprovements()
  *
- * @method $this setPending(bool $value)
- * @method $this setActive(bool $value)
+ * @method $this setConditionStatus(string $value)
  * @method $this setGamers(array $gamers)
- * @method $this setWaitingForRevenge(bool $value)
  * @method $this setRevengeApprovements(array $approvements)
  */
 abstract class AbstractGameCondition
 {
     private ?array $_map = null;
-    
-    protected bool $isPending;
-    protected bool $isActive;
-    protected array $gamers;
-    protected bool $isWaitingForRevenge;
-    protected array $revengeApprovements;
+    private DataObject $data;
 
     public function initByString(string $condition): void
     {
@@ -31,19 +24,18 @@ abstract class AbstractGameCondition
         $fields = $this->getFields();
         foreach ($fields as $field) {
             if (array_key_exists($field, $map)) {
-                $this->$field = $map[$field];
+                $this->data->$field = $map[$field];
             }
         }
     }
     
     public function __construct(?AbstractGame $game = null)
     {
+        $this->data = new DataObject();
         if ($game) {
             $this
-                ->setPending($game->isPending())
-                ->setActive($game->isActive())
                 ->setGamers($game->getGamers()->getGamersAsArray())
-                ->setWaitingForRevenge($game->isWaitingForRevenge())
+                ->setConditionStatus($game->getConditionStatus())
                 ->setRevengeApprovements($game->getRevengeApprovements());
         }
     }
@@ -51,10 +43,8 @@ abstract class AbstractGameCondition
     protected function getFields(): array
     {
         return [
-            'isPending',
-            'isActive',
+            'conditionStatus',
             'gamers',
-            'isWaitingForRevenge',
             'revengeApprovements',
         ];
     }
@@ -70,12 +60,12 @@ abstract class AbstractGameCondition
         if (!array_key_exists($name, $map)) {
             $name = lcfirst(preg_replace('/^get/', '', $methodName));
             if (array_key_exists($name, $map)) {
-                return $this->{$map[$name]};
+                return $this->data->{$map[$name]};
             }
             return;
         }
 
-        $this->{$map[$name]} = $arguments[0];
+        $this->data->{$map[$name]} = $arguments[0];
         return $this;
     }
 
@@ -84,8 +74,9 @@ abstract class AbstractGameCondition
         $result = [];
         $fields = $this->getFields();
         foreach ($fields as $field) {
-            if (property_exists($this, $field) && isset($this->$field)) {
-                $result[$field] = $this->$field;
+            $value = $this->data->$field;
+            if ($value !== null) {
+                $result[$field] = $value;
             }
         }
         return $result;

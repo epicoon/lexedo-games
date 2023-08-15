@@ -12,27 +12,11 @@
  * - ENV_gameBegin
  */
 #lx:namespace lexedo.games;
-class Game extends lx.Object {
+class Game extends lexedo.games.LocalGame {
 	constructor(env) {
-		super();
+		super(env);
 
-		this._environment = env;
-		this._plugin = env.getPlugin();
 		this._pending = true;
-		this.gamers = {};
-
-		if (lexedo.games.actions) {
-			let actionsClass = this.constructor.lxHasMethod('getActionsClass')
-				? this.constructor.getActionsClass()
-				: lexedo.games.actions.Actions;
-			this.actions = new actionsClass(this);
-		}
-
-		this.init();
-	}
-
-	static getGamerClass() {
-		return lexedo.games.Gamer;
 	}
 
 	static getChannelEventListenerClass() {
@@ -43,20 +27,8 @@ class Game extends lx.Object {
 		return lexedo.games.ConnectionEventListener;
 	}
 
-	init() {
-		// abstract		
-	}
-
-	getPlugin() {
-		return this._plugin;
-	}
-
-	getCore() {
-		return this._plugin.core;
-	}
-
-	getEnvironment() {
-		return this._environment;
+	isLocal() {
+		return false;
 	}
 
 	isPending() {
@@ -75,21 +47,6 @@ class Game extends lx.Object {
 		if (gamer.isLocal())
 			this.getPlugin().trigger('ENV_localGamerConnected');
 	}
-	
-	getGamers() {
-		return this.gamers;
-	}
-
-	getGamersCount() {
-		let counter = 0;
-		for (let i in this.gamers) counter++;
-		return counter;
-	}
-
-	forEachGamer(f) {
-		for (let id in this.gamers)
-			f(this.gamers[id]);
-	}
 
 	getLocalGamer() {
 		for (let id in this.gamers) {
@@ -99,16 +56,12 @@ class Game extends lx.Object {
 		return null;
 	}
 
-	getGamerById(id) {
-		return this.gamers[id];
-	}
-
 	getGamerByChannelMate(mate) {
 		for (let id in this.gamers) {
 			let gamer = this.gamers[id];
 			if (gamer._connectionId == mate.getId()) return gamer;
 		}
-		return null;		
+		return null;
 	}
 
 	getChannelMateByGamer(gamer) {

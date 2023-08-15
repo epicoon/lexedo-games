@@ -7,20 +7,15 @@ use lx\socket\channel\ChannelEvent;
 
 abstract class ActionsEventListener extends GameEventListener
 {
-    /**
-     * @abstract
-     */
-    protected static function getActionClass(): string
-    {
-        return ResponseAction::class;
-    }
+    abstract protected function getActionClass(): string;
 
     public function onAction(ChannelEvent $event): void
     {
         $data = $event->getData();
         $actionName = $data['action'];
 
-        $actionClass = static::getActionClass();
+        $actionClass = $this->getActionClass();
+        /** @var ResponseAction $action */
         $action = $actionClass::create($this->getGame(), $actionName);
         $action->setInitiator($this->getGame()->getGamerByConnection($event->getInitiator()));
         $action->setRequestData($data['data']);

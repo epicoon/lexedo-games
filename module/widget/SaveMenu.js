@@ -111,7 +111,7 @@ class SaveMenu extends lx.Box {
 	    	this._env.socketRequest('saveGame', {gameName}).then(res=>{
 	    		lx.tostMessage(#lx:i18n(gameSaved));
 	    		__unsetActiveSave(this);
-	    		//TODO this.gamesList.reset()
+				this.del();
 	    	});
     	});
     }

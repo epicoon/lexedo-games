@@ -16,12 +16,27 @@ class Cli implements FusionComponentInterface, ServiceCliInterface
     {
         return [
             [
-                'command' => 'gen-game-plugin-backend',
-                'description' => 'Generate backend for lexedo-game plugin',
+                'command' => ['new-lexedo-game-plugin', 'n'],
+                'description' => 'Generate code for lexedo-game plugin',
                 'arguments' => [
-                    CommandArgument::getPluginArgument(),
+                    CommandArgument::service()->setMandatory(),
+                    CommandArgument::plugin()->useInput()->setMandatory(),
+                    CommandArgument::string(['title'])->useInput()->setMandatory()
+                        ->setDescription('The game name'),
+                    CommandArgument::string(['slug'])->useInput()
+                        ->setDescription('Game slug, if empty is equal to plugin name'),
+                    CommandArgument::string(['namespace', 'n'])->useInput()
+                        ->setDescription('Fronted namespace, if empty is equal to slug'),
+                    CommandArgument::flag(['online', 'o'])->useSelect(['yes', 'no'])
+                        ->setDescription('The game supports online mode'),
+                    CommandArgument::flag(['local', 'l'])->useSelect(['yes', 'no'])
+                        ->setDescription('The game supports local mode'),
+                    CommandArgument::flag(['actions', 'a'])
+                        ->setDescription('The game uses actions architecture'),
+                    CommandArgument::integer(['index', 'i'])
+                        ->setDescription('Index of server plugins directory')
                 ],
-                'handler' => GameBackendGenerator::class,
+                'handler' => GameCodeGenerator::class,
             ],
         ];
     }

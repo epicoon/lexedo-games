@@ -19,6 +19,6 @@ class Actions {
     }
 
     trigger(action) {
-        this.game.triggerLocalEvent('action', action);
+        this.dataProvider.onClientAction(action);
     }
 }

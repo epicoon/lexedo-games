@@ -3,9 +3,6 @@ class ActionHandler {
     constructor(actions) {
         this.actions = actions;
         this.game = actions.game;
-        this.game.getPlugin().on('action', (event) => {
-            this.actions.dataProvider.onClientAction(event.data);
-        });
     }
 
     handle(action, data, subActions = null) {

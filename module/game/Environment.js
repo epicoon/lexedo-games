@@ -25,10 +25,8 @@ class Environment {
 
 	setGame(game, isOnline) {
 		this.game = game;
-		if (isOnline) {
-			__subscribeGameEvents(this);
+		if (isOnline)
 			this.gameEventHandler = new lexedo.games.GameEventHandler(this, game);
-		}
 		this._plugin.trigger('ENV_gameCreated');
 	}
 
@@ -103,19 +101,6 @@ class Environment {
 	}
 }
 
-function __subscribeGameEvents(self) {
-	self.getPlugin().on('ENV_gameStuffed', event=>{
-		self.unlockScreen();
-		self.game.setPending(false);
-	});
-	self.getPlugin().on('ENV_gamerReconnected', event=>{
-		self.game.setPending(event.getData().reconnectionData.gameIsPending);
-		if (!self.game.isPending())
-			self.unlockScreen();
-	});
-	self.getPlugin().on('ENV_observerConnected', event=>{
-		self.game.setPending(event.getData().gameIsPending);
-		if (!self.game.isPending())
-			self.unlockScreen();
-	});
-}
+lexedo.games.CONDITION_STATUS_PENDING = 'pending';
+lexedo.games.CONDITION_STATUS_STAFFED = 'staffed';
+lexedo.games.CONDITION_STATUS_REVANGE = 'revange';

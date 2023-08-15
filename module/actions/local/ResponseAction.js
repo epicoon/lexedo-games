@@ -6,7 +6,15 @@ class ResponseAction {
         this.inputData = data;
         this.outputData = new lexedo.games.actions.ActionData(this.dataProvider);
     }
+
+    getGame() {
+        return this.game;
+    }
     
+    getPlugin() {
+        return this.game.getPlugin();
+    }
+
     run() {
         // abstract
     }

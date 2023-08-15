@@ -25,11 +25,6 @@ abstract class AbstractAction
         return $this->process();
     }
 
-    public function returnResponse(): bool
-    {
-        return true;
-    }
-
     protected function beforeRun(): void
     {
         // pass

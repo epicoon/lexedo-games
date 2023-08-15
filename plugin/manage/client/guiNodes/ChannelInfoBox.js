@@ -22,6 +22,7 @@ class ChannelInfoBox extends lx.GuiNode {
         widget->>channelName.setEllipsisHint({css: 'lgman-Hint'});
         widget->>date.setEllipsisHint({css: 'lgman-Hint'});
 
+        widget->>gameIcon.overflow('hidden');
         widget->>gameIcon.setField('icon', function(val) {
             this.clear();
             if (val == '') return;

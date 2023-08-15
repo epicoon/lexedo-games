@@ -1,11 +1,4 @@
 {
-    "lexedo.games": {
-        "name": "lexedo.games",
-        "path": "module\/game\/Environment.js",
-        "data": {
-            "i18n": "EnvironmentI18n.yaml"
-        }
-    },
     "lexedo.games.localActions": {
         "name": "lexedo.games.localActions",
         "path": "module\/actions\/Local.js"
@@ -13,6 +6,13 @@
     "lexedo.games.onlineActions": {
         "name": "lexedo.games.onlineActions",
         "path": "module\/actions\/Online.js"
+    },
+    "lexedo.games": {
+        "name": "lexedo.games",
+        "path": "module\/game\/Environment.js",
+        "data": {
+            "i18n": "EnvironmentI18n.yaml"
+        }
     },
     "lexedo.games.OfferDialog": {
         "name": "lexedo.games.OfferDialog",

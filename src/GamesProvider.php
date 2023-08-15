@@ -6,6 +6,7 @@ use lexedo\games\models\AvailableGamePlugin;
 use lx\FusionComponentInterface;
 use lx\FusionComponentTrait;
 use lx\Plugin;
+use lx\PluginAssetProvider;
 
 class GamesProvider implements FusionComponentInterface
 {
@@ -105,7 +106,7 @@ class GamesProvider implements FusionComponentInterface
                 'connectionType' => $gamePlugin->getGameConnectionType(),
                 'plugin' => $gamePluginName,
                 'title' => $gamePlugin->getGameTitle(),
-                'image' => $gamePlugin->getTitleImage(),
+                'image' => (new PluginAssetProvider($gamePlugin))->getImageLink($gamePlugin->getTitleImage()),
                 'minGamers' => $gamePlugin->getMinGamers(),
                 'maxGamers' => $gamePlugin->getMaxGamers(),
             ];
