@@ -38,6 +38,7 @@ class Connector {
 				this._gameConfig.class = this._gameConfig.online.class;
 				className = this._gameConfig.class;
 			}
+			className = className || this._gameConfig.online.module;
 
 			if (this._gameConfig.online.module) {
 				this._plugin.useModule(
@@ -58,6 +59,7 @@ class Connector {
 				this._gameConfig.class = this._gameConfig.local.class;
 				className = this._gameConfig.class;
 			}
+			className = className || this._gameConfig.local.module;
 
 			this._plugin.useModule(
 				this._gameConfig.local.module,

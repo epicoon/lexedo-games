@@ -6,9 +6,8 @@ class Plugin extends lx.Plugin {
             mode: 'dev',
             name: '<<title>>',
             game: {
-                class: '<<front_namespace>>.Game',
-                local: {module: '<<front_namespace>>.Local'},
-                online: {module: '<<front_namespace>>.Online'},
+                local: {module: '<<front_namespace>>.LocalGame'},
+                online: {module: '<<front_namespace>>.OnlineGame'},
             }
         });
     }

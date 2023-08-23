@@ -1,4 +1,4 @@
-#lx:module <<front_namespace>>.Online;
+#lx:module <<front_namespace>>.OnlineGame;
 #lx:module-data {
     i18n: {plugin:<<serviceName>>:<<pluginName>>}/assets/i18n/main.yaml
 };
@@ -6,14 +6,14 @@
 #lx:use lexedo.games.onlineActions;
 #lx:require -R src/;
 #lx:require ../GameBehavior;
-#lx:require Gamer;
+#lx:require OnlineGamer;
 
 #lx:namespace <<front_namespace>>;
-class Game extends lexedo.games.Game {
+class OnlineGame extends lexedo.games.OnlineGame {
     #lx:behavior <<front_namespace>>.GameBehavior;
 
     static getGamerClass() {
-        return <<front_namespace>>.Gamer;
+        return <<front_namespace>>.OnlineGamer;
     }
 
     static getChannelEventListenerClass() {

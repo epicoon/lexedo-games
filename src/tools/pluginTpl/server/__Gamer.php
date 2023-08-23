@@ -17,9 +17,9 @@ class <<ucslug>>Gamer extends AbstractGamer
 
     public function toArray(): array
     {
-        //TODO
-
-        return [];
+        return array_merge(parent::toArray(), [
+            //TODO
+        ]);
     }
 
     public function restore(array $config): void

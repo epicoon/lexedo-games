@@ -1,5 +1,5 @@
 #lx:namespace lexedo.games.actions;
-class DataProvider {
+class LocalDataProvider {
     constructor(actions) {
         this.actions = actions;
         this.game = actions.game;

@@ -32,6 +32,11 @@ class CommonProcessStatus extends lx.BindableModel {
         this.core.getPlugin().on('connectionClosed', ()=>{
             setTimeout(()=>this.watchOff(), 200);
         });
+
+        this.core.getPlugin().on('switchStatusWatch', ()=>{
+            if (this.isWatching) this.watchOff();
+            else this.watchOn();
+        });
     }
 
     watchOn() {

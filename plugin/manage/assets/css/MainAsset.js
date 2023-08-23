@@ -37,5 +37,12 @@ class MainAsset extends lx.PluginCssAsset {
         css.addClass('lgman-smalltext', {
             fontSize: '0.7em'
         });
+
+        css.addClass('lgman-watch-on', {
+            backgroundColor: css.preset.checkedDeepColor
+        });
+        css.addClass('lgman-watch-off', {
+            backgroundColor: css.preset.hotDeepColor
+        });
     }
 }

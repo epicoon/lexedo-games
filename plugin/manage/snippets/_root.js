@@ -15,7 +15,8 @@
                 <lx.Box:@processLabel._spread (text:'lexedo/games - games_server')>.align(lx.CENTER, lx.MIDDLE)
                 <lx.Box (geom: ['10px', '10px', '20%', null, null, '10px'])>.align(lx.LEFT, lx.MIDDLE)
                     <lx.Box:@processRefreshIndicator.lgman-indicator (width:'auto', height:'auto')>
-            <lx.Box:[f:statusText].lgman-Box.lgman-smalltext (width:2)>.align(lx.CENTER, lx.MIDDLE)
+            <lx.Button:@watch (text:'watch')>
+            <lx.Box:[f:statusText].lgman-Box.lgman-smalltext (width:1)>.align(lx.CENTER, lx.MIDDLE)
             <lx.Box:[f:pid].lgman-Box.lgman-smalltext (width:2)>.align(lx.CENTER, lx.MIDDLE)
             <lx.Box:[f:date].lgman-Box.lgman-smalltext (width:2)>.align(lx.CENTER, lx.MIDDLE)
             <lx.Button:@availablePluginsBut (text:'available')>

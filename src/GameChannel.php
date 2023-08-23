@@ -255,7 +255,7 @@ abstract class GameChannel extends Channel
 
         $game = $this->getGame();
         if (!$this->game->actualizeGamerByConnection($connection)) {
-            $this->trigger('error', 'Gamer reconnection problem');
+            $this->trigger('error', ['message' => 'Gamer reconnection problem']);
             return;
         }
 

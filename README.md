@@ -1,7 +1,7 @@
 ## Lexedo games
 
 ### Create new game plugin:
-
+- use CLI command `new-lexedo-game-plugin`
 
 ### To use actions architecture:
 #### Client side

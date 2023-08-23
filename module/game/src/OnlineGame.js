@@ -12,7 +12,7 @@
  * - ENV_gameBegin
  */
 #lx:namespace lexedo.games;
-class Game extends lexedo.games.LocalGame {
+class OnlineGame extends lexedo.games.LocalGame {
 	constructor(env) {
 		super(env);
 
@@ -25,6 +25,10 @@ class Game extends lexedo.games.LocalGame {
 
 	static getConnectionEventListenerClass() {
 		return lexedo.games.ConnectionEventListener;
+	}
+
+	static getGamerClass() {
+		return lexedo.games.OnlineGamer;
 	}
 
 	isLocal() {

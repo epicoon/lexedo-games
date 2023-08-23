@@ -1,5 +1,5 @@
 #lx:namespace lexedo.games;
-class Gamer extends lx.Object {
+class OnlineGamer extends lx.Object {
 	constructor(game, id, channelMate, data = {}) {
 		super();
 

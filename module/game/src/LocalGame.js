@@ -7,7 +7,7 @@ class LocalGame  extends lx.Object {
         this._plugin = env.getPlugin();
         this.gamers = {};
 
-        if (lexedo.games.actions) {
+        if (this.constructor.lxHasMethod('getActionsDependencies') && lexedo.games.actions) {
             let actionsClass = this.constructor.lxHasMethod('getActionsClass')
                 ? this.constructor.getActionsClass()
                 : lexedo.games.actions.Actions;
@@ -18,7 +18,7 @@ class LocalGame  extends lx.Object {
     }
 
     static getGamerClass() {
-        return lexedo.games.Gamer;
+        return lexedo.games.LocalGamer;
     }
 
     init() {

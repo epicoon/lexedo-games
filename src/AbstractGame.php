@@ -21,7 +21,7 @@ abstract class AbstractGame
     private GamePlugin $_plugin;
     private GameChannel $_channel;
 
-    private array $userToGamerMap;
+    private array $userToGamerMap = [];
     protected GamersList $gamers;
 
     protected bool $isPending;
@@ -88,6 +88,9 @@ abstract class AbstractGame
         $this->conditionStatus = $condition->getConditionStatus();
         $this->revengeApprovements = $condition->getRevengeApprovements();
         $this->setFromCondition($condition);
+        if ($this->gamers->isEmpty()) {
+            $this->loadGamersFromCondition($condition);
+        }
     }
 
     protected function loadGamersFromCondition(AbstractGameCondition $condition): void

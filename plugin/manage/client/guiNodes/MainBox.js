@@ -65,6 +65,17 @@ class MainBox extends lx.GuiNode {
     initHandlers() {
         const widget = this.getWidget();
 
+        const watch = widget->>watch;
+        watch.addClass('lgman-watch-on');
+        watch.click(()=>{
+            watch.removeClass('lgman-watch-on');
+            watch.removeClass('lgman-watch-off');
+            this.getPlugin().trigger('switchStatusWatch');
+            this.getCore().commonProcessStatus.isWatching
+                ? watch.addClass('lgman-watch-on')
+                : watch.addClass('lgman-watch-off');
+        });
+
         widget->>availablePluginsBut.click(()=>{
             this.getGuiNode('availablePlugins').show();
         });
