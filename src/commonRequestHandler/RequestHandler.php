@@ -1,6 +1,6 @@
 <?php
 
-namespace lexedo\games\requestHandling;
+namespace lexedo\games\commonRequestHandler;
 
 use Throwable;
 use lexedo\games\CommonChannel;

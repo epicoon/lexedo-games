@@ -4,10 +4,10 @@ namespace lexedo\games;
 
 use lexedo\games\actions\ActionFactory;
 use lexedo\games\admin\Admin;
-use lexedo\games\requestHandling\events\AdminEvent;
+use lexedo\games\commonRequestHandler\events\AdminEvent;
 use lexedo\games\admin\AdminEventSender;
-use lexedo\games\requestHandling\RequestHandler;
-use lexedo\games\requestHandling\RequestVoter;
+use lexedo\games\commonRequestHandler\RequestHandler;
+use lexedo\games\commonRequestHandler\RequestVoter;
 use lx;
 use lx\ModelInterface;
 use lx\AuthenticationInterface;

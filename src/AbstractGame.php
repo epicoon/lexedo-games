@@ -4,6 +4,7 @@ namespace lexedo\games;
 
 use lx;
 use lx\Math;
+use lx\ArrayHelper;
 use lexedo\games\GamePlugin;
 use lx\socket\channel\ChannelEvent;
 use lx\socket\Connection;
@@ -14,9 +15,11 @@ abstract class AbstractGame
     const CONDITION_CLASS = 'condition';
 
     const CONDITION_STATUS_PENDING = 'pending';
-    const CONDITION_STATUS_STAFFED = 'staffed';
+    const CONDITION_STATUS_PREPARING = 'preparing';
+    const CONDITION_STATUS_PREPARED = 'prepared';
     const CONDITION_STATUS_ACTIVE = 'active';
-    const CONDITION_STATUS_REVANGE = 'revange';
+    const CONDITION_STATUS_OVER = 'over';
+    const CONDITION_STATUS_REVENGE = 'revenge';
 
     private GamePlugin $_plugin;
     private GameChannel $_channel;
@@ -24,15 +27,17 @@ abstract class AbstractGame
     private array $userToGamerMap = [];
     protected GamersList $gamers;
 
-    protected bool $isPending;
-    protected bool $isLoaded;
-    protected string $conditionStatus;
-    protected array $revengeApprovements;
+    private bool $isStuffed;
+    private bool $isLoaded;
+    private string $conditionStatus;
+    private ?string $prevConditionStatus;
+    private array $revengeApprovements;
 
     public function __construct()
     {
-        $this->isPending = true;
+        $this->isStuffed = false;
         $this->isLoaded = false;
+        $this->prevConditionStatus = null;
         $this->conditionStatus = self::CONDITION_STATUS_PENDING;
         $this->gamers = new GamersList();
         $this->revengeApprovements = [];
@@ -46,22 +51,7 @@ abstract class AbstractGame
     abstract public function getClassesMap(): array;
     abstract public function getCondition(): AbstractGameCondition;
 
-    public function init(): void
-    {
-        // pass
-    }
-
     protected function setFromCondition(AbstractGameCondition $condition): void
-    {
-        // pass
-    }
-
-    public function beforeBegin(): void
-    {
-        // pass
-    }
-
-    public function prepareBeginEvent(ChannelEvent $event): void
     {
         // pass
     }
@@ -69,6 +59,36 @@ abstract class AbstractGame
     protected function filterConditionForGamer(?AbstractGamer $gamer, AbstractGameCondition $condition): array
     {
         return $condition->toArray();
+    }
+
+    public function init(): void
+    {
+        // pass
+    }
+
+    public function reset(): void
+    {
+        // pass
+    }
+
+    protected function prepare(): void
+    {
+        // pass
+    }
+
+    protected function prepareGamer(AbstractGamer $gamer): void
+    {
+        // pass
+    }
+
+    protected function getPrepareData(): iterable
+    {
+        return [];
+    }
+
+    protected function getGamerPrepareData(AbstractGamer $gamer): iterable
+    {
+        return [];
     }
 
 
@@ -83,8 +103,9 @@ abstract class AbstractGame
 
     public function loadFromCondition(AbstractGameCondition $condition): void
     {
-        $this->isPending = true;
+        $this->isStuffed = false;
         $this->isLoaded = true;
+        $this->prevConditionStatus = null;
         $this->conditionStatus = $condition->getConditionStatus();
         $this->revengeApprovements = $condition->getRevengeApprovements();
         $this->setFromCondition($condition);
@@ -104,12 +125,12 @@ abstract class AbstractGame
         }
     }
 
-    public function prepareNewGamerEvent(ChannelEvent $event): void
+    public function fillNewGamerEvent(ChannelEvent $event): void
     {
         $event->addData($this->getGamersData());
     }
 
-    public function prepareGamerReconnectedEvent(ChannelEvent $event, Connection $connection): void
+    public function fillGamerReconnectedEvent(ChannelEvent $event, Connection $connection): void
     {
         $gamer = $this->getGamerByConnection($connection);
         $event->addData([
@@ -117,7 +138,7 @@ abstract class AbstractGame
                 'oldConnectionId' => $connection->getOldId(),
                 'newConnectionId' => $connection->getId(),
                 'gamerId' => $gamer->getId(),
-                'gameIsPending' => $this->isPending(),
+                'gameIsStuffed' => $this->isStuffed(),
             ],
         ]);
         $event->setDataForConnection($connection, [
@@ -126,17 +147,29 @@ abstract class AbstractGame
         ]);
     }
 
-    public function prepareObserverConnectedEvent(ChannelEvent $event, Connection $connection): void
+    public function fillObserverConnectedEvent(ChannelEvent $event, Connection $connection): void
     {
         $event->addDataForConnection($connection, [
             'observerId' => $connection->getId(),
             'gamersData' => $this->getGamersData(),
             'gameData' => $this->getConditionForGamer(),
-            'gameIsPending' => $this->isPending(),
+            'gameIsStuffed' => $this->isStuffed(),
         ]);
     }
 
-    public function prepareLoadedEvent(ChannelEvent $event): void
+    public function fillPreparedEvent(ChannelEvent $event): void
+    {
+        $event->addData(ArrayHelper::iterableToArray($this->getPrepareData()));
+
+        foreach ($this->getGamers() as $gamer) {
+            $data = ArrayHelper::iterableToArray($this->getGamerPrepareData($gamer));
+            $user = $gamer->getGameChannelUser();
+            $data['roleAroundGame'] = $user->getType();
+            $event->addDataForConnection($gamer->getConnection(), $data);
+        }
+    }
+
+    public function fillLoadedEvent(ChannelEvent $event): void
     {
         foreach ($this->getGamers() as $gamer) {
             $event->addDataForConnection($gamer->getConnection(), [
@@ -195,17 +228,53 @@ abstract class AbstractGame
         return $map[$key] ?? null;
     }
 
-    public function setPending(bool $pending): void
+    public function setStuffed(): void
     {
-        $this->isPending = $pending;
-        if (!$pending) {
-            $this->conditionStatus = self::CONDITION_STATUS_STAFFED;
+        $this->isStuffed = true;
+        if ($this->conditionStatus === self::CONDITION_STATUS_PENDING) {
+            $this->setConditionStatus(self::CONDITION_STATUS_PREPARING);
         }
     }
 
-    public function isPending(): bool
+    public function runPreparing(): void
     {
-        return $this->isPending;
+        $this->prepare();
+        foreach ($this->getGamers() as $gamer) {
+            $this->prepareGamer($gamer);
+        }
+        $this->setConditionStatus(self::CONDITION_STATUS_PREPARED);
+    }
+
+    public function setActive(): void
+    {
+        $this->setConditionStatus(self::CONDITION_STATUS_ACTIVE);
+        $event = $this->getChannel()->createEvent('game-activated');
+        $this->getChannel()->sendEvent($event);
+    }
+
+    public function setOver(): void
+    {
+        $this->setConditionStatus(self::CONDITION_STATUS_OVER);
+        $event = $this->getChannel()->createEvent('game-over');
+        $this->getChannel()->sendEvent($event);
+    }
+
+    public function setRevenge(string $initiatorId): void
+    {
+        $this->setConditionStatus(self::CONDITION_STATUS_REVENGE);
+        foreach ($this->getGamers() as $gamer) {
+            $user = $gamer->getGameChannelUser();
+            if ($gamer->getId() == $initiatorId) {
+                $user->setType(GameChannelUser::TYPE_AUTHOR);
+            } else {
+                $user->setType(GameChannelUser::TYPE_PARTICIPANT);
+            }
+        }
+    }
+
+    public function isStuffed(): bool
+    {
+        return $this->isStuffed;
     }
 
     public function getGamersCount(): int
@@ -223,6 +292,9 @@ abstract class AbstractGame
         return $this->revengeApprovements;
     }
 
+    /**
+     * @return GamersList&iterable<AbstractGamer>
+     */
     public function getGamers(): GamersList
     {
         return $this->gamers;
@@ -288,26 +360,47 @@ abstract class AbstractGame
         $this->gamers[$id] = $gamer;
     }
 
-    public function approveRevenge(string $gamerId): array
+    public function approveRevenge(string $gamerId): void
     {
-        if ($this->conditionStatus !== self::CONDITION_STATUS_REVANGE) {
-            return [];
+        if ($this->conditionStatus !== self::CONDITION_STATUS_REVENGE) {
+            return;
+        }
+        $this->revengeApprovements[$gamerId] = true;
+
+        $approves = 0;
+        $votes = 0;
+        foreach ($this->revengeApprovements as $vote) {
+            $votes++;
+            if ($vote) {
+                $approves++;
+            }
         }
 
-        if (!in_array($gamerId, $this->revengeApprovements)) {
-            $this->revengeApprovements[] = $gamerId;
+        if ($approves == $this->getNeedleGamersCount()) {
+            $this->revengeApprovements = [];
+            $this->reset();
+            $this->runPreparing();
+            $event = $this->getChannel()->createEvent('game-prepared');
+            $this->fillPreparedEvent($event);
+            $event->send();
+        } elseif ($votes == $this->getNeedleGamersCount()) {
+            $this->setConditionStatus($this->prevConditionStatus);
         }
-        if (count($this->revengeApprovements) != $this->getNeedleGamersCount()) {
-            return [
-                'start' => false,
-                'approvesCount' => count($this->revengeApprovements),
-                'gamersCount' => $this->getNeedleGamersCount(),
-            ];
-        } else {
-            return [
-                'start' => true,
-            ];
+    }
+
+    public function declineRevenge(string $gamerId): void
+    {
+        if ($this->conditionStatus !== self::CONDITION_STATUS_REVENGE) {
+            return;
         }
+        $this->revengeApprovements[$gamerId] = false;
+    }
+
+    public function getRevengeData(): array
+    {
+        return [
+            'revengeApprovements' => $this->revengeApprovements,
+        ];
     }
 
     public function dropGamer(AbstractGamer $gamer): void
@@ -357,25 +450,40 @@ abstract class AbstractGame
         return $list;
     }
 
-    private function getConditionForGamer(?AbstractGamer $gamer = null): array
+    private function setConditionStatus(string $status): void
     {
-        if ($this->isPending()) {
-            return [
-                'conditionStatus' => self::CONDITION_STATUS_PENDING,
-            ];
-        }
+        $this->prevConditionStatus = $this->conditionStatus;
+        $this->conditionStatus = $status;
+    }
 
-        if ($this->conditionStatus === self::CONDITION_STATUS_REVANGE) {
-            return [
-                'conditionStatus' => self::CONDITION_STATUS_REVANGE,
-                'approvesCount' => count($this->revengeApprovements),
-                'gamersCount' => $this->getNeedleGamersCount(),
-                'revengeApprovements' => $this->revengeApprovements,
-            ];
-        }
+    private function getConditionForGamer(?AbstractGamer $gamer = null): ?array
+    {
+        switch ($this->conditionStatus) {
+            case self::CONDITION_STATUS_PENDING:
+            case self::CONDITION_STATUS_PREPARING:
+                return null;
 
-        $result = $this->filterConditionForGamer($gamer, $this->getCondition());
-        $result['conditionStatus'] = self::CONDITION_STATUS_STAFFED;
-        return $result;
+            case self::CONDITION_STATUS_PREPARED:
+                $result = ArrayHelper::iterableToArray($this->getPrepareData());
+                if ($gamer) {
+                    $data = ArrayHelper::iterableToArray($this->getGamerPrepareData($gamer));
+                    $user = $gamer->getGameChannelUser();
+                    $data['roleAroundGame'] = $user->getType();
+                    $result = array_merge($result, $data);
+                }
+                $result['conditionStatus'] = $this->conditionStatus;
+                return $result;
+
+            case self::CONDITION_STATUS_ACTIVE:
+                return $this->filterConditionForGamer($gamer, $this->getCondition());
+
+            case self::CONDITION_STATUS_OVER:
+                return ['conditionStatus' => $this->conditionStatus];
+
+            case self::CONDITION_STATUS_REVENGE:
+                $result = $this->getRevengeData();
+                $result['conditionStatus'] = $this->conditionStatus;
+                return $result;
+        }
     }
 }

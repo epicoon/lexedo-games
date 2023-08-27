@@ -9,14 +9,18 @@
  * - ENV_gamerReconnected
  * - ENV_observerConnected
  * - ENV_gameStuffed
- * - ENV_gameBegin
+ * - ENV_gamePrepared
+ * - ENV_gameOver
+ * - ENV_revengeRequested
+ * - ENV_revengeVoted
  */
 #lx:namespace lexedo.games;
 class OnlineGame extends lexedo.games.LocalGame {
 	constructor(env) {
 		super(env);
 
-		this._pending = true;
+		this._stuffed = false;
+		this._conditionStatus = lexedo.games.CONDITION_STATUS_PENDING;
 	}
 
 	static getChannelEventListenerClass() {
@@ -35,12 +39,12 @@ class OnlineGame extends lexedo.games.LocalGame {
 		return false;
 	}
 
-	isPending() {
-		return this._pending;
+	isStuffed() {
+		return this._stuffed;
 	}
 
-	setPending(value) {
-		this._pending = value;
+	setStuffed(value) {
+		this._stuffed = value;
 	}
 
 	registerGamer(channelMate, gamerId) {

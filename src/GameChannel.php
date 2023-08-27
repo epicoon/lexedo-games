@@ -219,7 +219,7 @@ abstract class GameChannel extends Channel
         $this->sendGameReferences($connection);
         $game->promiseGamerForConnection($connection);
         $event = $this->createEvent('new-gamer');
-        $game->prepareNewGamerEvent($event);
+        $game->fillNewGamerEvent($event);
         $event->send();
 
         /** @var GamesServer $app */
@@ -234,12 +234,12 @@ abstract class GameChannel extends Channel
         $app->getCommonChannel()->stuffPendingGame($this);
 
         $this->trigger('game-stuffed');
-        $game->setPending(false);
+        $game->setStuffed();
 
         if ($this->isLoaded()) {
             $this->triggerGameLoaded();
         } else {
-            $this->triggerGameBegin();
+            $this->triggerGamePrepared();
         }
     }
 
@@ -261,13 +261,13 @@ abstract class GameChannel extends Channel
 
         /** @var GamesServer $app */
         $app = lx::$app;
-        if ($game->isPending()) {
+        if (!$game->isStuffed()) {
             $app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
         }
 
         $this->sendGameReferences($connection);
         $event = $this->createEvent('gamer-reconnected');
-        $game->prepareGamerReconnectedEvent($event, $connection);
+        $game->fillGamerReconnectedEvent($event, $connection);
         $event->send();
     }
 
@@ -294,7 +294,7 @@ abstract class GameChannel extends Channel
             return;
         }
 
-        if ($this->game->isPending()) {
+        if (!$this->game->isStuffed()) {
             /** @var GamesServer $app */
             $app = lx::$app;
             $app->getCommonChannel()->onUserLeaveGame($this, $user);
@@ -324,7 +324,7 @@ abstract class GameChannel extends Channel
             return;
         }
 
-        if ($this->game->isPending()) {
+        if (!$this->game->isStuffed()) {
             $app->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
         }
 
@@ -378,7 +378,7 @@ abstract class GameChannel extends Channel
     {
         $this->sendGameReferences($connection);
         $event = $this->createEvent('observer-connected');
-        $this->getGame()->prepareObserverConnectedEvent($event, $connection);
+        $this->getGame()->fillObserverConnectedEvent($event, $connection);
         $event->send();
     }
 
@@ -395,12 +395,12 @@ abstract class GameChannel extends Channel
             ->send();
     }
 
-    private function triggerGameBegin(): void
+    private function triggerGamePrepared(): void
     {
         $game = $this->getGame();
-        $game->beforeBegin();
-        $event = $this->createEvent('game-begin');
-        $game->prepareBeginEvent($event);
+        $event = $this->createEvent('game-prepared');
+        $game->runPreparing();
+        $game->fillPreparedEvent($event);
         $event->send();
     }
 
@@ -408,7 +408,7 @@ abstract class GameChannel extends Channel
     {
         $game = $this->getGame();
         $event = $this->createEvent('game-loaded');
-        $game->prepareLoadedEvent($event);
+        $game->fillLoadedEvent($event);
         $event->send();
     }
 }

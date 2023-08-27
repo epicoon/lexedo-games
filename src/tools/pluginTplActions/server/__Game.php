@@ -26,11 +26,6 @@ class <<ucslug>>Game extends AbstractGame
         ];
     }
 
-    public function init(): void
-    {
-        //TODO
-    }
-
     public function getCondition(): <<ucslug>>GameCondition
     {
         $condition = $this->getConditionBlank();
@@ -52,13 +47,35 @@ class <<ucslug>>Game extends AbstractGame
         return [];
     }
 
-    public function beforeBegin(): void
+    public function init(): void
     {
         //TODO
     }
 
-    public function prepareBeginEvent(ChannelEvent $event): void
+    public function reset(): void
     {
         //TODO
+    }
+
+    protected function prepare(): void
+    {
+        //TODO
+    }
+
+    protected function prepareGamer(<<ucslug>>Gamer $gamer): void
+    {
+        //TODO
+    }
+
+    protected function getPrepareData(): iterable
+    {
+        //TODO
+        return [];
+    }
+
+    protected function getGamerPrepareData(<<ucslug>>Gamer $gamer): iterable
+    {
+        //TODO
+        return [];
     }
 }

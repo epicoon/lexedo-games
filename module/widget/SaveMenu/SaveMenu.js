@@ -9,6 +9,11 @@
 #lx:namespace lexedo.games;
 class SaveMenu extends lx.Box {
     modifyConfigBeforeApply(config) {
+		let parent = null;
+		if (config.parent) {
+			parent = config.parent;
+			delete config.parent;
+		}
 		config.geom = config.geom || [10, 15, 80, 60];
 		config.header = config.header || #lx:i18n(saveMenu);
     	config.closeButton = config.closeButton || {
@@ -18,22 +23,31 @@ class SaveMenu extends lx.Box {
 		};
 		config = {
 			geom: true,
-			depthCluster: lx.DepthClusterMap.CLUSTER_OVER,
+			depthCluster: lx.DepthClusterMap.CLUSTER_FRONT,
 			formConfig: config
 		};
+		if (parent) config.parent = parent;
         return config;
     }
 
 	static initCss(css) {
-		css.inheritClass('lgames-Box', 'AbstractBox');
-		css.addClass('lgames-saved-games-list', {
+		css.inheritClass('lg-SaveMenu-Box', 'AbstractBox');
+		css.addClass('lg-SaveMenu-list', {
 			backgroundColor: css.preset.bodyBackgroundColor,
 		});
-		css.addClass('lgames-save-game-checked', {
+		css.addClass('lg-SaveMenu-checked', {
 			backgroundColor: css.preset.checkedMainColor,
 		});
 	}
-	
+
+	getBasicCss() {
+		return {
+			box: 'lg-SaveMenu-Box',
+			list: 'lg-SaveMenu-list',
+			checked: 'lg-SaveMenu-checked'
+		};
+	}
+
     #lx:client clientBuild(config) {
     	super.clientBuild(config);
 
@@ -71,23 +85,24 @@ class SaveMenu extends lx.Box {
     		console.log('Filter has changed', e.newValue);
     	});
 
+		const self = this;
     	content.list.matrix({
     		items: this.gamesList,
     		itemBox: [lx.Box, {height:'60px', gridProportional: {indent:'10px'}}],
     		itemRender: (box, model)=>{
-    			let imgWrapper = new lx.Box({css:'lgames-Box'});
+    			let imgWrapper = new lx.Box({css:this.basicCss.box});
     			let img = imgWrapper.add(lx.Image, {filename: model.image});
     			img.adapt();
 
-    			new lx.Box({field:'name', width:3, css:'lgames-Box'});
-    			new lx.Box({field:'date', width:3, css:'lgames-Box'});
-    			new lx.Box({field:'gamers', width:5, css:'lgames-Box'});
+    			new lx.Box({field:'name', width:3, css:this.basicCss.box});
+    			new lx.Box({field:'date', width:3, css:this.basicCss.box});
+    			new lx.Box({field:'gamers', width:5, css:this.basicCss.box});
 
     			box.getChildren().forEach(c=>c.align(lx.CENTER, lx.MIDDLE));
     			box.style('cursor', 'pointer');
     			box.click(()=>__setActiveSave(this, model));
     			box.setField('isActive', function(value) {
-					this.toggleClassOnCondition(value, 'lgames-save-game-checked');
+					this.toggleClassOnCondition(value, self.basicCss.checked);
     			});
     		}
     	});

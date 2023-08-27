@@ -1,6 +1,6 @@
 <?php
 
-namespace lexedo\games\requestHandling\actions;
+namespace lexedo\games\commonRequestHandler\actions;
 
 use lexedo\games\CommonChannel;
 use lx\socket\channel\request\ChannelRequest;

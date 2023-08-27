@@ -4,7 +4,7 @@ namespace lexedo\games\admin\actions;
 
 use Exception;
 use lexedo\games\admin\Admin;
-use lexedo\games\requestHandling\actions\AbstractAction;
+use lexedo\games\commonRequestHandler\actions\AbstractAction;
 
 abstract class AbstractAdminAction extends AbstractAction
 {

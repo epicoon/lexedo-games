@@ -1,10 +1,10 @@
 <?php
 
-namespace lexedo\games\requestHandling;
+namespace lexedo\games\commonRequestHandler;
 
 use lexedo\games\CommonChannel;
 use lx\socket\channel\request\ChannelRequest;
-use lexedo\games\requestHandling\actions\AbstractAction;
+use lexedo\games\commonRequestHandler\actions\AbstractAction;
 use lx\StringHelper;
 
 class ActionFactory
@@ -15,7 +15,7 @@ class ActionFactory
         $routeArr = explode('/', $route);
         $class = '';
         if (count($routeArr) == 1) {
-            $prefix = 'lexedo\games\requestHandling\actions\\';
+            $prefix = 'lexedo\games\commonRequestHandler\actions\\';
             $class = $prefix . 'Action' . ucfirst(StringHelper::snakeToCamel($routeArr[0], ['-', '_']));
         } elseif (count($routeArr == 2)) {
             if ($routeArr[0] == 'admin') {

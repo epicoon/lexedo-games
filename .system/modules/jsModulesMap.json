@@ -23,7 +23,14 @@
     },
     "lexedo.games.SaveMenu": {
         "name": "lexedo.games.SaveMenu",
-        "path": "module\/widget\/SaveMenu.js",
+        "path": "module\/widget\/SaveMenu\/SaveMenu.js",
+        "data": {
+            "i18n": "i18n.yaml"
+        }
+    },
+    "lexedo.games.VotingMenu": {
+        "name": "lexedo.games.VotingMenu",
+        "path": "module\/widget\/VotingMenu\/VotingMenu.js",
         "data": {
             "i18n": "i18n.yaml"
         }

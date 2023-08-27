@@ -25,8 +25,6 @@ class Environment {
 
 	setGame(game, isOnline) {
 		this.game = game;
-		if (isOnline)
-			this.gameEventHandler = new lexedo.games.GameEventHandler(this, game);
 		this._plugin.trigger('ENV_gameCreated');
 	}
 
@@ -102,5 +100,8 @@ class Environment {
 }
 
 lexedo.games.CONDITION_STATUS_PENDING = 'pending';
-lexedo.games.CONDITION_STATUS_STAFFED = 'staffed';
-lexedo.games.CONDITION_STATUS_REVANGE = 'revange';
+lexedo.games.CONDITION_STATUS_PREPARING = 'preparing';
+lexedo.games.CONDITION_STATUS_PREPARED = 'prepared';
+lexedo.games.CONDITION_STATUS_ACTIVE = 'active';
+lexedo.games.CONDITION_STATUS_OVER = 'over';
+lexedo.games.CONDITION_STATUS_REVENGE = 'revenge';

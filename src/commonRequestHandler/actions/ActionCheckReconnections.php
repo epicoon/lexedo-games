@@ -1,6 +1,6 @@
 <?php
 
-namespace lexedo\games\requestHandling\actions;
+namespace lexedo\games\commonRequestHandler\actions;
 
 class ActionCheckReconnections extends AbstractAction
 {

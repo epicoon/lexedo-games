@@ -21,6 +21,11 @@ class GameChannelUser
         $this->type = $type;
     }
 
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
     public function isConnected(): bool
     {
         return $this->connection !== null;
