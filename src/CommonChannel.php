@@ -332,8 +332,16 @@ class CommonChannel extends Channel
             ];
         }
 
+        $user = $this->getUser($connection);
+        if ($user) {
+            $cookie = $this->getUserCookie($user);
+            $lang = $cookie['lang'] ?? 'en-EN';
+        } else {
+            $lang = 'en-EN';
+        }
+
         return [
-            'games' => $gamesProvider->getFullData(),
+            'games' => $gamesProvider->getFullData($lang),
             'messages' => $this->messageLog,
             'currentGames' => $currentGames,
         ];

@@ -10,6 +10,7 @@ use lx\File;
 use lx\Math;
 use lx\ModelInterface;
 use lx\socket\channel\Channel;
+use lx\socket\channel\ChannelInterface;
 use lx\socket\channel\request\ChannelRequest;
 use lx\socket\channel\request\ChannelResponse;
 use lx\socket\Connection;
@@ -46,6 +47,13 @@ abstract class GameChannel extends Channel
         return array_merge(parent::getDependenciesConfig(), [
             'plugin' => GamePlugin::class,
         ]);
+    }
+
+    public function getCommonChannel(): ChannelInterface
+    {
+        /** @var GamesServer $app */
+        $app = lx::$app;
+        return $app->getCommonChannel();
     }
 
     public function getType(): string
@@ -222,16 +230,14 @@ abstract class GameChannel extends Channel
         $game->fillNewGamerEvent($event);
         $event->send();
 
-        /** @var GamesServer $app */
-        $app = lx::$app;
         if ($this->getGamersCount() != $this->getNeedleGamersCount()) {
-            $app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
+            $this->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
             return;
         }
 
         // Game has stuffed
         $this->isStuffed = true;
-        $app->getCommonChannel()->stuffPendingGame($this);
+        $this->getCommonChannel()->stuffPendingGame($this);
 
         $this->trigger('game-stuffed');
         $game->setStuffed();
@@ -259,10 +265,8 @@ abstract class GameChannel extends Channel
             return;
         }
 
-        /** @var GamesServer $app */
-        $app = lx::$app;
         if (!$game->isStuffed()) {
-            $app->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
+            $this->getCommonChannel()->onUserJoinGame($this, $this->getUser($connection));
         }
 
         $this->sendGameReferences($connection);
@@ -273,9 +277,7 @@ abstract class GameChannel extends Channel
 
     public function afterConnect(Connection $connection): void
     {
-        /** @var GamesServer $app */
-        $app = lx::$app;
-        $app->getCommonChannel()->sendAdminEvent('newGameChannelConnection', [
+        $this->getCommonChannel()->sendAdminEvent('newGameChannelConnection', [
             'gameChannel' => $this,
             'connection' => $connection,
         ]);
@@ -295,9 +297,7 @@ abstract class GameChannel extends Channel
         }
 
         if (!$this->game->isStuffed()) {
-            /** @var GamesServer $app */
-            $app = lx::$app;
-            $app->getCommonChannel()->onUserLeaveGame($this, $user);
+            $this->getCommonChannel()->onUserLeaveGame($this, $user);
         }
 
         $this->users->disconnectUser($connection);
@@ -306,15 +306,12 @@ abstract class GameChannel extends Channel
     public function onLeave(Connection $connection): void
     {
         parent::onLeave($connection);
-        
-        /** @var GamesServer $app */
-        $app = lx::$app;
 
         if ($this->getConnectionsCount() == 0) {
-            $app->getCommonChannel()->trigger('game-close', [
+            $this->getCommonChannel()->trigger('game-close', [
                 'channel' => $this->getName(),
             ]);
-            $app->getCommonChannel()->closePendingGame($this);
+            $this->getCommonChannel()->closePendingGame($this);
             $this->drop();
             return;
         }
@@ -325,7 +322,7 @@ abstract class GameChannel extends Channel
         }
 
         if (!$this->game->isStuffed()) {
-            $app->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
+            $this->getCommonChannel()->onUserLeaveGame($this, $this->getUser($connection));
         }
 
         $gamer = $this->game->getGamerByConnection($connection);
@@ -336,9 +333,7 @@ abstract class GameChannel extends Channel
 
     public function afterDisconnect(Connection $connection): void
     {
-        /** @var GamesServer $app */
-        $app = lx::$app;
-        $app->getCommonChannel()->sendAdminEvent('dropGameChannelConnection', [
+        $this->getCommonChannel()->sendAdminEvent('dropGameChannelConnection', [
             'gameChannel' => $this,
             'connection' => $connection,
         ]);
@@ -351,20 +346,18 @@ abstract class GameChannel extends Channel
     
     public function beforeClose(): void
     {
-        /** @var GamesServer $app */
-        $app = lx::$app;
-        $app->getCommonChannel()->closeGame($this);
+        $this->getCommonChannel()->closeGame($this);
     }
 
     public function onIteration(): void
     {
         if ($this->getTimer() > $this->reconnectionPeriod) {
-            /** @var GamesServer $app */
-            $app = lx::$app;
-            $app->getCommonChannel()->trigger('game-close', [
+            $this->getCommonChannel()->trigger('game-close', [
                 'channel' => $this->getName(),
             ]);
-            $app->getCommonChannel()->closePendingGame($this);
+            $this->getCommonChannel()->closePendingGame($this);
+            /** @var GamesServer $app */
+            $app = lx::$app;
             $app->channels->close($this->getName());
         }
     }

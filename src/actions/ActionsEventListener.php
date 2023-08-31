@@ -20,9 +20,21 @@ abstract class ActionsEventListener extends GameEventListener
         $action->setInitiator($this->getGame()->getGamerByConnection($event->getInitiator()));
         $action->setRequestData($data['data']);
         $response = $action->run();
+
         if (!$action->isSuccessful()) {
             $event->setReceiver($event->getInitiator());
         }
-        $event->setData($response);
+
+        if ($action instanceof ConnectionDependentInterface) {
+            $connections = $event->getReceivers();
+            foreach ($connections as $connection) {
+                $event->setDataForConnection(
+                    $connection,
+                    $action->processForConnection($connection, $response)
+                );
+            }
+        } else {
+            $event->setData($response);
+        }
     }
 }

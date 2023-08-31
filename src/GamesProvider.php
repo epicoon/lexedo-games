@@ -23,14 +23,15 @@ class GamesProvider implements FusionComponentInterface
         return $this->gamesData;
     }
 
-    public function getFullData(): array
+    public function getFullData(string $lang = 'en-EN'): array
     {
         $result = [];
         foreach ($this->getGames() as $type => $game) {
+            $plugin = $this->getGamePlugin($type);
             $result[] = [
                 'type' => $type,
                 'connectionType' => $game['connectionType'],
-                'title' => $game['title'],
+                'title' => $plugin->i18nMap->localizeKey($game['title'], [], $lang),
                 'image' => $game['image'],
                 'minGamers' => $game['minGamers'],
                 'maxGamers' => $game['maxGamers'],
