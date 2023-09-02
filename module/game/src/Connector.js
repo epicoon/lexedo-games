@@ -88,7 +88,10 @@ class Connector {
 			connectionEventListener: this._gameConfig.connectionEventListener,
 			channelEventListener: this._gameConfig.channelEventListener
 		});
-		this.socket.connect(this._connectData.userChannelData || {}, {token: this._connectData.token});
+		this.socket.connect(this._connectData.userChannelData || {}, {
+			token: this._connectData.token,
+			password: this._connectData.password
+		});
 	}
 
 	leave() {

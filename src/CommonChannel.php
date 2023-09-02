@@ -329,6 +329,7 @@ class CommonChannel extends Channel
                 'image' => $gameData['image'],
                 'gamersCurrent' => $game->getGamersCount(),
                 'gamersRequired' => $game->getNeedleGamersCount(),
+                'requirePassword' => $game->requirePassword(),
             ];
         }
 

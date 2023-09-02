@@ -29,6 +29,7 @@ class Core extends lx.PluginCore {
 					image: {},
 					gamersCurrent: {},
 					gamersRequired: {},
+					requirePassword: {default: false},
 					follow: {default: false},
 					isOwned: {default: false}
 				}
@@ -154,7 +155,7 @@ class Core extends lx.PluginCore {
 	}
 
 	__createOnlineGame(gameData) {
-		var params = [#lx:i18n(NewGameName), #lx:i18n(Password)];
+		let params = [#lx:i18n(NewGameName), #lx:i18n(Password)];
 		if (gameData.minGamers != gameData.maxGamers)
 			params.push(#lx:i18n(GamersCount, {min: gameData.minGamers, max: gameData.maxGamers}));
 
@@ -181,17 +182,30 @@ class Core extends lx.PluginCore {
 			lx.ConfirmPopup.open(#lx:i18n(ToLeave)).confirm(()=>game.box.del());
 		} else {
 			lx.ConfirmPopup.open(#lx:i18n(ToJoin), {asObserver:#lx:i18n(AsObserver)}, 3)
-				.confirm(()=>{
-					//TODO password
-					this.__inConnecting = {password: ''};
-					this.socket.trigger('askForJoin', {key:game.channelKey});
-				})
-				.asObserver(()=>{
-					//TODO password
-					this.__inConnecting = {password: ''};
-					this.socket.trigger('askForJoin', {key:game.channelKey, isObserver:true});
-				});
+				.confirm(()=>this.__tryConnect(game))
+				.asObserver(()=>this.__tryConnect(game, true));
 		}
+	}
+
+	__tryConnect(game, isObserver = false) {
+
+		// console.log( game );
+
+		if (game.requirePassword) {
+			lx.InputPopup.open([#lx:i18n(Password)]).confirm((values)=>{
+				let password = values[0];
+				this.__connect(game, isObserver, password);
+			});
+		} else {
+			this.__connect(game, isObserver);
+		}
+	}
+
+	__connect(game, isObserver, password = '') {
+		this.__inConnecting = {password};
+		let data = {key: game.channelKey};
+		if (isObserver) data.isObserver = true;
+		this.socket.trigger('askForJoin', data);
 	}
 
 	__initGui() {
