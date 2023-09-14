@@ -31,7 +31,7 @@
             <lx.JointMover (top:'2/3', height:'10px')>
             <lx.Box:._spread>
                 <lx.socket.ChatBox:@chatBox (
-                    id:'commonChat',
+                    chatId:'commonChat',
                     geom:['10px',0,null,null,'10px','10px'],
                     mateNameField:'login',
                     matesPosition: lx.LEFT

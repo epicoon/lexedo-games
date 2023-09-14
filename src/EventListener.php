@@ -121,6 +121,14 @@ class EventListener extends ChannelEventListener
             return;
         }
 
+        if ($channel->requirePassword() && !$channel->checkPassword($eventData['password'] ?? '')) {
+            $event->replaceEvent('error', [
+                'message' => 'Wrong password'
+            ]);
+            $event->setReceiver($event->getInitiator());
+            return;
+        }
+
         $token = Math::randHash();
         $isObserver = $eventData['isObserver'] ?? false;
         $channel->addWaitingUser(
@@ -173,6 +181,7 @@ class EventListener extends ChannelEventListener
             'gameData' =>  $gameData,
             'gameName' => $channel->getParameter('name'),
             'gamersRequired' => $channel->getNeedleGamersCount(),
+            'requirePassword' => $channel->requirePassword(),
         ];
 
         $subEvent = $event->replaceEvent('gameCreated', $eventData);

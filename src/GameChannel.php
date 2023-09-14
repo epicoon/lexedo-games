@@ -197,7 +197,7 @@ abstract class GameChannel extends Channel
             return true;
         }
 
-        if ($this->requirePassword() && !$this->checkPassword($authData['password'] ?? null)) {
+        if ($this->requirePassword() && !$this->checkPassword($authData['password'] ?? '')) {
             return false;
         }
         

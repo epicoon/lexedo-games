@@ -188,12 +188,8 @@ class Core extends lx.PluginCore {
 	}
 
 	__tryConnect(game, isObserver = false) {
-
-		// console.log( game );
-
 		if (game.requirePassword) {
-			lx.InputPopup.open([#lx:i18n(Password)]).confirm((values)=>{
-				let password = values[0];
+			lx.InputPopup.open([#lx:i18n(Password)]).confirm((password)=>{
 				this.__connect(game, isObserver, password);
 			});
 		} else {
@@ -203,7 +199,7 @@ class Core extends lx.PluginCore {
 
 	__connect(game, isObserver, password = '') {
 		this.__inConnecting = {password};
-		let data = {key: game.channelKey};
+		let data = {key: game.channelKey, password};
 		if (isObserver) data.isObserver = true;
 		this.socket.trigger('askForJoin', data);
 	}

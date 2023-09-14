@@ -144,7 +144,6 @@ class SaveMenu extends lx.Box {
     			return;
     		}
 
-    		//TODO password!!
 			this._core.__inConnecting = {
 				password: ''
 			};

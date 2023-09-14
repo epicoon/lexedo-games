@@ -8,7 +8,7 @@ class ConnectionEventListener {
 		return this._environment;
 	}
 
-	onConnected() {
+	onConnected(event) {
 		if (this._environment.mode == 'dev') {
 		    console.log(__title(this, 'ON CONNECTED'));
 		}
@@ -43,7 +43,8 @@ class ConnectionEventListener {
 			console.log(event.payload.mate);
 		}
 
-		this._environment.getPlugin().trigger('ENV_socketConnected');
+		if (event.payload.mate.isLocal())
+			this._environment.getPlugin().trigger('ENV_socketConnected');
 	}
 
 	onClientLeave(event) {

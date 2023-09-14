@@ -229,7 +229,7 @@ class CommonChannel extends Channel
 
     public function checkOnConnect(Connection $connection, array $authData): bool
     {
-        if ($this->requirePassword() && !$this->checkPassword($authData['password'] ?? null)) {
+        if ($this->requirePassword() && !$this->checkPassword($authData['password'] ?? '')) {
             return false;
         }
 

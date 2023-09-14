@@ -82,7 +82,10 @@ class Environment {
 		if (this.useScreenLock) {
 			this.screenLock = new lx.Box({parent: this.getPlugin().root, geom: true});
 			this.screenLock.add(lx.Box, {geom: true, fill:'black', opacity:0.5});
-			var textWrapper = this.screenLock.add(lx.Box, {geom:true});
+			const textWrapper = this.screenLock.add(lx.Box, {
+				geom: true,
+				depthCluster: lx.DepthClusterMap.CLUSTER_OVER
+			});
 			textWrapper.text(#lx:i18n(waiting));
 			textWrapper.style('color', 'white');
 			textWrapper->text.style('fontSize', '2em');

@@ -26,6 +26,7 @@ class SocketEventListener extends lx.socket.EventListener {
 			image: data.gameData.image,
 			gamersCurrent: 0,
 			gamersRequired: data.gamersRequired,
+			requirePassword: data.requirePassword,
 			isOwned: event.isFromMe()
 		});
 
@@ -60,15 +61,14 @@ class SocketEventListener extends lx.socket.EventListener {
 	}
 
 	onGameJoining(event) {
-		let data = event.getData();
-
-		var game = this._core.getPendingGame(data.channelKey);
+		let data = event.getData(),
+			game = this._core.getPendingGame(data.channelKey);
 		if (!game) {
 			lx.tostError('Game state changing error');
 			return;
 		}
 
-		var connectData = this.__prepareConnectData(data);
+		let connectData = this.__prepareConnectData(data);
 		if (connectData)
 			this._core.loadGamePlugin(game, connectData);
 	}
