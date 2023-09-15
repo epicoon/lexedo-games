@@ -21,6 +21,11 @@ abstract class ActionsEventListener extends GameEventListener
         $action->setRequestData($data['data']);
         $response = $action->run();
 
+        if ($action instanceof ServerOnlyInterface) {
+            $event->stop();
+            return;
+        }
+
         if (!$action->isSuccessful()) {
             $event->setReceiver($event->getInitiator());
         }
