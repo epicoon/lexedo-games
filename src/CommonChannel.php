@@ -244,7 +244,7 @@ class CommonChannel extends Channel
             return false;
         }
 
-        if ($authData['admin'] === true) {
+        if (($authData['admin'] ?? null) === true) {
             if (!$this->requestVoter->run($user, 'admin')) {
                 return false;
             }

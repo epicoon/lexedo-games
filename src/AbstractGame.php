@@ -407,7 +407,7 @@ abstract class AbstractGame
     {
         $authField = $gamer->getAuthField();
         unset($this->userToGamerMap[$authField]);
-        unset($this->gamers[$gamerId]);
+        unset($this->gamers[$gamer->getId()]);
     }
 
 

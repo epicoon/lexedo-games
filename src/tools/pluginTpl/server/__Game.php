@@ -3,6 +3,8 @@
 namespace <<namespace>>;
 
 use lexedo\games\AbstractGame;
+use lexedo\games\AbstractGameCondition;
+use lexedo\games\AbstractGamer;
 use lx\socket\channel\ChannelEvent;
 
 /**
@@ -35,12 +37,19 @@ class <<ucslug>>Game extends AbstractGame
         return $condition;
     }
 
-    protected function setFromCondition(<<ucslug>>GameCondition $condition): void
+    /**
+     * @param <<ucslug>>GameCondition $condition
+     */
+    protected function setFromCondition(AbstractGameCondition $condition): void
     {
         //TODO
     }
 
-    protected function filterConditionForGamer(?<<ucslug>>Gamer $gamer, <<ucslug>>GameCondition $condition): array
+    /**
+     * @param null <<ucslug>>Gamer $gamer
+     * @param null <<ucslug>>GameCondition $condition
+     */
+    protected function filterConditionForGamer(?AbstractGamer $gamer, AbstractGameCondition $condition): array
     {
         //TODO
 
@@ -62,7 +71,10 @@ class <<ucslug>>Game extends AbstractGame
         //TODO
     }
 
-    protected function prepareGamer(<<ucslug>>Gamer $gamer): void
+    /**
+     * @param <<ucslug>>Gamer $gamer
+     */
+    protected function prepareGamer(AbstractGamer $gamer): void
     {
         //TODO
     }
@@ -73,7 +85,10 @@ class <<ucslug>>Game extends AbstractGame
         return [];
     }
 
-    protected function getGamerPrepareData(<<ucslug>>Gamer $gamer): iterable
+    /**
+     * @param <<ucslug>>Gamer $gamer
+     */
+    protected function getGamerPrepareData(AbstractGamer $gamer): iterable
     {
         //TODO
         return [];

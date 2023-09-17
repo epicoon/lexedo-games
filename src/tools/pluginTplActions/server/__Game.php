@@ -3,6 +3,8 @@
 namespace <<namespace>>;
 
 use lexedo\games\AbstractGame;
+use lexedo\games\AbstractGameCondition;
+use lexedo\games\AbstractGamer;
 use lx\socket\channel\ChannelEvent;
 
 /**
@@ -19,8 +21,8 @@ use lx\socket\channel\ChannelEvent;
 class <<ucslug>>Game extends AbstractGame
 {
     public function getClassesMap(): array
-    {
-        return [
+{
+    return [
             self::GAMER_CLASS => <<ucslug>>Gamer::class,
             self::CONDITION_CLASS => <<ucslug>>GameCondition::class,
         ];
@@ -35,47 +37,60 @@ class <<ucslug>>Game extends AbstractGame
         return $condition;
     }
 
-    protected function setFromCondition(<<ucslug>>GameCondition $condition): void
-    {
-        //TODO
-    }
+    /**
+     * @param <<ucslug>>GameCondition $condition
+     */
+    protected function setFromCondition(AbstractGameCondition $condition): void
+{
+    //TODO
+}
 
-    protected function filterConditionForGamer(?<<ucslug>>Gamer $gamer, <<ucslug>>GameCondition $condition): array
-    {
-        //TODO
+    /**
+     * @param null <<ucslug>>Gamer $gamer
+     * @param null <<ucslug>>GameCondition $condition
+     */
+    protected function filterConditionForGamer(?AbstractGamer $gamer, AbstractGameCondition $condition): array
+{
+    //TODO
 
-        return [];
-    }
+    return [];
+}
 
     public function init(): void
-    {
-        //TODO
-    }
+{
+    //TODO
+}
 
     public function reset(): void
-    {
-        //TODO
-    }
+{
+    //TODO
+}
 
     protected function prepare(): void
-    {
-        //TODO
-    }
+{
+    //TODO
+}
 
-    protected function prepareGamer(<<ucslug>>Gamer $gamer): void
-    {
-        //TODO
-    }
+    /**
+     * @param <<ucslug>>Gamer $gamer
+     */
+    protected function prepareGamer(AbstractGamer $gamer): void
+{
+    //TODO
+}
 
     protected function getPrepareData(): iterable
-    {
-        //TODO
-        return [];
-    }
+{
+    //TODO
+    return [];
+}
 
-    protected function getGamerPrepareData(<<ucslug>>Gamer $gamer): iterable
-    {
-        //TODO
-        return [];
-    }
+    /**
+     * @param <<ucslug>>Gamer $gamer
+     */
+    protected function getGamerPrepareData(AbstractGamer $gamer): iterable
+{
+    //TODO
+    return [];
+}
 }
