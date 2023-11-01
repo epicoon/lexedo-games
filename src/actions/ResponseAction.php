@@ -17,7 +17,7 @@ abstract class ResponseAction implements ResponseActionInterface
     private array $subActions = [];
     private bool $successful = true;
 
-    abstract protected function process(): array;
+    abstract protected function process(): Response;
 
     /**
      * @abstract
@@ -40,6 +40,11 @@ abstract class ResponseAction implements ResponseActionInterface
         $this->name = $name;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+    
     public function getPlugin(): GamePlugin
     {
         return $this->getGame()->getPlugin();
@@ -69,20 +74,17 @@ abstract class ResponseAction implements ResponseActionInterface
     {
         return $this->requestData;
     }
-
-    public function run(): array
+    
+    public function run(): ResponseInterface
     {
         try {
-            $result = $this->process();
+            $response = $this->process();
+            $response->processSubActions();
         } catch (ActionException $exception) {
-            lx::$app->log($exception->getMessageForLog(), 'action_error');
-            $result = [
-                'success' => false,
-                'error' => $exception->getMessageForClient(),
-            ];
             $this->successful = false;
+            return new ErrorResponse($exception);
         }
-        return $this->serialize($result);
+        return $response;
     }
 
     public function throwException(string $key, array $params = []): void
@@ -105,34 +107,24 @@ abstract class ResponseAction implements ResponseActionInterface
         $cookie = $app->getCommonChannel()->getUserCookie($user);
         return $cookie['lang'] ?? 'en-EN';
     }
-    
+
+    public function getSubActions(): array
+    {
+        return $this->subActions;
+    }
+
     protected function addSubAction(string $actionName): void
     {
         $this->subActions[$actionName] = static::create($this->getGame(), $actionName);
     }
-
-    private function serialize(array $response): array
+    
+    protected function prepareResponse(iterable $data): Response
     {
-        $result = [
-            'action' => $this->name,
-            'actionData' => $response,
-        ];
+        return new Response($this, $data);
+    }
 
-        if (!empty($this->subActions)) {
-            $subActionsData = [];
-
-            /** @var AbstractAction $subAction */
-            foreach ($this->subActions as $name => $subAction) {
-                $subData = $subAction->run();
-                $subActionsData[$name] = $subData['actionData'];
-                if (array_key_exists('subActions', $subData)) {
-                    $subActionsData = array_merge($subActionsData, $subData['subActions']);
-                }
-            }
-
-            $result['subActions'] = $subActionsData;
-        }
-
-        return $result;
+    protected function emptyResponse(): Response
+    {
+        return new Response($this, []);
     }
 }

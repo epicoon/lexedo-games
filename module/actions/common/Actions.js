@@ -7,6 +7,7 @@ class Actions {
             dataProviderClass = dep.dataProviderClass
                 || (game.isLocal() ? lexedo.games.actions.LocalDataProvider : lexedo.games.actions.OnlineDataProvider),
             actionHandlerClass = dep.actionHandlerClass || lexedo.games.actions.ActionHandler;
+
         this.dataProvider = new dataProviderClass(this);
         this.actionHandler = new actionHandlerClass(this);
     }

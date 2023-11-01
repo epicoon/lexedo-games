@@ -7,5 +7,6 @@ use lx\socket\Connection;
 
 interface ConnectionDependentInterface
 {
-    public function processForConnection(Connection $connection, iterable $response): iterable;
+    public function processForConnection(Connection $connection, array $responseData): array;
+    public function getConnectionLang(Connection $connection): string;
 }

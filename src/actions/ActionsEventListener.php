@@ -28,18 +28,18 @@ abstract class ActionsEventListener extends GameEventListener
 
         if (!$action->isSuccessful()) {
             $event->setReceiver($event->getInitiator());
+            return;
         }
 
-        if ($action instanceof ConnectionDependentInterface) {
+
+
+        if ($response->isConnectionDependent()) {
             $connections = $event->getReceivers();
             foreach ($connections as $connection) {
-                $event->setDataForConnection(
-                    $connection,
-                    $action->processForConnection($connection, $response)
-                );
+                $event->setDataForConnection($connection, $response->forConnection($connection));
             }
         } else {
-            $event->setData($response);
+            $event->setData($response->toArray());
         }
     }
 }

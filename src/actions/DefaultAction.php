@@ -4,8 +4,8 @@ namespace lexedo\games\actions;
 
 class DefaultAction extends ResponseAction
 {
-    protected function process(): array
+    protected function process(): Response
     {
-        return $this->getRequestData();
+        return $this->prepareResponse($this->getRequestData());
     }
 }
