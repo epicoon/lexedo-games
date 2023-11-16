@@ -3,6 +3,7 @@
 namespace lexedo\games\actions;
 
 use lx;
+use lx\socket\Connection;
 
 class ErrorResponse implements ResponseInterface
 {
@@ -20,5 +21,15 @@ class ErrorResponse implements ResponseInterface
             'success' => false,
             'error' => $exception->getMessageForClient(),
         ];
+    }
+
+    public function forConnection(Connection $connection): array
+    {
+        return [];
+    }
+
+    public function isConnectionDependent(): bool
+    {
+        return false;
     }
 }
