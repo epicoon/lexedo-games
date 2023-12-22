@@ -17,7 +17,7 @@ class ActionFactory
         if (count($routeArr) == 1) {
             $prefix = 'lexedo\games\commonRequestHandler\actions\\';
             $class = $prefix . 'Action' . ucfirst(StringHelper::snakeToCamel($routeArr[0], ['-', '_']));
-        } elseif (count($routeArr == 2)) {
+        } elseif (count($routeArr) == 2) {
             if ($routeArr[0] == 'admin') {
                 $prefix = 'lexedo\games\admin\actions\\';
                 $class = $prefix . 'Action' . ucfirst(StringHelper::snakeToCamel($routeArr[1], ['-', '_']));
