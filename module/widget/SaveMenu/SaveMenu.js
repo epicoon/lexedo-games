@@ -48,8 +48,8 @@ class SaveMenu extends lx.Box {
 		};
 	}
 
-    #lx:client clientBuild(config) {
-    	super.clientBuild(config);
+    #lx:client clientRender(config) {
+    	super.clientRender(config);
 
 		this.add(lx.Box, {
 			geom: true,

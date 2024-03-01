@@ -40,8 +40,8 @@ class VotingMenu extends lx.Box {
         };
     }
 
-    #lx:client clientBuild(config) {
-        super.clientBuild(config);
+    #lx:client clientRender(config) {
+        super.clientRender(config);
 
         this._env = null;
         this._onAppove = null;
